@@ -23,12 +23,6 @@ export default function OffshoreForm() {
 
     const methods = useForm<OffshoreFormData>({
         defaultValues: {
-            relacao_empresa: 'proprietario',
-            imoveis_brasil: 'nao',
-            socio_responsavel: 'sim',
-            jurisdicao: 'Névis',
-            pep: 'nao',
-            residencia_eua: 'nao',
             uso_empresa: [],
             origem_fundos: [],
         }
@@ -149,7 +143,7 @@ export default function OffshoreForm() {
             <header className="form-header">
                 <div className="logo-container">
                     <img
-                        src={theme === 'light' ? '/logo-preto.jpg' : '/logo-branco.jpg'}
+                        src="/LogoBranco.svg"
                         alt="Bezerra Borges Advogados"
                         className="logo-img"
                     />

@@ -17,7 +17,7 @@ export default function Step4({ onPrev, isSubmitting }: { onPrev: () => void, is
         <div className="animate-fade-in-up">
             <h2 className="form-title">Dados <span className="accent-text">Pessoais</span></h2>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+            <div className="responsive-grid">
                 <div className="form-group">
                     <label className="form-label">Nome Completo</label>
                     <input type="text" className="form-input" {...register('nome_completo_pessoal', { required: true })} />
@@ -28,7 +28,7 @@ export default function Step4({ onPrev, isSubmitting }: { onPrev: () => void, is
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+            <div className="responsive-grid">
                 <div className="form-group">
                     <label className="form-label">E-mail Corporativo/Pessoal</label>
                     <input type="email" className="form-input" {...register('email', { required: true })} />
@@ -44,7 +44,7 @@ export default function Step4({ onPrev, isSubmitting }: { onPrev: () => void, is
                 <input type="text" className="form-input" {...register('endereco')} placeholder="Rua, Número, Complemento, Cidade, Estado, CEP" />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+            <div className="responsive-grid">
                 <div className="form-group">
                     <label className="form-label">CPF ou NIT</label>
                     <input type="text" className="form-input" {...register('cpf_nit')} />
@@ -64,9 +64,7 @@ export default function Step4({ onPrev, isSubmitting }: { onPrev: () => void, is
                     ].map((opt) => (
                         <label key={opt.id} className={`option-card ${ocupacao === opt.id ? 'selected' : ''}`}>
                             <input type="radio" value={opt.id} {...register('ocupacao')} />
-                            <div className="option-indicator">
-                                {ocupacao === opt.id && <Check size={14} />}
-                            </div>
+                            <div className="option-indicator" />
                             <span>{opt.label}</span>
                         </label>
                     ))}
@@ -89,16 +87,14 @@ export default function Step4({ onPrev, isSubmitting }: { onPrev: () => void, is
                 </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+            <div className="responsive-grid">
                 <div className="form-group">
                     <label className="form-label">Exposto Politicamente?</label>
                     <div className="option-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
                         {['sim', 'nao'].map(opt => (
                             <label key={opt} className={`option-card ${pep === opt ? 'selected' : ''}`}>
                                 <input type="radio" value={opt} {...register('pep')} />
-                                <div className="option-indicator">
-                                    {pep === opt && <Check size={14} />}
-                                </div>
+                                <div className="option-indicator" />
                                 <span className="capitalize">{opt === 'sim' ? 'Sim' : 'Não'}</span>
                             </label>
                         ))}
@@ -110,9 +106,7 @@ export default function Step4({ onPrev, isSubmitting }: { onPrev: () => void, is
                         {['sim', 'nao'].map(opt => (
                             <label key={opt} className={`option-card ${eua === opt ? 'selected' : ''}`}>
                                 <input type="radio" value={opt} {...register('residencia_eua')} />
-                                <div className="option-indicator">
-                                    {eua === opt && <Check size={14} />}
-                                </div>
+                                <div className="option-indicator" />
                                 <span className="capitalize">{opt === 'sim' ? 'Sim' : 'Não'}</span>
                             </label>
                         ))}
@@ -141,9 +135,7 @@ export default function Step4({ onPrev, isSubmitting }: { onPrev: () => void, is
             <div className="form-group" style={{ marginTop: '2rem' }}>
                 <label className={`option-card ${aceite ? 'selected' : ''}`}>
                     <input type="checkbox" {...register('declaracao_aceite', { required: true })} />
-                    <div className="option-indicator">
-                        {aceite && <Check size={14} />}
-                    </div>
+                    <div className="option-indicator" />
                     <span className="text-sm">
                         Declaro que as informações são verdadeiras e aceito os termos de sigilo.
                     </span>

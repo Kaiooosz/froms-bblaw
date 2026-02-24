@@ -60,5 +60,27 @@ model Lead {
   documento_residencia  String?
   documento_identidade  String?
 
+  // Controle Administrativo
+  status                String   @default("pendente") // "pendente", "aprovado", "recusado"
+  
   @@map("leads")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String   // Ex: "LEAD_APPROVE", "CONFIG_UPDATE"
+  details   String   // Detalhes da ação em formato de texto ou JSON
+  user      String   // Email ou nome do admin
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+model AppConfig {
+  id          String   @id @default("config_unico")
+  whatsapp    String   @default("+55 1198271-2025")
+  notificacao Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+
+  @@map("app_configs")
 }

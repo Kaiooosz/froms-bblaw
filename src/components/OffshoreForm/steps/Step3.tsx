@@ -23,7 +23,7 @@ export default function Step3({ onNext, onPrev }: { onNext: () => void, onPrev: 
             <div className="form-group">
                 <label className="form-label">Sugestões de Nome (em ordem de preferência)</label>
                 <div style={{ display: 'grid', gap: '1rem' }}>
-                    <div className="relative">
+                    <div style={{ position: 'relative' }}>
                         <input type="text" placeholder="1ª Opção de Nome" className="form-input" {...register('empresa_opcao1', { required: true })} />
                     </div>
                     <input type="text" placeholder="2ª Opção de Nome" className="form-input" {...register('empresa_opcao2')} />
@@ -33,7 +33,7 @@ export default function Step3({ onNext, onPrev }: { onNext: () => void, onPrev: 
 
             <div className="form-group">
                 <label htmlFor="jurisdicao" className="form-label">Jurisdição de Preferência</label>
-                <div className="relative">
+                <div style={{ position: 'relative' }}>
                     <select id="jurisdicao" className="form-input" {...register('jurisdicao')} style={{ appearance: 'none' }}>
                         {['Névis', 'BVI', 'Bahamas', 'Panamá', 'São Vicente e Granadinas', 'Ilhas Cayman', 'Seychelles', 'Outra'].map(j => (
                             <option key={j} value={j}>{j}</option>
@@ -73,13 +73,36 @@ export default function Step3({ onNext, onPrev }: { onNext: () => void, onPrev: 
                     ].map((opt) => (
                         <label key={opt.id} className={`option-card ${usoEmpresa.includes(opt.id) ? 'selected' : ''}`} style={{ padding: '1rem 1.5rem' }}>
                             <input type="checkbox" value={opt.id} {...register('uso_empresa')} />
-                            <div className="option-indicator" style={{ borderRadius: '6px', marginRight: '1rem' }} />
+                            <div className="option-indicator" />
                             <span className="text-sm" style={{ fontWeight: 500 }}>{opt.label}</span>
                         </label>
                     ))}
                 </div>
                 {usoEmpresa.includes('outro') && (
                     <input type="text" placeholder="Descreva sua finalidade..." className="form-input mt-4 animate-fade-in-up" {...register('uso_empresa_outro')} />
+                )}
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">Origem dos Fundos</label>
+                <div className="option-grid" style={{ gap: '0.75rem' }}>
+                    {[
+                        { id: 'salario', label: 'Salário / Bônus ou Pró-labore' },
+                        { id: 'lucros', label: 'Lucros e Dividendos' },
+                        { id: 'venda', label: 'Venda de Imóveis ou Empresas' },
+                        { id: 'heranca', label: 'Herança ou Doação' },
+                        { id: 'cripto', label: 'Mercado Cripto / Ativos Digitais' },
+                        { id: 'outro', label: 'Outra Origem' }
+                    ].map((opt) => (
+                        <label key={opt.id} className={`option-card ${origemFundos.includes(opt.id) ? 'selected' : ''}`} style={{ padding: '1rem 1.5rem' }}>
+                            <input type="checkbox" value={opt.id} {...register('origem_fundos')} />
+                            <div className="option-indicator" />
+                            <span className="text-sm" style={{ fontWeight: 500 }}>{opt.label}</span>
+                        </label>
+                    ))}
+                </div>
+                {origemFundos.includes('outro') && (
+                    <input type="text" placeholder="Descreva a origem detalhadamente..." className="form-input mt-4 animate-fade-in-up" {...register('origem_fundos_outro')} />
                 )}
             </div>
 

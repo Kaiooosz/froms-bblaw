@@ -16,6 +16,7 @@ export async function GET() {
 
         return NextResponse.json(leads);
     } catch (error) {
-        return NextResponse.json({ message: 'Erro ao buscar leads' }, { status: 500 });
+        console.error("PRISMA FETCH ERROR:", error);
+        return NextResponse.json([]); // Return empty array to prevent type error in UI while logging exact error
     }
 }

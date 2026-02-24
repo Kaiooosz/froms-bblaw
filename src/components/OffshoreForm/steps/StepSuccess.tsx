@@ -40,12 +40,12 @@ export default function StepSuccess() {
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
                     <button
-                        onClick={() => window.location.href = 'https://wa.me/5511999999999'}
+                        onClick={() => window.location.href = 'https://wa.me/5511982712025?text=meu%20formulario%20da%20solicitacao%20da%20offshore%20j%C3%A1%20foi%20prenchido%2C%20essa%20mensagem%20%C3%A9%20um%20aviso!'}
                         className="btn btn-primary"
                         style={{ padding: '0.75rem 2rem' }}
                     >
                         <MessageSquare size={18} />
-                        Falar com Especialista agora
+                        Avisar Especialista (WhatsApp)
                     </button>
                     <button
                         onClick={() => window.location.reload()}
