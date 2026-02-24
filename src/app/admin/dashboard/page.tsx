@@ -158,28 +158,24 @@ export default function AdminDashboard() {
 
     return (
         <div className="form-page-wrapper">
-            <header className="form-header">
-                <div className="logo-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <img src="/LogoBranco.svg" alt="Bezerra Borges Advogados" style={{ height: '24px', width: 'auto' }} />
-                    <h2 className="logo-text" style={{ fontSize: '1.25rem', color: 'white', margin: 0 }}>
+            <header className="form-header header-admin-custom">
+                <div className="logo-container">
+                    <img src="/LogoBranco.svg" alt="Bezerra Borges Advogados" className="admin-logo-img" />
+                    <h2 className="logo-text">
                         {t.panel} <span className="accent-text" style={{ color: 'rgba(255,255,255,0.7)' }}>{t.admin}</span>
                     </h2>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <div className="header-actions">
                     {/* Language Switch */}
-                    <div style={{ display: 'flex', background: 'var(--secondary)', borderRadius: '2rem', padding: '0.25rem' }}>
+                    <div className="lang-switcher">
                         {(['PT', 'EN', 'ES'] as Lang[]).map(l => (
                             <button
                                 key={l}
                                 onClick={() => setLang(l)}
+                                className="lang-btn"
                                 style={{
-                                    padding: '0.4rem 1rem',
-                                    borderRadius: '1.5rem',
-                                    fontSize: '0.75rem',
-                                    fontWeight: 800,
                                     background: lang === l ? 'var(--primary)' : 'transparent',
-                                    color: lang === l ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
-                                    transition: 'all 0.2s ease'
+                                    color: lang === l ? 'var(--primary-foreground)' : 'var(--muted-foreground)'
                                 }}
                             >
                                 {l}
@@ -187,8 +183,8 @@ export default function AdminDashboard() {
                         ))}
                     </div>
 
-                    <button onClick={handleLogout} className="theme-toggle" title={t.logout} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', padding: '0 1rem', width: 'auto', borderRadius: '1rem' }}>
-                        <LogOut size={16} /> <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{t.logout}</span>
+                    <button onClick={handleLogout} className="theme-toggle logout-btn" title={t.logout}>
+                        <LogOut size={16} /> <span>{t.logout}</span>
                     </button>
                 </div>
             </header>
@@ -524,6 +520,72 @@ export default function AdminDashboard() {
                 .admin-row:hover {
                     background: var(--secondary) !important;
                     transform: scale(1.002);
+                }
+                
+                /* Admin Header Responsive CSS */
+                .header-admin-custom {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 1rem;
+                }
+                .header-admin-custom .logo-container {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                }
+                .header-admin-custom .header-actions {
+                    display: flex;
+                    gap: 1rem;
+                    align-items: center;
+                }
+                .lang-switcher {
+                    display: flex;
+                    background: var(--secondary);
+                    border-radius: 2rem;
+                    padding: 0.25rem;
+                }
+                .lang-btn {
+                    padding: 0.4rem 1rem;
+                    border-radius: 1.5rem;
+                    font-size: 0.75rem;
+                    font-weight: 800;
+                    transition: all 0.2s ease;
+                }
+                .logout-btn {
+                    display: flex;
+                    gap: 0.5rem;
+                    align-items: center;
+                    padding: 0 1rem;
+                    width: auto;
+                    border-radius: 1rem;
+                }
+                .logout-btn span {
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                }
+                
+                @media (max-width: 768px) {
+                    .header-admin-custom {
+                        flex-direction: column;
+                        justify-content: center;
+                        padding: 1rem;
+                        border-radius: 1.5rem;
+                        text-align: center;
+                    }
+                    .header-admin-custom .logo-container {
+                        justify-content: center;
+                        width: 100%;
+                    }
+                    .header-admin-custom .admin-logo-img {
+                        height: 20px;
+                    }
+                    .header-admin-custom .header-actions {
+                        width: 100%;
+                        justify-content: center;
+                        flex-wrap: wrap;
+                    }
                 }
             `}} />
         </div>

@@ -101,20 +101,31 @@ export default function OffshoreForm() {
                 if (!error) docPassaporteUrl = fileName;
             }
 
-            // 2. Enviar dados para API
+            // 2. Preparar payload (Removendo os objetos File pesados do JSON)
+            const payload = { ...data };
+            delete payload.doc_endereco;
+            delete payload.doc_passaporte;
+
+            // 3. Enviar dados para API
             const response = await fetch('/api/leads', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    ...data,
+                    ...payload,
                     documento_residencia: docEnderecoUrl,
                     documento_identidade: docPassaporteUrl
                 }),
             });
 
-            const result = await response.json();
+            let result;
+            try {
+                result = await response.json();
+            } catch (err) {
+                // Se a API retornar erro de Timeout ou erro crítico (500) sem JSON
+                throw new Error(`Erro do servidor. Status: ${response.status}`);
+            }
 
             if (result.success) {
                 setStep(5);
@@ -122,9 +133,9 @@ export default function OffshoreForm() {
             } else {
                 alert('Erro ao enviar: ' + result.message);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Submission error:', error);
-            alert('Erro de conexão com o servidor.');
+            alert(`Erro de conexão: ${error.message || 'Verifique sua internet ou tente novamente.'}`);
         } finally {
             setIsSubmitting(false);
         }

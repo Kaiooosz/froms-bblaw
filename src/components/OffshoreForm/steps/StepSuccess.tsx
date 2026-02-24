@@ -1,9 +1,25 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ShieldCheck, ArrowRight, MessageSquare } from 'lucide-react';
 
 export default function StepSuccess() {
+    const [whatsAppNum, setWhatsAppNum] = useState('5511982712025'); // Default / fallback
+
+    useEffect(() => {
+        // Busca a configuração do Admin e atualiza o número
+        fetch('/api/admin/config')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.whatsapp) {
+                    // Extract only numbers from the string
+                    setWhatsAppNum(data.whatsapp.replace(/\D/g, ''));
+                }
+            })
+            .catch(console.error);
+    }, []);
+
     return (
         <div className="text-center py-8">
             <motion.div
@@ -40,7 +56,7 @@ export default function StepSuccess() {
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
                     <button
-                        onClick={() => window.location.href = 'https://wa.me/5511982712025?text=meu%20formulario%20da%20solicitacao%20da%20offshore%20j%C3%A1%20foi%20prenchido%2C%20essa%20mensagem%20%C3%A9%20um%20aviso!'}
+                        onClick={() => window.location.href = `https://wa.me/${whatsAppNum}?text=meu%20formulario%20da%20solicitacao%20da%20offshore%20j%C3%A1%20foi%20prenchido%2C%20essa%20mensagem%20%C3%A9%20um%20aviso!`}
                         className="btn btn-primary"
                         style={{ padding: '0.75rem 2rem' }}
                     >

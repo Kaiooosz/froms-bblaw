@@ -1,13 +1,25 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getSession } from './src/lib/auth';
+import { decrypt } from './src/lib/auth';
 
 export async function middleware(request: NextRequest) {
-    const session = await getSession();
+    const sessionCookie = request.cookies.get('session')?.value;
 
-    // If the user is trying to access admin pages (except login)
-    if (request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login')) {
-        if (!session) {
+    // Se estiver tentando acessar rotas do Admin (exceto login) ou API do Admin
+    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login');
+    const isAdminApi = request.nextUrl.pathname.startsWith('/api/admin') && !request.nextUrl.pathname.startsWith('/api/admin/login');
+
+    if (isAdminRoute || isAdminApi) {
+        if (!sessionCookie) {
+            if (isAdminApi) return NextResponse.json({ message: 'Acesso Negado' }, { status: 401 });
+            return NextResponse.redirect(new URL('/admin/login', request.url));
+        }
+
+        try {
+            const parsed = await decrypt(sessionCookie);
+            if (!parsed || !parsed.email) throw new Error('Sessão inválida');
+        } catch (error) {
+            if (isAdminApi) return NextResponse.json({ message: 'Sessão Expirada' }, { status: 401 });
             return NextResponse.redirect(new URL('/admin/login', request.url));
         }
     }
@@ -16,5 +28,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/admin/:path*'],
+    matcher: ['/admin/:path*', '/api/admin/:path*'],
 };
