@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id                    String   @id @default(cuid())
+  createdAt             DateTime @default(now())
+  
+  // Step 1
+  relacao_empresa       String
+  whatsapp              String
+
+  // Step 2
+  participacao          Int?
+  socio_responsavel     String?
+
+  // Step 3
+  empresa_opcao1        String
+  empresa_opcao2        String?
+  empresa_opcao3        String?
+  jurisdicao           String
+  jurisdicao_outra      String?
+  imoveis_brasil        String
+  uso_empresa           String[]
+  uso_empresa_outro     String?
+  atividade_empresa     String?
+  conta_bancaria        String
+  ativos_texto          String?
+  diretor_tipo          String?
+  herdeiros             String?
+  origem_fundos         String[]
+  origem_fundos_outro   String?
+
+  // Step 4
+  nome_completo_pessoal String
+  data_nascimento       String
+  genero                String?
+  estado_civil          String?
+  endereco              String?
+  passaporte            String?
+  cidade_nascimento     String?
+  telefone              String?
+  email                 String
+  residencia_fiscal     String?
+  cpf_nit               String?
+  ocupacao              String
+  cnpj                  String?
+  empresa_trabalha      String?
+  funcao                String?
+  pep                   String
+  residencia_eua        String
+  declaracao_aceite     Boolean
+  
+  // Documentos (URLs ou caminhos no Storage)
+  documento_residencia  String?
+  documento_identidade  String?
+
+  @@map("leads")
+}

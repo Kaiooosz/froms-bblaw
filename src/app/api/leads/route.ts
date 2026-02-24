@@ -1,0 +1,68 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '../../../lib/prisma';
+
+export async function POST(request: Request) {
+    try {
+        const data = await request.json();
+
+        // Basic validation
+        if (!data.email || !data.whatsapp) {
+            return NextResponse.json(
+                { message: 'Campos obrigatórios faltando.' },
+                { status: 400 }
+            );
+        }
+
+        const lead = await prisma.lead.create({
+            data: {
+                relacao_empresa: data.relacao_empresa,
+                whatsapp: data.whatsapp,
+                participacao: data.participacao ? parseInt(data.participacao) : null,
+                socio_responsavel: data.socio_responsavel,
+                empresa_opcao1: data.empresa_opcao1,
+                empresa_opcao2: data.empresa_opcao2,
+                empresa_opcao3: data.empresa_opcao3,
+                jurisdicao: data.jurisdicao,
+                jurisdicao_outra: data.jurisdicao_outra,
+                imoveis_brasil: data.imoveis_brasil,
+                uso_empresa: data.uso_empresa || [],
+                uso_empresa_outro: data.uso_empresa_outro,
+                atividade_empresa: data.atividade_empresa,
+                conta_bancaria: data.conta_bancaria,
+                ativos_texto: data.ativos_texto,
+                diretor_tipo: data.diretor_tipo,
+                herdeiros: data.herdeiros,
+                origem_fundos: data.origem_fundos || [],
+                origem_fundos_outro: data.origem_fundos_outro,
+                nome_completo_pessoal: data.nome_completo_pessoal,
+                data_nascimento: data.data_nascimento,
+                genero: data.genero,
+                estado_civil: data.estado_civil,
+                endereco: data.endereco,
+                passaporte: data.passaporte,
+                cidade_nascimento: data.cidade_nascimento,
+                telefone: data.telefone,
+                email: data.email,
+                residencia_fiscal: data.residencia_fiscal,
+                cpf_nit: data.cpf_nit,
+                ocupacao: data.ocupacao,
+                cnpj: data.cnpj,
+                empresa_trabalha: data.empresa_trabalha,
+                funcao: data.funcao,
+                pep: data.pep,
+                residencia_eua: data.residencia_eua,
+                declaracao_aceite: !!data.declaracao_aceite,
+                documento_residencia: data.documento_residencia,
+                documento_identidade: data.documento_identidade
+            }
+        });
+
+        return NextResponse.json({ success: true, leadId: lead.id });
+    } catch (error: any) {
+        console.error('Error saving lead:', error);
+        return NextResponse.json(
+            { message: 'Erro ao salvar informações.', error: error.message },
+            { status: 500 }
+        );
+    }
+}
