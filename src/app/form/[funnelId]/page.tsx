@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useRouter, useParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, ShieldCheck, Loader2, CheckCircle2, Moon, Sun } from 'lucide-react';
 import { funnelConfig } from '@/lib/funnels';
@@ -13,6 +14,8 @@ export default function DynamicForm() {
     const params = useParams();
     const funnelId = params?.funnelId as string;
     const { theme, toggleTheme } = useTheme();
+    const { data: session } = useSession();
+    const isAdmin = (session?.user as any)?.role === 'ADMIN';
     const config = funnelConfig[funnelId as string];
     const [step, setStep] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -215,9 +218,11 @@ export default function DynamicForm() {
                             <button onClick={() => router.push('/funnels')} style={{ flex: 1, padding: '1rem', borderRadius: '100px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--foreground)', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.05em', cursor: 'pointer' }}>
                                 ABRIR NOVO FORMULÁRIO
                             </button>
-                            <button onClick={() => router.push('/admin/dashboard')} style={{ flex: 1, padding: '1rem', borderRadius: '100px', border: '1px solid var(--border)', background: 'var(--secondary)', color: 'var(--foreground)', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.05em', cursor: 'pointer' }}>
-                                PAINEL ADMIN
-                            </button>
+                            {isAdmin && (
+                                <button onClick={() => router.push('/admin/dashboard')} style={{ flex: 1, padding: '1rem', borderRadius: '100px', border: '1px solid var(--border)', background: 'var(--secondary)', color: 'var(--foreground)', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.05em', cursor: 'pointer' }}>
+                                    PAINEL ADMIN
+                                </button>
+                            )}
                         </div>
                     </div>
                 </motion.div>
