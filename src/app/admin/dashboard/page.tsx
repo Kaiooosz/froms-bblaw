@@ -1,614 +1,387 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/dist/client/components/navigation';
+import { useRouter } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import {
-    Users, FileDown, LogOut, Search, MessageCircle, X, ExternalLink, Calendar, Mail, Phone, Globe, Briefcase, ShieldCheck, Info, MapPin, ClipboardList, Settings, Activity, CheckCircle, XCircle, Save
+    Users,
+    LogOut,
+    Search,
+    X,
+    ExternalLink,
+    Calendar,
+    Mail,
+    ShieldCheck,
+    ClipboardList,
+    Loader2,
+    Filter,
+    CheckCircle2,
+    Moon,
+    Sun,
+    LayoutDashboard,
+    Settings,
+    Bell,
+    ChevronRight,
+    ArrowUpRight,
+    FileText
 } from 'lucide-react';
-import '@/components/OffshoreForm/styles.css';
-
-const T = {
-    PT: {
-        panel: "PAINEL", admin: "ADMIN", logout: "Sair",
-        tabLeads: "Leads Pendentes", tabAudit: "Auditoria", tabSettings: "Configurações",
-        titleLeads: "Leads Capturados", descLeads: "Gerenciamento de solicitações aguardando revisão.",
-        titleAudit: "Auditoria do Sistema", descAudit: "Registro de todas as ações administrativas realizadas.",
-        titleSettings: "Configurações do App", descSettings: "Controle das variáveis globais e de contato da plataforma.",
-        search: "Buscar por nome, email ou whatsapp...",
-        candidate: "Candidato", contact: "Contato", juris: "Jurisdição", date: "Data", action: "Ação",
-        noData: "Nenhum dado encontrado.", loading: "Carregando...",
-        approve: "Aprovar", reject: "Recusar",
-        details: "Detalhes Completos do Lead",
-        wppLabel: "Número WhatsApp de Contato do Site", notifLabel: "Habilitar Notificações do Sistema",
-        save: "Salvar Configurações",
-        personalInfo: "Informações Pessoais", offshoreInfo: "Estrutura Desejada", profInfo: "Profissional & Compliance", docsInfo: "Documentos Anexados"
-    },
-    EN: {
-        panel: "PANEL", admin: "ADMIN", logout: "Logout",
-        tabLeads: "Pending Leads", tabAudit: "Audit", tabSettings: "Settings",
-        titleLeads: "Captured Leads", descLeads: "Management of requests pending review.",
-        titleAudit: "System Audit", descAudit: "Log of all administrative actions performed.",
-        titleSettings: "App Settings", descSettings: "Control of global variables and platform contact info.",
-        search: "Search by name, email or whatsapp...",
-        candidate: "Candidate", contact: "Contact", juris: "Jurisdiction", date: "Date", action: "Action",
-        noData: "No data found.", loading: "Loading...",
-        approve: "Approve", reject: "Reject",
-        details: "Full Lead Details",
-        wppLabel: "Website WhatsApp Contact Number", notifLabel: "Enable System Notifications",
-        save: "Save Settings",
-        personalInfo: "Personal Information", offshoreInfo: "Desired Structure", profInfo: "Professional & Compliance", docsInfo: "Attached Documents"
-    },
-    ES: {
-        panel: "PANEL", admin: "ADMIN", logout: "Salir",
-        tabLeads: "Leads Pendientes", tabAudit: "Auditoría", tabSettings: "Configuraciones",
-        titleLeads: "Leads Capturados", descLeads: "Gestión de solicitudes en espera de revisión.",
-        titleAudit: "Auditoría del Sistema", descAudit: "Registro de todas las acciones administrativas realizadas.",
-        titleSettings: "Ajustes de la App", descSettings: "Control de las variables globales y contacto de la plataforma.",
-        search: "Buscar por nombre, correo electrónico o whatsapp...",
-        candidate: "Candidato", contact: "Contacto", juris: "Jurisdicción", date: "Fecha", action: "Acción",
-        noData: "No se encontraron datos.", loading: "Cargando...",
-        approve: "Aprobar", reject: "Rechazar",
-        details: "Detalles Completos del Lead",
-        wppLabel: "Número de WhatsApp del Sitio", notifLabel: "Habilitar Notificaciones del Sistema",
-        save: "Guardar Ajustes",
-        personalInfo: "Información Personal", offshoreInfo: "Estructura Deseada", profInfo: "Profesional y Cumplimiento", docsInfo: "Documentos Adjuntos"
-    }
-};
-
-type Lang = 'PT' | 'EN' | 'ES';
+import { motion, AnimatePresence } from 'framer-motion';
+import { funnelConfig } from '@/lib/funnels';
+import { useTheme } from '@/components/ThemeProvider';
+import '@/app/forms.css';
 
 export default function AdminDashboard() {
-    const [lang, setLang] = useState<Lang>('PT');
-    const [activeTab, setActiveTab] = useState<'leads' | 'audit' | 'settings'>('leads');
-
-    // Dados
-    const [leads, setLeads] = useState<any[]>([]);
-    const [auditLogs, setAuditLogs] = useState<any[]>([]);
-    const [config, setConfig] = useState<any>({ whatsapp: '', notificacao: true });
-
+    const { data: session, status } = useSession();
+    const { theme, toggleTheme } = useTheme();
+    const [submissions, setSubmissions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedLead, setSelectedLead] = useState<any | null>(null);
+    const [selectedSubmission, setSelectedSubmission] = useState<any | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-
+    const [activeTab, setActiveTab] = useState<'SUBMISSIONS' | 'USERS'>('SUBMISSIONS');
+    const [users, setUsers] = useState<any[]>([]);
+    const [filterType, setFilterType] = useState('ALL');
     const router = useRouter();
 
-    const t = T[lang];
-
     useEffect(() => {
-        fetchAllData();
-    }, []);
-
-    const fetchAllData = async () => {
-        setLoading(true);
-        try {
-            const [resLeads, resAudit, resConfig] = await Promise.all([
-                fetch('/api/admin/leads'),
-                fetch('/api/admin/audit'),
-                fetch('/api/admin/config')
-            ]);
-
-            if (resLeads.status === 401) {
-                router.push('/admin/login');
-                return;
-            }
-
-            const dataLeads = await resLeads.json();
-            if (Array.isArray(dataLeads)) setLeads(dataLeads);
-
-            const dataAudit = await resAudit.json();
-            if (Array.isArray(dataAudit)) setAuditLogs(dataAudit);
-
-            const dataConfig = await resConfig.json();
-            if (dataConfig?.id) setConfig(dataConfig);
-
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
+        if (status === 'unauthenticated' || (session?.user as any)?.role !== 'ADMIN') {
+            router.push('/auth/signin');
+        } else if (status === 'authenticated') {
+            fetchSubmissions();
+            fetchUsers();
         }
-    };
+    }, [status, session, router]);
 
-    const handleLogout = async () => {
-        document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        router.push('/admin/login');
-    };
-
-    const handleLeadStatusChange = async (id: string, newStatus: string) => {
+    const fetchSubmissions = async () => {
         try {
-            const res = await fetch(`/api/admin/leads/${id}/status`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
-            });
-
-            if (res.ok) {
-                // Atualiza o cache local fechando o modal e forçando refetch para pegar auditoria nova
-                setSelectedLead(null);
-                fetchAllData();
-            } else {
-                alert('Erro ao processar');
-            }
-        } catch (err) {
-            console.error(err);
-        }
+            const res = await fetch('/api/admin/submissions');
+            const data = await res.json();
+            setSubmissions(data || []);
+        } catch (err) { console.error(err); } finally { setLoading(false); }
     };
 
-    const handleSaveConfig = async () => {
+    const fetchUsers = async () => {
         try {
-            const res = await fetch('/api/admin/config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(config)
-            });
-            if (res.ok) {
-                fetchAllData();
-                alert('Configurações salvas com sucesso!');
-            }
-        } catch (err) {
-            console.error(err);
-        }
+            const res = await fetch('/api/admin/users');
+            const data = await res.json();
+            setUsers(data || []);
+        } catch (err) { console.error(err); }
     };
 
-    const pendingLeads = leads.filter(l => l.status === 'pendente' || !l.status);
-    const filteredLeads = pendingLeads.filter(lead =>
-        lead.nome_completo_pessoal?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.whatsapp?.includes(searchTerm)
+    const filteredSubmissions = (submissions || []).filter(sub => {
+        const matchesSearch =
+            sub.user?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            sub.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            sub.user?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesFilter = filterType === 'ALL' || sub.funnelType.toLowerCase() === filterType.toLowerCase();
+        return matchesSearch && matchesFilter;
+    });
+
+    const filteredUsers = (users || []).filter(user =>
+        user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (loading) return (
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#000', alignItems: 'center', justifyContent: 'center' }}>
+            <Loader2 className="animate-spin" size={32} color="white" />
+            <p style={{ marginTop: '2rem', fontSize: '0.6rem', color: 'white', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em' }}>SISTEMA DE GESTÃO BBLAW</p>
+        </div>
     );
 
     return (
-        <div className="form-page-wrapper">
-            <header className="form-header header-admin-custom">
-                <div className="logo-container">
-                    <img src="/LogoBranco.svg" alt="Bezerra Borges Advogados" className="admin-logo-img" />
-                    <h2 className="logo-text">
-                        {t.panel} <span className="accent-text" style={{ color: 'rgba(255,255,255,0.7)' }}>{t.admin}</span>
-                    </h2>
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#000', color: '#fff' }}>
+            {/* Sidebar Lateral Minimalista */}
+            <aside style={{ width: '280px', borderRight: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', padding: '2rem 1.5rem', position: 'fixed', height: '100vh', zIndex: 100 }}>
+                <div style={{ marginBottom: '4rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <img src="/logo-branco.svg" alt="BBLAW" style={{ maxWidth: '100px' }} />
+                    <span style={{ fontSize: '0.5rem', fontWeight: 900, background: '#fff', color: '#000', padding: '2px 6px', borderRadius: '3px' }}>ADM</span>
                 </div>
-                <div className="header-actions">
-                    {/* Language Switch */}
-                    <div className="lang-switcher">
-                        {(['PT', 'EN', 'ES'] as Lang[]).map(l => (
-                            <button
-                                key={l}
-                                onClick={() => setLang(l)}
-                                className="lang-btn"
-                                style={{
-                                    background: lang === l ? 'var(--primary)' : 'transparent',
-                                    color: lang === l ? 'var(--primary-foreground)' : 'var(--muted-foreground)'
-                                }}
-                            >
-                                {l}
-                            </button>
-                        ))}
-                    </div>
 
-                    <button onClick={handleLogout} className="theme-toggle logout-btn" title={t.logout}>
-                        <LogOut size={16} /> <span>{t.logout}</span>
+                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+                    <SidebarLink icon={<LayoutDashboard size={18} />} label="Overview" active={false} onClick={() => { }} />
+                    <SidebarLink icon={<ClipboardList size={18} />} label="Protocolos" active={activeTab === 'SUBMISSIONS'} onClick={() => setActiveTab('SUBMISSIONS')} />
+                    <SidebarLink icon={<Users size={18} />} label="Base de Usuários" active={activeTab === 'USERS'} onClick={() => setActiveTab('USERS')} />
+                    <SidebarLink icon={<Settings size={18} />} label="Configurações" active={false} onClick={() => { }} />
+                </nav>
+
+                <div style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem', padding: '0 0.5rem' }}>
+                        <div style={{ width: '36px', height: '36px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 900 }}>
+                            {session?.user?.name?.[0]}
+                        </div>
+                        <div style={{ overflow: 'hidden' }}>
+                            <p style={{ fontSize: '0.75rem', fontWeight: 800, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{session?.user?.name}</p>
+                            <p style={{ fontSize: '0.6rem', opacity: 0.4, fontWeight: 700 }}>Master Admin</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, transition: 'opacity 0.2s', padding: '0.5rem' }}
+                        onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
+                        onMouseOut={(e) => (e.currentTarget.style.opacity = '0.5')}
+                    >
+                        <LogOut size={16} /> SAIR E TROCAR USUÁRIO
                     </button>
                 </div>
-            </header>
+            </aside>
 
-            <main className="form-main-container" style={{ maxWidth: '1200px' }}>
-                {/* Tabs */}
-                <div style={{ display: 'flex', gap: '1rem', marginBottom: '2.5rem', borderBottom: '1px solid var(--border)' }}>
-                    {[
-                        { id: 'leads', icon: Users, label: t.tabLeads },
-                        { id: 'audit', icon: Activity, label: t.tabAudit },
-                        { id: 'settings', icon: Settings, label: t.tabSettings },
-                    ].map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
-                            style={{
-                                display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1rem 1.5rem',
-                                borderBottom: activeTab === tab.id ? '2px solid var(--primary)' : '2px solid transparent',
-                                color: activeTab === tab.id ? 'var(--primary)' : 'var(--muted-foreground)',
-                                fontWeight: activeTab === tab.id ? 700 : 500,
-                                transition: 'all 0.2s',
-                                fontSize: '0.9rem'
-                            }}
-                        >
-                            <tab.icon size={18} /> {tab.label}
-                        </button>
-                    ))}
-                </div>
+            {/* Viewport Principal */}
+            <main style={{ flex: 1, marginLeft: '280px', display: 'flex', flexDirection: 'column' }}>
+                {/* Header Superior */}
+                <header style={{ height: '80px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 3rem', position: 'sticky', top: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 10 }}>
+                    <div style={{ position: 'relative', width: '400px' }}>
+                        <Search size={14} style={{ position: 'absolute', left: '0', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
+                        <input
+                            type="text"
+                            placeholder="Pesquisa rápida em toda a rede..."
+                            style={{ background: 'transparent', border: 'none', padding: '0.5rem 0 0.5rem 1.5rem', width: '100%', fontSize: '0.8rem', color: '#fff', outline: 'none' }}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
 
-                {activeTab === 'leads' && (
-                    <div className="animate-fade-in-up">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1.5rem' }}>
-                            <div>
-                                <h1 className="form-title" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>
-                                    {t.titleLeads.split(' ')[0]} <span className="accent-text">{t.titleLeads.split(' ')[1] || ''}</span>
-                                </h1>
-                                <p className="form-description">{t.descLeads}</p>
-                            </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                        <button style={{ opacity: 0.3 }}><Bell size={18} /></button>
+                        <button onClick={toggleTheme} style={{ opacity: 0.3 }}>{theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}</button>
+                    </div>
+                </header>
 
-                            <div style={{ display: 'flex', gap: '1rem', flex: 1, minWidth: '300px', justifyContent: 'flex-end' }}>
-                                <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
-                                    <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
-                                    <input
-                                        type="text"
-                                        placeholder={t.search}
-                                        className="form-input"
-                                        style={{ paddingLeft: '3rem', fontSize: '0.875rem' }}
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                    />
-                                </div>
-                                <div className="sigilo-box" style={{ margin: 0, padding: '0.75rem 1.5rem', fontSize: '0.875rem' }}>
-                                    <strong>{filteredLeads.length}</strong> Leads
-                                </div>
-                            </div>
+                <div style={{ padding: '3rem' }}>
+                    <header style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>
+                                {activeTab === 'SUBMISSIONS' ? 'Monitor de Protocolos' : 'Diretório de Usuários'}
+                            </h2>
+                            <p style={{ fontSize: '0.9rem', opacity: 0.4 }}>{activeTab === 'SUBMISSIONS' ? 'Fluxo de dados estratégicos recebidos em tempo real.' : 'Base completa de clientes autenticados no ecossistema BBLAW.'}</p>
                         </div>
 
-                        <div className="form-card" style={{ padding: '0', overflow: 'hidden', borderRadius: '2rem', border: '1px solid var(--border)' }}>
-                            <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '2fr 1.5fr 1fr 1fr 0.5fr', gap: '1rem', background: 'var(--secondary)', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', opacity: 0.7 }}>
-                                <div>{t.candidate}</div>
-                                <div>{t.contact}</div>
-                                <div>{t.juris}</div>
-                                <div>{t.date}</div>
-                                <div style={{ textAlign: 'right' }}>{t.action}</div>
-                            </div>
+                        {activeTab === 'SUBMISSIONS' && (
+                            <select
+                                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.05)', padding: '0.5rem 1rem', borderRadius: '5px', fontSize: '0.7rem', fontWeight: 800, outline: 'none', color: '#fff' }}
+                                value={filterType}
+                                onChange={(e) => setFilterType(e.target.value)}
+                            >
+                                <option value="ALL">TODOS OS FILTROS</option>
+                                {Object.keys(funnelConfig).map(id => (
+                                    <option key={id} value={id}>{funnelConfig[id].title.toUpperCase()}</option>
+                                ))}
+                            </select>
+                        )}
+                    </header>
 
-                            <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-                                {loading ? (
-                                    <div style={{ padding: '6rem', textAlign: 'center' }}>
-                                        <Loader2 className="animate-spin" style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
-                                        <p style={{ opacity: 0.5 }}>{t.loading}</p>
-                                    </div>
-                                ) : filteredLeads.length === 0 ? (
-                                    <div style={{ padding: '6rem', textAlign: 'center', opacity: 0.5 }}>
-                                        <ClipboardList size={40} style={{ margin: '0 auto 1rem' }} />
-                                        <p>{t.noData}</p>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        {filteredLeads.map((lead) => (
-                                            <div
-                                                key={lead.id}
-                                                className="admin-row"
-                                                onClick={() => setSelectedLead(lead)}
-                                                style={{
-                                                    padding: '1.25rem 2rem',
-                                                    display: 'grid',
-                                                    gridTemplateColumns: '2fr 1.5fr 1fr 1fr 0.5fr',
-                                                    gap: '1rem',
-                                                    alignItems: 'center',
-                                                    borderBottom: '1px solid var(--border)',
-                                                    cursor: 'pointer',
-                                                    transition: 'background 0.2s'
-                                                }}
+                    {/* Espaço de Dados Estilo SaaS */}
+                    <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', overflow: 'hidden' }}>
+                        {activeTab === 'SUBMISSIONS' ? (
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <tr>
+                                        <AdminTh>CLIENTE / E-MAIL</AdminTh>
+                                        <AdminTh>PROTOCOLO</AdminTh>
+                                        <AdminTh>STATUS / PRIORIDADE</AdminTh>
+                                        <AdminTh>DATA / HORA</AdminTh>
+                                        <AdminTh align="right">AÇÕES</AdminTh>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredSubmissions.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={5} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                <ClipboardList size={32} style={{ margin: '0 auto 1.5rem' }} />
+                                                <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM PROTOCOLOS REGISTRADOS</p>
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        filteredSubmissions.map((sub) => (
+                                            <tr key={sub.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'background 0.2s' }}
+                                                onClick={() => setSelectedSubmission(sub)}
+                                                onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                                                onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
                                             >
-                                                <div>
-                                                    <div style={{ fontWeight: 700, fontSize: '1rem' }}>{lead.nome_completo_pessoal}</div>
-                                                    <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>{lead.email}</div>
-                                                </div>
-                                                <div style={{ fontSize: '0.875rem' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                        <MessageCircle size={14} color="#25D366" />
-                                                        {lead.whatsapp}
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <span style={{
-                                                        padding: '0.25rem 0.6rem',
-                                                        background: 'var(--primary)',
-                                                        color: 'var(--primary-foreground)',
-                                                        borderRadius: '0.5rem',
-                                                        fontSize: '0.7rem',
-                                                        fontWeight: 800,
-                                                        textTransform: 'uppercase'
-                                                    }}>
-                                                        {lead.jurisdicao}
+                                                <AdminTd>
+                                                    <p style={{ fontWeight: 800 }}>{sub.user?.fullName || sub.user?.name}</p>
+                                                    <p style={{ fontSize: '0.65rem', opacity: 0.3 }}>{sub.user?.email}</p>
+                                                </AdminTd>
+                                                <AdminTd>
+                                                    <span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '3px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', textTransform: 'uppercase' }}>
+                                                        {funnelConfig[sub.funnelType]?.title || sub.funnelType}
                                                     </span>
-                                                </div>
-                                                <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>
-                                                    <div>{new Date(lead.createdAt).toLocaleDateString('pt-BR')}</div>
-                                                    <div style={{ fontSize: '0.65rem' }}>{new Date(lead.createdAt).toLocaleTimeString('pt-BR')}</div>
-                                                </div>
-                                                <div style={{ textAlign: 'right' }}>
-                                                    <button className="theme-toggle" style={{ width: '32px', height: '32px', borderRadius: '8px' }}>
-                                                        <ExternalLink size={14} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                                                </AdminTd>
+                                                <AdminTd>
+                                                    <StatusBadge priority={sub.priority} />
+                                                </AdminTd>
+                                                <AdminTd>
+                                                    <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{new Date(sub.createdAt).toLocaleDateString('pt-BR')}</p>
+                                                    <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{new Date(sub.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                                                </AdminTd>
+                                                <AdminTd align="right">
+                                                    <button style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', opacity: 0.5 }}><ChevronRight size={14} /></button>
+                                                </AdminTd>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <tr>
+                                        <AdminTh>USUÁRIO</AdminTh>
+                                        <AdminTh>DOCUMENTO / CPF</AdminTh>
+                                        <AdminTh>CONTATO</AdminTh>
+                                        <AdminTh>ORIGEM</AdminTh>
+                                        <AdminTh align="right">PROCESSO</AdminTh>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredUsers.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={5} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                <Users size={32} style={{ margin: '0 auto 1.5rem' }} />
+                                                <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM USUÁRIOS REGISTRADOS</p>
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        filteredUsers.map((user) => (
+                                            <tr key={user.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }}
+                                                onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                                                onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+                                            >
+                                                <AdminTd>
+                                                    <p style={{ fontWeight: 800 }}>{user.fullName || user.name}</p>
+                                                    <p style={{ fontSize: '0.65rem', opacity: 0.3 }}>{user.email}</p>
+                                                </AdminTd>
+                                                <AdminTd>
+                                                    <p style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6 }}>{user.document || '—'}</p>
+                                                </AdminTd>
+                                                <AdminTd>
+                                                    <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{user.phone || '—'}</p>
+                                                </AdminTd>
+                                                <AdminTd>
+                                                    <span style={{ fontSize: '0.6rem', fontWeight: 900, background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '100px', textTransform: 'uppercase' }}>{user.origemLead}</span>
+                                                </AdminTd>
+                                                <AdminTd align="right">
+                                                    <button style={{ fontSize: '0.65rem', fontWeight: 800, borderBottom: '1px solid white', paddingBottom: '2px', opacity: 0.8 }}>DETALHAR</button>
+                                                </AdminTd>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
-                )}
-
-                {activeTab === 'audit' && (
-                    <div className="animate-fade-in-up">
-                        <div style={{ marginBottom: '2rem' }}>
-                            <h1 className="form-title" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>{t.titleAudit}</h1>
-                            <p className="form-description">{t.descAudit}</p>
-                        </div>
-
-                        <div className="form-card" style={{ padding: '0', overflow: 'hidden', borderRadius: '2rem', border: '1px solid var(--border)' }}>
-                            <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '1fr 3fr 1fr 1fr', gap: '1rem', background: 'var(--secondary)', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', opacity: 0.7 }}>
-                                <div>Ação</div>
-                                <div>Detalhes</div>
-                                <div>Usuário</div>
-                                <div>Data</div>
-                            </div>
-                            <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-                                {loading ? (
-                                    <div style={{ padding: '4rem', textAlign: 'center', opacity: 0.5 }}>{t.loading}</div>
-                                ) : auditLogs.length === 0 ? (
-                                    <div style={{ padding: '4rem', textAlign: 'center', opacity: 0.5 }}>{t.noData}</div>
-                                ) : (
-                                    auditLogs.map(log => (
-                                        <div key={log.id} style={{ padding: '1.25rem 2rem', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '1fr 3fr 1fr 1fr', gap: '1rem', alignItems: 'center' }}>
-                                            <div style={{ fontWeight: 800, fontSize: '0.75rem', color: log.action.includes('APROVADO') ? '#25D366' : log.action.includes('RECUSADO') ? '#ef4444' : 'var(--primary)' }}>
-                                                {log.action}
-                                            </div>
-                                            <div style={{ fontSize: '0.875rem' }}>{log.details}</div>
-                                            <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>{log.user}</div>
-                                            <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>{new Date(log.createdAt).toLocaleString('pt-BR')}</div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === 'settings' && (
-                    <div className="animate-fade-in-up">
-                        <div style={{ marginBottom: '2rem' }}>
-                            <h1 className="form-title" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>{t.titleSettings}</h1>
-                            <p className="form-description">{t.descSettings}</p>
-                        </div>
-
-                        <div className="form-card" style={{ maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                            <div className="form-group mb-0">
-                                <label className="form-label">{t.wppLabel}</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={config.whatsapp}
-                                    onChange={e => setConfig({ ...config, whatsapp: e.target.value })}
-                                />
-                                <p style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '0.5rem' }}>Número oficial para contato e disparo do botão de alerta de envio do Lead.</p>
-                            </div>
-
-                            <div className="form-group mb-0">
-                                <label className="option-card" style={{ padding: '1rem 1.5rem' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={config.notificacao}
-                                        onChange={e => setConfig({ ...config, notificacao: e.target.checked })}
-                                        style={{ position: 'absolute', width: '0', height: '0', opacity: 0 }}
-                                    />
-                                    <div className={`option-indicator ${config.notificacao ? 'checked' : ''}`} style={{ background: config.notificacao ? 'var(--primary)' : 'transparent', borderColor: config.notificacao ? 'var(--primary)' : 'var(--border)' }}>
-                                        {config.notificacao && <CheckCircle size={14} color="var(--primary-foreground)" />}
-                                    </div>
-                                    <span style={{ fontWeight: 600 }}>{t.notifLabel}</span>
-                                </label>
-                            </div>
-
-                            <button onClick={handleSaveConfig} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                                <Save size={18} /> {t.save}
-                            </button>
-                        </div>
-                    </div>
-                )}
+                </div>
             </main>
 
-            {/* Modal de Detalhes - Oculto caso Audit/Settings esteja ativo */}
-            {selectedLead && activeTab === 'leads' && (
-                <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-                    <div
-                        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
-                        onClick={() => setSelectedLead(null)}
-                    />
-                    <div
-                        style={{
-                            position: 'relative', background: 'var(--card)', width: '100%', maxWidth: '900px', maxHeight: '90vh',
-                            borderRadius: '2rem', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column'
-                        }}
-                    >
-                        <div style={{ padding: '2rem', background: 'var(--secondary)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                <div style={{ width: '48px', height: '48px', background: 'var(--primary)', color: 'var(--primary-foreground)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Users size={24} />
-                                </div>
+            {/* Modal de Detalhes Estilo Sidebar (Lateral Direita) */}
+            <AnimatePresence>
+                {selectedSubmission && (
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSelectedSubmission(null)} />
+                        <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 200 }}
+                            style={{ position: 'relative', width: 'min(640px, 90vw)', background: '#080808', borderLeft: '1px solid rgba(255,255,255,0.1)', height: '100%', display: 'flex', flexDirection: 'column', padding: '3rem' }}>
+                            <header style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                 <div>
-                                    <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{t.details}</h2>
-                                    <p style={{ fontSize: '0.875rem', opacity: 0.6 }}>ID: {selectedLead.id}</p>
+                                    <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '1rem' }}>RECURSOS ESTRATÉGICOS</p>
+                                    <h3 style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.1 }}>Detalhes do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Protocolo</span></h3>
                                 </div>
-                            </div>
-                            <button onClick={() => setSelectedLead(null)} className="theme-toggle">
-                                <X size={20} />
-                            </button>
-                        </div>
+                                <button onClick={() => setSelectedSubmission(null)} style={{ opacity: 0.3, padding: '0.5rem' }}><X size={32} /></button>
+                            </header>
 
-                        <div style={{ padding: '2.5rem', overflowY: 'auto', flex: 1 }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '3rem' }}>
-
-                                {/* Info Pessoal */}
-                                <div>
-                                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem', color: 'var(--primary)' }}>
-                                        <Info size={18} /> {t.personalInfo}
-                                    </h3>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                        <DetailItem label="Nome Completo" value={selectedLead.nome_completo_pessoal} />
-                                        <DetailItem label="Data Nascimento" value={selectedLead.data_nascimento} icon={<Calendar size={14} />} />
-                                        <DetailItem label="Email" value={selectedLead.email} icon={<Mail size={14} />} />
-                                        <DetailItem label="WhatsApp" value={selectedLead.whatsapp} icon={<Phone size={14} />} />
-                                        <DetailItem label="CPF/NIT" value={selectedLead.cpf_nit} />
-                                        <DetailItem label="Passaporte" value={selectedLead.passaporte} />
-                                    </div>
+                            <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '4rem' }}>
+                                    <DetailGroup label="Cliente Final" value={selectedSubmission.user?.fullName || selectedSubmission.user?.name} icon={<Users size={12} />} />
+                                    <DetailGroup label="Tipo de Fluxo" value={funnelConfig[selectedSubmission.funnelType]?.title} icon={<ClipboardList size={12} />} />
+                                    <DetailGroup label="Canal de E-mail" value={selectedSubmission.user?.email} icon={<Mail size={12} />} />
+                                    <DetailGroup label="Contato / WhatsApp" value={selectedSubmission.user?.phone} icon={<Users size={12} />} />
+                                    <DetailGroup label="Registro / Doc" value={selectedSubmission.user?.document || 'PENDENTE'} icon={<ShieldCheck size={12} />} />
                                 </div>
 
-                                {/* Offshore Structure */}
-                                <div>
-                                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem', color: 'var(--primary)' }}>
-                                        <Globe size={18} /> {t.offshoreInfo}
-                                    </h3>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                        <DetailItem label="Relação do Usuário" value={selectedLead.relacao_empresa} />
-                                        <DetailItem label="Jurisdição Preferida" value={selectedLead.jurisdicao} />
-                                        <DetailItem label="Tipo de Conta" value={selectedLead.conta_bancaria} />
-                                        <DetailItem label="Opção Nome 1" value={selectedLead.empresa_opcao1} />
-                                    </div>
-                                </div>
+                                <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '3rem' }}>
+                                    <h4 style={{ fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginBottom: '2.5rem' }}>DADOS DA TRANSMISSÃO</h4>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                                        {Object.keys(selectedSubmission.data).map(key => {
+                                            const val = selectedSubmission.data[key];
 
-                                {/* Compliance */}
-                                <div>
-                                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem', color: 'var(--primary)' }}>
-                                        <Briefcase size={18} /> {t.profInfo}
-                                    </h3>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                        <DetailItem label="Origem de Fundos" value={selectedLead.origem_fundos?.join(', ')} />
-                                        <DetailItem label="Finalidade" value={selectedLead.uso_empresa?.join(', ')} />
-                                        <DetailItem label="Pessoa Politicamente Exposta" value={selectedLead.pep} />
-                                    </div>
-                                </div>
+                                            // Handling file uploads (base64)
+                                            if (Array.isArray(val) && val.length > 0 && val[0] && typeof val[0] === 'object' && 'base64' in val[0]) {
+                                                return (
+                                                    <div key={key}>
+                                                        <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '1rem' }}>{key.replace(/_/g, ' ')}</p>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                                            {val.map((file: any, fIdx: number) => (
+                                                                <a key={fIdx} href={file.base64} download={file.name} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', color: '#fff', fontSize: '0.8rem', fontWeight: 700, transition: 'background 0.2s', textDecoration: 'none' }}
+                                                                    onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                                                                    onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                                                                >
+                                                                    <FileText size={18} opacity={0.5} />
+                                                                    <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{file.name}</span>
+                                                                    <span style={{ fontSize: '0.6rem', opacity: 0.3 }}>{(file.size / 1024).toFixed(0)} KB</span>
+                                                                    <ArrowUpRight size={14} opacity={0.2} />
+                                                                </a>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
 
-                                {/* Documents */}
-                                <div>
-                                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem', color: 'var(--primary)' }}>
-                                        <ShieldCheck size={18} /> {t.docsInfo}
-                                    </h3>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                        {selectedLead.documento_residencia ? (
-                                            <div className="option-card" style={{ padding: '1rem', cursor: 'pointer', background: 'var(--background)', borderColor: 'var(--primary)', opacity: 0.8 }} onClick={() => window.open(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/leads-documents/${selectedLead.documento_residencia}`)}>
-                                                <FileDown size={18} style={{ marginRight: '0.5rem' }} />
-                                                <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Comprovante de Endereço</span>
-                                            </div>
-                                        ) : <DetailItem label="Comprovante de Endereço" value="Não enviado" />}
-
-                                        {selectedLead.documento_identidade ? (
-                                            <div className="option-card" style={{ padding: '1rem', cursor: 'pointer', background: 'var(--background)', borderColor: 'var(--primary)', opacity: 0.8 }} onClick={() => window.open(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/leads-documents/${selectedLead.documento_identidade}`)}>
-                                                <FileDown size={18} style={{ marginRight: '0.5rem' }} />
-                                                <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Identidade / Passaporte</span>
-                                            </div>
-                                        ) : <DetailItem label="Identidade" value="Não enviado" />}
+                                            // Handle other object representations or arrays cleanly
+                                            return (
+                                                <div key={key}>
+                                                    <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.75rem' }}>{key.replace(/_/g, ' ')}</p>
+                                                    <p style={{ fontSize: '1rem', fontWeight: 700, lineHeight: 1.5 }}>
+                                                        {Array.isArray(val) ? val.join(', ') : (typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val))}
+                                                    </p>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* ACÕES (Aprovar / Recusar) */}
-                        <div style={{ padding: '1.5rem 2.5rem', background: 'var(--secondary)', borderTop: '1px solid var(--border)', display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                            <button
-                                onClick={() => handleLeadStatusChange(selectedLead.id, 'recusado')}
-                                className="btn"
-                                style={{ background: '#ef444415', color: '#ef4444', borderColor: '#ef444430', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', borderRadius: '1rem' }}
-                            >
-                                <XCircle size={18} /> {t.reject}
-                            </button>
-                            <button
-                                onClick={() => handleLeadStatusChange(selectedLead.id, 'aprovado')}
-                                className="btn btn-primary"
-                                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', borderRadius: '1rem' }}
-                            >
-                                <CheckCircle size={18} /> {t.approve}
-                            </button>
-                        </div>
+                            <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem' }}>
+                                <button style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em' }}>MARCAR COMO PROCESSADO</button>
+                                <button onClick={() => setSelectedSubmission(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 800, color: '#fff', borderRadius: '100px', fontSize: '0.8rem' }}>FECHAR</button>
+                            </footer>
+                        </motion.div>
                     </div>
-                </div>
-            )}
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .admin-row:hover {
-                    background: var(--secondary) !important;
-                    transform: scale(1.002);
-                }
-                
-                /* Admin Header Responsive CSS */
-                .header-admin-custom {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                }
-                .header-admin-custom .logo-container {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                }
-                .header-admin-custom .header-actions {
-                    display: flex;
-                    gap: 1rem;
-                    align-items: center;
-                }
-                .lang-switcher {
-                    display: flex;
-                    background: var(--secondary);
-                    border-radius: 2rem;
-                    padding: 0.25rem;
-                }
-                .lang-btn {
-                    padding: 0.4rem 1rem;
-                    border-radius: 1.5rem;
-                    font-size: 0.75rem;
-                    font-weight: 800;
-                    transition: all 0.2s ease;
-                }
-                .logout-btn {
-                    display: flex;
-                    gap: 0.5rem;
-                    align-items: center;
-                    padding: 0 1rem;
-                    width: auto;
-                    border-radius: 1rem;
-                }
-                .logout-btn span {
-                    font-size: 0.8rem;
-                    font-weight: 600;
-                }
-                
-                @media (max-width: 768px) {
-                    .header-admin-custom {
-                        flex-direction: column;
-                        justify-content: center;
-                        padding: 1rem;
-                        border-radius: 1.5rem;
-                        text-align: center;
-                    }
-                    .header-admin-custom .logo-container {
-                        justify-content: center;
-                        width: 100%;
-                    }
-                    .header-admin-custom .admin-logo-img {
-                        height: 20px;
-                    }
-                    .header-admin-custom .header-actions {
-                        width: 100%;
-                        justify-content: center;
-                        flex-wrap: wrap;
-                    }
-                }
-            `}} />
+                )}
+            </AnimatePresence>
         </div>
     );
 }
 
-function DetailItem({ label, value, icon }: { label: string, value: string | null | undefined, icon?: React.ReactNode }) {
-    if (!value) return null;
+function SidebarLink({ icon, label, active, onClick }: { icon: any, label: string, active: boolean, onClick: () => void }) {
+    return (
+        <button onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.85rem 1.25rem', borderRadius: '12px', background: active ? 'rgba(255,255,255,0.05)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.4)', transition: 'all 0.2s ease', fontWeight: 800, fontSize: '0.85rem' }}>
+            {icon} {label}
+        </button>
+    );
+}
+
+function AdminTh({ children, align = 'left', style = {} }: any) {
+    return <th style={{ padding: '1.25rem 2rem', fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', textAlign: align, textTransform: 'uppercase', ...style }}>{children}</th>;
+}
+
+function AdminTd({ children, align = 'left' }: any) {
+    return <td style={{ padding: '1.5rem 2rem', textAlign: align, verticalAlign: 'middle' }}>{children}</td>;
+}
+
+function StatusBadge({ priority }: any) {
+    const isHigh = priority === 'ALTA' || priority === 'URGENTE' || priority === 'VIP';
+    return (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '4px 12px', borderRadius: '100px', background: isHigh ? 'rgba(255,0,0,0.1)' : 'rgba(0,255,0,0.05)', color: isHigh ? '#ff4444' : '#44ff44', fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ width: '6px', height: '6px', background: 'currentColor', borderRadius: '50%' }} />
+            {priority || 'NORMAL'}
+        </div>
+    );
+}
+
+function DetailGroup({ label, value, icon }: any) {
     return (
         <div>
-            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.5, fontWeight: 700, marginBottom: '0.2rem' }}>{label}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem', fontWeight: 600 }}>
-                {icon}
-                {value}
-            </div>
+            <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '0.1em' }}>{icon} {label}</p>
+            <p style={{ fontSize: '1.1rem', fontWeight: 800 }}>{value || '—'}</p>
         </div>
-    );
-}
-
-function Loader2(props: any) {
-    return (
-        <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-        </svg>
     );
 }

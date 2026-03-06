@@ -5,8 +5,8 @@ import { cookies } from 'next/headers';
 export async function POST(request: Request) {
     const { email, password } = await request.json();
 
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'bezerraborges@gmail.com';
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'bitcoin2025*';
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
         const expires = new Date(Date.now() + 2 * 60 * 60 * 1000);

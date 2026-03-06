@@ -1,32 +1,34 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { decrypt } from './src/lib/auth';
+import { auth } from "./src/auth"
+import { NextResponse } from "next/server"
 
-export async function middleware(request: NextRequest) {
-    const sessionCookie = request.cookies.get('session')?.value;
+export default auth((req) => {
+    const isLoggedIn = !!req.auth
+    const isDashboardPage = req.nextUrl.pathname.startsWith("/dashboard")
+    const isAdminPage = req.nextUrl.pathname.startsWith("/admin")
+    const isAuthPage = req.nextUrl.pathname.startsWith("/auth")
+    const isFormPage = req.nextUrl.pathname.startsWith("/form")
 
-    // Se estiver tentando acessar rotas do Admin (exceto login) ou API do Admin
-    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login');
-    const isAdminApi = request.nextUrl.pathname.startsWith('/api/admin') && !request.nextUrl.pathname.startsWith('/api/admin/login');
-
-    if (isAdminRoute || isAdminApi) {
-        if (!sessionCookie) {
-            if (isAdminApi) return NextResponse.json({ message: 'Acesso Negado' }, { status: 401 });
-            return NextResponse.redirect(new URL('/admin/login', request.url));
+    if (isAdminPage) {
+        if (!isLoggedIn) return NextResponse.redirect(new URL("/auth/signin", req.nextUrl))
+        if ((req.auth?.user as any)?.role !== "ADMIN") {
+            return NextResponse.redirect(new URL("/dashboard", req.nextUrl))
         }
-
-        try {
-            const parsed = await decrypt(sessionCookie);
-            if (!parsed || !parsed.email) throw new Error('Sessão inválida');
-        } catch (error) {
-            if (isAdminApi) return NextResponse.json({ message: 'Sessão Expirada' }, { status: 401 });
-            return NextResponse.redirect(new URL('/admin/login', request.url));
-        }
+        return NextResponse.next()
     }
 
-    return NextResponse.next();
-}
+    if (isDashboardPage || isFormPage) {
+        if (!isLoggedIn) return NextResponse.redirect(new URL("/auth/signin", req.nextUrl))
+        return NextResponse.next()
+    }
+
+    if (isAuthPage && isLoggedIn) {
+        return NextResponse.redirect(new URL("/dashboard", req.nextUrl))
+    }
+
+    return NextResponse.next()
+})
 
 export const config = {
-    matcher: ['/admin/:path*', '/api/admin/:path*'],
-};
+    matcher: ["/dashboard/:path*", "/admin/:path*", "/auth/:path*", "/form/:path*"],
+}
+

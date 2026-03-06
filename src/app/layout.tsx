@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthProvider } from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "Abertura de Empresa Offshore | Bezerra Borges Advogados",
-  description: "Formulário especializado para coleta de dados para abertura de empresa offshore. Sua liberdade financeira está próxima.",
+  title: "Portal BBLAW | Formulário Especializado",
+  description: "Formulários especializados para assessoria jurídica e financeira internacional da Bezerra Borges Advogados.",
 };
 
 export default function RootLayout({
@@ -17,7 +18,9 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <div className="premium-bg" />
         <ThemeProvider>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

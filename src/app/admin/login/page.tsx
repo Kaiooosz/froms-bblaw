@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Shield, Lock, Mail, Loader2 } from 'lucide-react';
-import '@/components/OffshoreForm/styles.css';
+import { signIn } from 'next-auth/react';
+import '@/app/forms.css';
 
 export default function AdminLogin() {
     const [email, setEmail] = useState('');
@@ -18,18 +19,19 @@ export default function AdminLogin() {
         setError('');
 
         try {
-            const res = await fetch('/api/admin/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+            const result = await signIn('credentials', {
+                email,
+                password,
+                redirect: false,
             });
 
-            if (res.ok) {
-                router.push('/admin/dashboard');
-            } else {
+            if (result?.error) {
                 setError('Acesso negado. Verifique suas credenciais.');
+            } else {
+                router.push('/admin/dashboard');
             }
-        } catch (err) {
+        } catch (adminLoginErr) {
+            console.error('Admin login error:', adminLoginErr);
             setError('Erro de conexão.');
         } finally {
             setLoading(false);

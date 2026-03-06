@@ -7,23 +7,86 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String       @id @default(cuid())
+  name          String?
+  email         String?      @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  fullName      String?
+  document      String?
+  birthDate     String?
+  role          String       @default("USER")
+  origemLead    String?      @default("DIRETO")
+  phone         String?
+  accounts      Account[]
+  sessions      Session[]
+  leads         Lead[]
+  submissions   Submission[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Submission {
+  id         String   @id @default(cuid())
+  userId     String
+  funnelType String
+  status     String   @default("PENDING")
+  data       Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  priority   String?  @default("NORMAL")
+  score      Int?
+  tags       String[]
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("submissions")
+}
+
 model Lead {
   id                    String   @id @default(cuid())
   createdAt             DateTime @default(now())
-  
-  // Step 1
   relacao_empresa       String
   whatsapp              String
-
-  // Step 2
   participacao          Int?
   socio_responsavel     String?
-
-  // Step 3
   empresa_opcao1        String
   empresa_opcao2        String?
   empresa_opcao3        String?
-  jurisdicao           String
+  jurisdicao            String
   jurisdicao_outra      String?
   imoveis_brasil        String
   uso_empresa           String[]
@@ -35,8 +98,6 @@ model Lead {
   herdeiros             String?
   origem_fundos         String[]
   origem_fundos_outro   String?
-
-  // Step 4
   nome_completo_pessoal String
   data_nascimento       String
   genero                String?
@@ -55,32 +116,10 @@ model Lead {
   pep                   String
   residencia_eua        String
   declaracao_aceite     Boolean
-  
-  // Documentos (URLs ou caminhos no Storage)
-  documento_residencia  String?
   documento_identidade  String?
+  documento_residencia  String?
+  userId                String?
+  user                  User?    @relation(fields: [userId], references: [id])
 
-  // Controle Administrativo
-  status                String   @default("pendente") // "pendente", "aprovado", "recusado"
-  
   @@map("leads")
-}
-
-model AuditLog {
-  id        String   @id @default(cuid())
-  action    String   // Ex: "LEAD_APPROVE", "CONFIG_UPDATE"
-  details   String   // Detalhes da ação em formato de texto ou JSON
-  user      String   // Email ou nome do admin
-  createdAt DateTime @default(now())
-
-  @@map("audit_logs")
-}
-
-model AppConfig {
-  id          String   @id @default("config_unico")
-  whatsapp    String   @default("+55 1198271-2025")
-  notificacao Boolean  @default(true)
-  updatedAt   DateTime @updatedAt
-
-  @@map("app_configs")
 }
