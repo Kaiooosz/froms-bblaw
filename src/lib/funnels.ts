@@ -137,7 +137,12 @@ export const funnelConfig: Record<string, any> = {
                     { id: 'volume_mensal', type: 'text', label: 'Volume mensal médio?' }
                 ]
             }
-        ]
+        ],
+        completionAdvice: {
+            title: "Requisitos de Compliance: Offshore",
+            message: "Recebemos sua solicitação de estruturação internacional. Para prosseguirmos com a abertura, precisamos que inicie a separação dos seguintes documentos para nossa Due Diligence:\n\n1. Cópia do Passaporte (Apostilado)\n2. Comprovante de Residência (Máximo 90 dias)\n3. Carta de Referência Bancária (Se aplicável)\n4. Comprovativos da Origem do Patrimônio\n\nNossa equipe em breve entrará em contato para alinhar a melhor jurisdição aplicável.",
+            buttonText: "NOTIFICAR EQUIPE E ENVIAR DOCUMENTOS"
+        }
     },
     holding: {
         title: 'Holding Nacional / Planejamento Patrimonial',
@@ -155,7 +160,12 @@ export const funnelConfig: Record<string, any> = {
                     { id: 'risco_temido', type: 'textarea', label: 'Qual risco patrimonial você mais teme hoje?', placeholder: 'Ex: Bloqueios, inventários caros...', required: true }
                 ]
             }
-        ]
+        ],
+        completionAdvice: {
+            title: "Análise Patrimonial Solicitada",
+            message: "Avaliamos suas informações iniciais de exposição de risco e patrimônio imobiliário. Para um diagnóstico de blindagem mais preciso, por favor envie:\n\n1. Relação simplificada dos imóveis ou IRPF atualizado\n2. Cópia do Contrato Social da sua empresa (Caso possua empresa ativa)\n\nIsso agilizará o estudo de viabilidade (croqui) para evitar inventários e riscos civis/trabalhistas.",
+            buttonText: "NOTIFICAR EQUIPE NO WHATSAPP"
+        }
     },
     cripto: {
         title: 'Estruturação Cripto / Custódia',
@@ -172,7 +182,12 @@ export const funnelConfig: Record<string, any> = {
                     { id: 'notificado_receita', type: 'radio', label: 'Já foi notificado pela Receita?', options: ['Sim', 'Não'], required: true }
                 ]
             }
-        ]
+        ],
+        completionAdvice: {
+            title: "Tratamento Confidencial de Criptoativos",
+            message: "Protocolo cripto registrado com sucesso. Estamos cientes da necessidade de sigilo na estruturação.\n\nCaso tenha sido notificado pela Receita Federal, solicitamos que encaminhe uma foto da notificação ou do relatório fiscal imediatamente para estancar possíveis danos.",
+            buttonText: "FALAR COM A EQUIPE AGORA"
+        }
     },
     sucessorio: {
         title: 'Planejamento Sucessório',
@@ -187,7 +202,12 @@ export const funnelConfig: Record<string, any> = {
                     { id: 'objetivo_sucessao', type: 'textarea', label: 'Qual o principal objetivo com a sucessão?', required: true }
                 ]
             }
-        ]
+        ],
+        completionAdvice: {
+            title: "Próximos Passos: Estruturação Sucessória",
+            message: "Recebemos sua manifestação de interesse em planejamento sucessório.\n\nUm advogado sênior de nossa equipe de Família & Sucessões fará o contato para aprofundar o cenário familiar e traçar alternativas que preservem o patrimônio fora de inventários judiciais.",
+            buttonText: "NOTIFICAR EQUIPE NO WHATSAPP"
+        }
     },
     contencioso: {
         title: 'Contencioso Estratégico',
@@ -204,7 +224,12 @@ export const funnelConfig: Record<string, any> = {
                     { id: 'resumo_caso', type: 'textarea', label: 'Fale brevemente sobre o problema', required: true }
                 ]
             }
-        ]
+        ],
+        completionAdvice: {
+            title: "Próximos Passos (Aviso Importante)",
+            message: "Em litígios estratégicos, cada dia de prazo é vital. \n\nSe você possui mandados e notificações recebidas em casa, não demore em nos encaminhar fotos nítidas dos despachos para podermos contabilizar o prazo processual no nosso sistema.",
+            buttonText: "ENVIAR CITAÇÕES/PROCESSO AGORA"
+        }
     },
     compliance: {
         title: 'Retainer / Compliance Recorrente',
@@ -220,7 +245,12 @@ export const funnelConfig: Record<string, any> = {
                     { id: 'autuacao_fiscal', type: 'radio', label: 'Já teve autuação fiscal?', options: ['Sim', 'Não'] }
                 ]
             }
-        ]
+        ],
+        completionAdvice: {
+            title: "Auditoria e Compliance Corporativo",
+            message: "Protocolo registrado corporativo formalizado.\n\nPara o orçamento do Retainer (Contrato de Assessoria Recorrente), por favor, deixe pronto o último Balanço Patrimonial e o Contrato Social consolidado de sua empresa.",
+            buttonText: "FALAR COM EXECUTIVO DE CONTAS"
+        }
     },
     contabil: {
         title: 'Contabilidade Empresarial',
@@ -235,6 +265,11 @@ export const funnelConfig: Record<string, any> = {
                     { id: 'ir_atraso', type: 'radio', label: 'Está com IR em atraso?', options: ['Sim', 'Não'], required: true }
                 ]
             }
-        ]
+        ],
+        completionAdvice: {
+            title: "Assessment Contábil Solicitado",
+            message: "Nossa equipe de especialistas em balanço e tributos fará uma avaliação sem custos do seu cenário fiscal.\n\nPreparar o acesso ao certificado digital E-CNPJ ou Gov.br Prata/Ouro nos poupará tempo de avaliação e ajudará em nosso alinhamento.",
+            buttonText: "NOTIFICAR ATENDIMENTO"
+        }
     }
 };

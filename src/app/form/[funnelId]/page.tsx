@@ -211,12 +211,14 @@ export default function DynamicForm() {
                         >
                             {config.completionAdvice?.buttonText || "NOTIFICAR EQUIPE NO WHATSAPP"}
                         </a>
-                        <button onClick={() => router.push('/funnels')} style={{ opacity: 0.4, fontSize: '0.75rem', fontWeight: 800, marginTop: '1rem', letterSpacing: '0.05em' }}>
-                            VOLTAR AOS FORMULÁRIOS
-                        </button>
-                        <button onClick={() => router.push('/admin/dashboard')} style={{ opacity: 0.4, fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.05em' }}>
-                            VOLTAR AO DASHBOARD
-                        </button>
+                        <div style={{ display: 'flex', gap: '1rem', width: '100%', marginTop: '0.5rem' }}>
+                            <button onClick={() => router.push('/funnels')} style={{ flex: 1, padding: '1rem', borderRadius: '100px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--foreground)', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.05em', cursor: 'pointer' }}>
+                                ABRIR NOVO FORMULÁRIO
+                            </button>
+                            <button onClick={() => router.push('/admin/dashboard')} style={{ flex: 1, padding: '1rem', borderRadius: '100px', border: '1px solid var(--border)', background: 'var(--secondary)', color: 'var(--foreground)', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.05em', cursor: 'pointer' }}>
+                                PAINEL ADMIN
+                            </button>
+                        </div>
                     </div>
                 </motion.div>
             </div>
