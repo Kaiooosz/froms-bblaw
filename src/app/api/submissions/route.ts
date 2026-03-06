@@ -84,7 +84,7 @@ export async function POST(req: Request) {
 
         // Webhook integration MindTech
         try {
-            await fetch('https://webhook.mindtechbusiness.com.br/webhook/forms', {
+            await fetch('https://n8n.mindtechbusiness.com.br/webhook-test/forms', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

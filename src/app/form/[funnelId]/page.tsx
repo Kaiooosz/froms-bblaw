@@ -165,19 +165,32 @@ export default function DynamicForm() {
 
     if (isDone) {
         const adminWhatsAppNumber = "5511982712025";
-        const message = `Olá! O formulário estratégico "${config.title}" da BBLAW foi preenchido por ${methods.getValues('name') || methods.getValues('fullName') || 'um cliente'}.`;
+        const message = `Olá! O formulário estratégico "${config.title}" da BBLAW foi preenchido!`;
         const waUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(message)}`;
 
         return (
-            <div className="form-page-wrapper responsive-padding" style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="form-card" style={{ maxWidth: '600px', width: '100%', textAlign: 'center' }}>
-                    <div style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'center' }}>
-                        <CheckCircle2 size={40} />
+            <div className="form-page-wrapper responsive-padding" style={{ justifyContent: 'center', alignItems: 'center', padding: '4rem 1rem' }}>
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="form-card" style={{ maxWidth: '640px', width: '100%', textAlign: 'center', margin: 'auto' }}>
+                    <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center', color: 'var(--foreground)' }}>
+                        <CheckCircle2 size={56} />
                     </div>
-                    <h1 className="form-title" style={{ fontSize: '2.25rem', marginBottom: '1rem' }}>Protocolo <span className="accent-text">Transmitido</span></h1>
-                    <p style={{ opacity: 0.5, fontSize: '1rem', lineHeight: 1.6, marginBottom: '2.5rem' }}>
-                        As informações foram enviadas com sucesso e o setor administrativo já foi notificado.
-                    </p>
+                    <h1 className="form-title" style={{ fontSize: '2rem', marginBottom: '1rem' }}>Protocolo <span className="accent-text">Transmitido</span></h1>
+
+                    {config.completionAdvice ? (
+                        <div style={{ textAlign: 'left', background: 'var(--secondary)', padding: '2rem', borderRadius: '1rem', marginTop: '2rem', marginBottom: '2.5rem', borderLeft: '4px solid var(--accent)' }}>
+                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
+                                {config.completionAdvice.title}
+                            </h3>
+                            <div style={{ fontSize: '0.9rem', opacity: 0.8, lineHeight: 1.7, whiteSpace: 'pre-line' }}>
+                                {config.completionAdvice.message}
+                            </div>
+                        </div>
+                    ) : (
+                        <p style={{ opacity: 0.5, fontSize: '1rem', lineHeight: 1.6, marginBottom: '2.5rem' }}>
+                            As informações foram enviadas com sucesso e o setor administrativo já foi notificado.
+                        </p>
+                    )}
+
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <a
                             href={waUrl}
@@ -188,15 +201,20 @@ export default function DynamicForm() {
                                 width: '100%',
                                 justifyContent: 'center',
                                 borderRadius: '100px',
-                                background: '#25D366',
+                                background: 'var(--foreground)',
                                 border: 'none',
-                                color: 'white',
+                                color: 'var(--background)',
+                                fontWeight: 900,
+                                letterSpacing: '0.05em',
                                 padding: '1.25rem'
                             }}
                         >
-                            NOTIFICAR EQUIPE
+                            {config.completionAdvice?.buttonText || "NOTIFICAR EQUIPE NO WHATSAPP"}
                         </a>
-                        <button onClick={() => router.push('/admin/dashboard')} style={{ opacity: 0.4, fontSize: '0.85rem', fontWeight: 600 }}>
+                        <button onClick={() => router.push('/funnels')} style={{ opacity: 0.4, fontSize: '0.75rem', fontWeight: 800, marginTop: '1rem', letterSpacing: '0.05em' }}>
+                            VOLTAR AOS FORMULÁRIOS
+                        </button>
+                        <button onClick={() => router.push('/admin/dashboard')} style={{ opacity: 0.4, fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.05em' }}>
                             VOLTAR AO DASHBOARD
                         </button>
                     </div>

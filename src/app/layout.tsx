@@ -15,6 +15,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('unhandledrejection', function(event) {
+                if (event.reason && typeof event.reason.message === 'string' && event.reason.message.includes('MetaMask')) {
+                  event.preventDefault();
+                  event.stopImmediatePropagation();
+                  console.warn('Bloqueio reforçado: aviso MetaMask.');
+                }
+              }, true);
+            `
+          }}
+        />
+      </head>
       <body suppressHydrationWarning>
         <div className="premium-bg" />
         <ThemeProvider>

@@ -60,6 +60,29 @@ export async function POST(request: Request) {
             } as any
         });
 
+        // Webhook integration MindTech (For Custom Form Components)
+        try {
+            await fetch('https://n8n.mindtechbusiness.com.br/webhook-test/forms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: session?.user?.id,
+                    userEmail: data.email || session?.user?.email,
+                    userName: data.nome_completo_pessoal || session?.user?.name,
+                    funnelType: 'OFFSHORE_CUSTOM', // Distinguish this form
+                    data: data,
+                    priority: 'NORMAL',
+                    tags: ['CustomForm'],
+                    score: 0,
+                    submissionId: lead.id,
+                    createdAt: new Date().toISOString()
+                })
+            });
+            console.log(`[WEBHOOK_EVENT] Dados enviados com sucesso para MindTech para o funil OFFSHORE_CUSTOM`);
+        } catch (webhookError) {
+            console.error("[WEBHOOK_ERROR] Falha ao enviar para o webhook:", webhookError);
+        }
+
         return NextResponse.json({ success: true, leadId: lead.id });
     } catch (error: any) {
         console.error('Error saving lead:', error);

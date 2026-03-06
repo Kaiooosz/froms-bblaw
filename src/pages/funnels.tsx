@@ -17,42 +17,42 @@ const funnels = [
         category: 'INTERNACIONAL',
         title: 'Residência Fiscal Paraguai',
         icon: Globe,
-        href: '/forms/residencia-paraguai'
+        href: '/form/residencia_py'
     },
     {
         id: 'offshore',
         category: 'INTERNACIONAL',
         title: 'Offshore Internacional',
         icon: Shield,
-        href: '/forms/offshore'
+        href: '/form/offshore'
     },
     {
         id: 'holding',
         category: 'CONSULTIVO',
         title: 'Holding Nacional',
         icon: Gem,
-        href: '/forms/patrimonial'
+        href: '/form/holding'
     },
     {
         id: 'cripto',
         category: 'CRIPTO',
         title: 'Estruturação Cripto',
         icon: Coins,
-        href: '/forms/cripto'
+        href: '/form/cripto'
     },
     {
         id: 'sucessorio',
         category: 'ESTATE',
         title: 'Planejamento Sucessório',
         icon: CaseLower,
-        href: '/forms/sucessorio'
+        href: '/form/sucessorio'
     },
     {
         id: 'contencioso',
         category: 'JUDICIAL',
         title: 'Contencioso Estratégico',
         icon: Gavel,
-        href: '/forms/strategic-litigation'
+        href: '/form/contencioso'
     }
 ];
 

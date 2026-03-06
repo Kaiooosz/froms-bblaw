@@ -17,7 +17,7 @@ export const funnelConfig: Record<string, any> = {
         pages: [
             {
                 title: 'Regras Operacionais Críticas',
-                description: '🚨 AVISO: Você deve enviar fotos de todos os seus documentos para nossa conferência ANTES de realizar o Apostilamento de Haia. Isso evita custos desnecessários com documentos incorretos.',
+                description: 'AVISO: Você deve enviar fotos de todos os seus documentos para nossa conferência ANTES de realizar o Apostilamento de Haia. Isso evita custos desnecessários com documentos incorretos.',
                 questions: [
                     { id: 'entendeu_regra', type: 'radio', label: 'Ciente da necessidade de conferência prévia?', options: ['Sim, estou ciente', 'Já realizei o apostilamento'], required: true }
                 ]
@@ -67,7 +67,12 @@ export const funnelConfig: Record<string, any> = {
                     { id: 'saida_fiscal', type: 'radio', label: 'Você já declarou saída fiscal do Brasil?', options: ['Sim', 'Não', 'Não sei'], required: true }
                 ]
             }
-        ]
+        ],
+        completionAdvice: {
+            title: "Próximos Passos: Documentação Obrigatória",
+            message: "Agradecemos o envio das informações preliminares. Para dar prosseguimento imediato na sua emissão, por favor, prepare e envie fotos claras dos seguintes documentos:\n\n1. Certidão de Nascimento (Original + Apostila de Haia)\n2. Certidão de Casamento, se casado (Original + Apostila)\n3. Antecedentes Criminais da PF (Original + Apostila)\n4. Passaporte e RG (Trazer os físicos)\n5. Certificado Internacional de Vacinação Febre Amarela\n6. Foto Estilo Interpol\n\nLEMBRETE: Nos envie a foto dos documentos para conferência ANTES de pagar o Apostilamento de Haia no cartório.",
+            buttonText: "NOTIFICAR EQUIPE E ENVIAR FOTOS"
+        }
     },
     offshore: {
         title: 'Offshore Internacional',
@@ -191,7 +196,7 @@ export const funnelConfig: Record<string, any> = {
         pages: [
             {
                 title: 'Natureza da Demanda',
-                description: '⚠️ URGENTE: Se o prazo de defesa estiver próximo, anexe os documentos imediatamente para análise prioritária.',
+                description: 'URGENTE: Se o prazo de defesa estiver próximo, anexe os documentos imediatamente para análise prioritária.',
                 questions: [
                     { id: 'tipo_problema', type: 'radio', label: 'Tipo de problema:', options: ['Tributário', 'Empresarial', 'Administrativo', 'Outro'], required: true },
                     { id: 'prazo_correndo', type: 'radio', label: 'Existe prazo correndo?', options: ['Sim', 'Não', 'Não sei'], required: true },
