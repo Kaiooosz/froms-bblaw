@@ -37,7 +37,7 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [selectedSubmission, setSelectedSubmission] = useState<any | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState<'SUBMISSIONS' | 'USERS'>('SUBMISSIONS');
+    const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'SUBMISSIONS' | 'USERS'>('OVERVIEW');
     const [users, setUsers] = useState<any[]>([]);
     const [filterType, setFilterType] = useState('ALL');
     const router = useRouter();
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                    <SidebarLink icon={<LayoutDashboard size={18} />} label="Overview" active={false} onClick={() => { }} />
+                    <SidebarLink icon={<LayoutDashboard size={18} />} label="Overview" active={activeTab === 'OVERVIEW'} onClick={() => setActiveTab('OVERVIEW')} />
                     <SidebarLink icon={<ClipboardList size={18} />} label="Protocolos" active={activeTab === 'SUBMISSIONS'} onClick={() => setActiveTab('SUBMISSIONS')} />
                     <SidebarLink icon={<Users size={18} />} label="Base de Usuários" active={activeTab === 'USERS'} onClick={() => setActiveTab('USERS')} />
                     <SidebarLink icon={<Settings size={18} />} label="Configurações" active={false} onClick={() => { }} />
@@ -151,9 +151,9 @@ export default function AdminDashboard() {
                     <header style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
                             <h2 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>
-                                {activeTab === 'SUBMISSIONS' ? 'Monitor de Protocolos' : 'Diretório de Usuários'}
+                                {activeTab === 'OVERVIEW' ? 'Visão Geral (Overview)' : activeTab === 'SUBMISSIONS' ? 'Monitor de Protocolos' : 'Diretório de Usuários'}
                             </h2>
-                            <p style={{ fontSize: '0.9rem', opacity: 0.4 }}>{activeTab === 'SUBMISSIONS' ? 'Fluxo de dados estratégicos recebidos em tempo real.' : 'Base completa de clientes autenticados no ecossistema BBLAW.'}</p>
+                            <p style={{ fontSize: '0.9rem', opacity: 0.4 }}>{activeTab === 'OVERVIEW' ? 'Resumo de todos os fluxos e cadastros em andamento.' : activeTab === 'SUBMISSIONS' ? 'Fluxo de dados estratégicos recebidos em tempo real.' : 'Base completa de clientes autenticados no ecossistema BBLAW.'}</p>
                         </div>
 
                         {activeTab === 'SUBMISSIONS' && (
@@ -171,105 +171,131 @@ export default function AdminDashboard() {
                     </header>
 
                     {/* Espaço de Dados Estilo SaaS */}
-                    <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', overflow: 'hidden' }}>
-                        {activeTab === 'SUBMISSIONS' ? (
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <tr>
-                                        <AdminTh>CLIENTE / E-MAIL</AdminTh>
-                                        <AdminTh>PROTOCOLO</AdminTh>
-                                        <AdminTh>STATUS / PRIORIDADE</AdminTh>
-                                        <AdminTh>DATA / HORA</AdminTh>
-                                        <AdminTh align="right">AÇÕES</AdminTh>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredSubmissions.length === 0 ? (
+                    {activeTab === 'OVERVIEW' ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: 'var(--foreground)', opacity: 0.5 }}>
+                                    <ClipboardList size={24} />
+                                    <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>TOTAL DE PROTOCOLOS</h3>
+                                </div>
+                                <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>{submissions.length}</p>
+                            </div>
+                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: 'var(--foreground)', opacity: 0.5 }}>
+                                    <Users size={24} />
+                                    <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>USUÁRIOS CADASTRADOS</h3>
+                                </div>
+                                <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>{users.length}</p>
+                            </div>
+                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#ff4444', opacity: 0.8 }}>
+                                    <ShieldCheck size={24} />
+                                    <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>LEADS VIP / ALTA PRIORIDADE</h3>
+                                </div>
+                                <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1, color: '#ff4444' }}>{submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length}</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', overflow: 'hidden' }}>
+                            {activeTab === 'SUBMISSIONS' ? (
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                         <tr>
-                                            <td colSpan={5} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
-                                                <ClipboardList size={32} style={{ margin: '0 auto 1.5rem' }} />
-                                                <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM PROTOCOLOS REGISTRADOS</p>
-                                            </td>
+                                            <AdminTh>CLIENTE / E-MAIL</AdminTh>
+                                            <AdminTh>PROTOCOLO</AdminTh>
+                                            <AdminTh>STATUS / PRIORIDADE</AdminTh>
+                                            <AdminTh>DATA / HORA</AdminTh>
+                                            <AdminTh align="right">AÇÕES</AdminTh>
                                         </tr>
-                                    ) : (
-                                        filteredSubmissions.map((sub) => (
-                                            <tr key={sub.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'background 0.2s' }}
-                                                onClick={() => setSelectedSubmission(sub)}
-                                                onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
-                                                onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
-                                            >
-                                                <AdminTd>
-                                                    <p style={{ fontWeight: 800 }}>{sub.user?.fullName || sub.user?.name}</p>
-                                                    <p style={{ fontSize: '0.65rem', opacity: 0.3 }}>{sub.user?.email}</p>
-                                                </AdminTd>
-                                                <AdminTd>
-                                                    <span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '3px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', textTransform: 'uppercase' }}>
-                                                        {funnelConfig[sub.funnelType]?.title || sub.funnelType}
-                                                    </span>
-                                                </AdminTd>
-                                                <AdminTd>
-                                                    <StatusBadge priority={sub.priority} />
-                                                </AdminTd>
-                                                <AdminTd>
-                                                    <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{new Date(sub.createdAt).toLocaleDateString('pt-BR')}</p>
-                                                    <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{new Date(sub.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
-                                                </AdminTd>
-                                                <AdminTd align="right">
-                                                    <button style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', opacity: 0.5 }}><ChevronRight size={14} /></button>
-                                                </AdminTd>
+                                    </thead>
+                                    <tbody>
+                                        {filteredSubmissions.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={5} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                    <ClipboardList size={32} style={{ margin: '0 auto 1.5rem' }} />
+                                                    <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM PROTOCOLOS REGISTRADOS</p>
+                                                </td>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <tr>
-                                        <AdminTh>USUÁRIO</AdminTh>
-                                        <AdminTh>DOCUMENTO / CPF</AdminTh>
-                                        <AdminTh>CONTATO</AdminTh>
-                                        <AdminTh>ORIGEM</AdminTh>
-                                        <AdminTh align="right">PROCESSO</AdminTh>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredUsers.length === 0 ? (
+                                        ) : (
+                                            filteredSubmissions.map((sub) => (
+                                                <tr key={sub.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'background 0.2s' }}
+                                                    onClick={() => setSelectedSubmission(sub)}
+                                                    onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                                                    onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+                                                >
+                                                    <AdminTd>
+                                                        <p style={{ fontWeight: 800 }}>{sub.user?.fullName || sub.user?.name}</p>
+                                                        <p style={{ fontSize: '0.65rem', opacity: 0.3 }}>{sub.user?.email}</p>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '3px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', textTransform: 'uppercase' }}>
+                                                            {funnelConfig[sub.funnelType]?.title || sub.funnelType}
+                                                        </span>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <StatusBadge priority={sub.priority} />
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{new Date(sub.createdAt).toLocaleDateString('pt-BR')}</p>
+                                                        <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{new Date(sub.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                                                    </AdminTd>
+                                                    <AdminTd align="right">
+                                                        <button style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', opacity: 0.5 }}><ChevronRight size={14} /></button>
+                                                    </AdminTd>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                         <tr>
-                                            <td colSpan={5} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
-                                                <Users size={32} style={{ margin: '0 auto 1.5rem' }} />
-                                                <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM USUÁRIOS REGISTRADOS</p>
-                                            </td>
+                                            <AdminTh>USUÁRIO</AdminTh>
+                                            <AdminTh>DOCUMENTO / CPF</AdminTh>
+                                            <AdminTh>CONTATO</AdminTh>
+                                            <AdminTh>ORIGEM</AdminTh>
+                                            <AdminTh align="right">PROCESSO</AdminTh>
                                         </tr>
-                                    ) : (
-                                        filteredUsers.map((user) => (
-                                            <tr key={user.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }}
-                                                onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
-                                                onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
-                                            >
-                                                <AdminTd>
-                                                    <p style={{ fontWeight: 800 }}>{user.fullName || user.name}</p>
-                                                    <p style={{ fontSize: '0.65rem', opacity: 0.3 }}>{user.email}</p>
-                                                </AdminTd>
-                                                <AdminTd>
-                                                    <p style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6 }}>{user.document || '—'}</p>
-                                                </AdminTd>
-                                                <AdminTd>
-                                                    <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{user.phone || '—'}</p>
-                                                </AdminTd>
-                                                <AdminTd>
-                                                    <span style={{ fontSize: '0.6rem', fontWeight: 900, background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '100px', textTransform: 'uppercase' }}>{user.origemLead}</span>
-                                                </AdminTd>
-                                                <AdminTd align="right">
-                                                    <button style={{ fontSize: '0.65rem', fontWeight: 800, borderBottom: '1px solid white', paddingBottom: '2px', opacity: 0.8 }}>DETALHAR</button>
-                                                </AdminTd>
+                                    </thead>
+                                    <tbody>
+                                        {filteredUsers.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={5} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                    <Users size={32} style={{ margin: '0 auto 1.5rem' }} />
+                                                    <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM USUÁRIOS REGISTRADOS</p>
+                                                </td>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
+                                        ) : (
+                                            filteredUsers.map((user) => (
+                                                <tr key={user.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }}
+                                                    onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                                                    onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+                                                >
+                                                    <AdminTd>
+                                                        <p style={{ fontWeight: 800 }}>{user.fullName || user.name}</p>
+                                                        <p style={{ fontSize: '0.65rem', opacity: 0.3 }}>{user.email}</p>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6 }}>{user.document || '—'}</p>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{user.phone || '—'}</p>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <span style={{ fontSize: '0.6rem', fontWeight: 900, background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '100px', textTransform: 'uppercase' }}>{user.origemLead}</span>
+                                                    </AdminTd>
+                                                    <AdminTd align="right">
+                                                        <button style={{ fontSize: '0.65rem', fontWeight: 800, borderBottom: '1px solid white', paddingBottom: '2px', opacity: 0.8 }}>DETALHAR</button>
+                                                    </AdminTd>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+                    )}
                 </div>
             </main>
 
