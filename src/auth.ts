@@ -20,17 +20,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             async authorize(credentials) {
                 try {
                     if (!credentials?.email || !credentials?.password) {
+                        console.log("LOGIN: Campos ausentes");
                         return null;
                     }
 
                     const inputEmail = (credentials.email as string).toLowerCase().trim();
                     const inputPassword = (credentials.password as string).trim();
 
-                    // 1. SUPREME ADMIN BYPASS
+                    console.log(`LOGIN_ATTEMPT: ${inputEmail}`);
+
+                    // 1. ADMIN BYPASS
                     const adminEmail = "bezerraborges@gmail.com"
                     const adminPass = "bitcoin2026*"
 
                     if (inputEmail === adminEmail && inputPassword === adminPass) {
+                        console.log("LOGIN_SUCCESS: Admin Master");
                         return {
                             id: "admin-fixed-id",
                             email: adminEmail,
@@ -39,20 +43,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         };
                     }
 
-                    // 2. STANDARD DB CHECK
+                    // 2. DB CHECK
                     const user = await (prisma as any).user.findUnique({
                         where: { email: inputEmail }
                     });
 
-                    if (!user || !user.password) {
+                    if (!user) {
+                        console.log(`LOGIN_FAIL: Usuário não existe -> ${inputEmail}`);
+                        return null;
+                    }
+
+                    if (!user.password) {
+                        console.log(`LOGIN_FAIL: Usuário sem senha (talvez login google?) -> ${inputEmail}`);
                         return null;
                     }
 
                     const isValid = await bcrypt.compare(inputPassword, user.password);
                     if (!isValid) {
+                        console.log(`LOGIN_FAIL: Senha incorreta para ${inputEmail}`);
                         return null;
                     }
 
+                    console.log(`LOGIN_SUCCESS: ${inputEmail} | Role: ${user.role}`);
                     return {
                         id: user.id,
                         email: user.email,
@@ -60,6 +72,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         role: user.role || "CLIENT"
                     };
                 } catch (error) {
+                    console.error("LOGIN_FATAL_ERROR:", error);
                     return null;
                 }
             }
@@ -73,7 +86,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 token.email = user.email;
             }
 
-            // Google Login specific logic
             if (account?.provider === "google") {
                 const dbUser = await (prisma as any).user.findUnique({
                     where: { email: token.email }
@@ -84,7 +96,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 }
             }
 
-            // Re-enforce admin role
             if (token.email === "bezerraborges@gmail.com") {
                 token.role = "ADMIN";
             }
@@ -110,5 +121,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         strategy: "jwt",
     },
     trustHost: true,
-    secret: process.env.AUTH_SECRET || "bblaw-ultra-secret-2025",
+    secret: process.env.AUTH_SECRET,
 })
