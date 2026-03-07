@@ -70,6 +70,18 @@ export default async function FunnelsPage() {
 
     return (
         <div className={styles.container}>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                body {
+                    background-color: #000 !important;
+                }
+                ::-webkit-scrollbar-track {
+                    background: #000 !important;
+                }
+                ::-webkit-scrollbar-thumb {
+                    background: #333 !important;
+                }
+            `}} />
             <nav className={styles.nav}>
                 <img src="/LogoBranco.svg" alt="BBLAW" className={styles.navLogo} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
