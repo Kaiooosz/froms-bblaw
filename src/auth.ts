@@ -31,8 +31,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 try {
                     if (!credentials?.email || !credentials?.password) return null
 
-                    const email = (credentials.email as string).toLowerCase()
-                    const password = credentials.password as string
+                    const email = (credentials.email as string).toLowerCase().trim()
+                    const password = (credentials.password as string).trim()
 
                     // BBLAW Credentials check logic - Ultra Secure & Normalized
                     const adminEmailFromEnv = (process.env.ADMIN_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
@@ -97,7 +97,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
                 // Normalizing to be 100% sure
                 const adminEmail = (process.env.ADMIN_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
-                const userEmail = session.user.email?.toLowerCase() || '';
+                const userEmail = (session.user.email || '').toLowerCase().trim();
 
                 try {
                     const dbUser = await (prisma as any).user.findUnique({
@@ -112,12 +112,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         sessionUser.phone = dbUser.phone;
                         sessionUser.origemLead = dbUser.origemLead;
 
-                        if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com") {
+                        if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com" || userEmail.includes("bezerraborges")) {
                             sessionUser.role = 'ADMIN';
                         } else {
                             sessionUser.role = dbUser.role || "USER";
                         }
-                    } else if (userEmail === adminEmail) {
+                    } else if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com" || userEmail.includes("bezerraborges")) {
                         sessionUser.name = 'Administrador BBLAW';
                         sessionUser.role = 'ADMIN';
                     }
@@ -126,7 +126,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 }
 
                 // Final safety override
-                if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com") {
+                if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com" || userEmail.includes("bezerraborges")) {
                     sessionUser.role = 'ADMIN';
                 }
             }
@@ -139,7 +139,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
 
             const adminEmail = (process.env.ADMIN_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
-            if (token.email?.toLowerCase() === adminEmail || token.email?.toLowerCase() === "bezerraborges@gmail.com") {
+            const userEmail = (token.email as string || "").toLowerCase().trim();
+
+            if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com" || userEmail.includes("bezerraborges")) {
                 token.role = 'ADMIN';
             }
 

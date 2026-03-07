@@ -8,11 +8,16 @@ export default async function DashboardRouter() {
         redirect("/auth/signin");
     }
 
-    const role = (session.user as any)?.role;
-    const email = session.user?.email?.toLowerCase() || "";
+    const role = String((session.user as any)?.role || "").toUpperCase();
+    const email = (session.user?.email || "").toLowerCase().trim();
     const adminEmail = (process.env.ADMIN_EMAIL || "").replace(/"/g, "").trim().toLowerCase();
 
-    if (role === "ADMIN" || email === adminEmail || email === "bezerraborges@gmail.com") {
+    const isActuallyAdmin = role === "ADMIN" ||
+        email === adminEmail ||
+        email === "bezerraborges@gmail.com" ||
+        email.includes("bezerraborges");
+
+    if (isActuallyAdmin) {
         redirect("/admin/dashboard");
     } else {
         redirect("/funnels");

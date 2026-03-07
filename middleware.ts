@@ -12,7 +12,7 @@ export default auth((req) => {
     if (isAdminPage) {
         if (!isLoggedIn) return NextResponse.redirect(new URL("/auth/signin", req.nextUrl))
 
-        const userEmail = (req.auth?.user?.email || "").toLowerCase()
+        const userEmail = (req.auth?.user?.email || "").toLowerCase().trim()
         const adminEmail = (process.env.ADMIN_EMAIL || "").replace(/"/g, "").trim().toLowerCase()
         const isActuallyAdmin = (req.auth?.user as any)?.role === "ADMIN" ||
             userEmail === adminEmail ||
