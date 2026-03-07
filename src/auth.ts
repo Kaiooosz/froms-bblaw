@@ -34,9 +34,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     const email = (credentials.email as string).toLowerCase()
                     const password = credentials.password as string
 
-                    // BBLAW Credentials check logic
-                    const isAdmin = email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD
-                    const isTestUser = email === process.env.TEST_USER_EMAIL && password === process.env.TEST_USER_PASSWORD
+                    // BBLAW Credentials check logic - Ultra Secure & Normalized
+                    const adminEmailFromEnv = (process.env.ADMIN_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
+                    const testEmailFromEnv = (process.env.TEST_USER_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
+
+                    const isAdmin = email === adminEmailFromEnv && password === process.env.ADMIN_PASSWORD;
+                    const isTestUser = email === testEmailFromEnv && password === process.env.TEST_USER_PASSWORD;
 
                     if (isAdmin || isTestUser) {
                         let user = await (prisma as any).user.findUnique({
@@ -54,14 +57,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                                 }
                             })
                         } else if (isAdmin && user.role !== 'ADMIN') {
-                            // Force update to ADMIN if credentials match
                             user = await (prisma as any).user.update({
                                 where: { email },
                                 data: { role: 'ADMIN' }
                             })
                         }
 
-                        return user as any
+                        return { ...user, role: isAdmin ? 'ADMIN' : 'USER' } as any
                     }
 
                     const user = await (prisma as any).user.findUnique({
@@ -70,12 +72,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
                     if (!user || !user.password) return null
 
-                    const isValid = await bcrypt.compare(
-                        password,
-                        user.password
-                    )
-
+                    const isValid = await bcrypt.compare(password, user.password)
                     if (!isValid) return null
+
+                    // Final fallback check during authorization
+                    if (user.email?.toLowerCase() === adminEmailFromEnv) {
+                        user.role = 'ADMIN';
+                    }
 
                     return user as any
                 } catch (error: any) {
@@ -90,49 +93,52 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             if (session.user) {
                 const sessionUser = session.user as any;
                 sessionUser.id = token.sub;
-                sessionUser.role = token.role || "USER";
+
+                // Normalizing to be 100% sure
+                const adminEmail = (process.env.ADMIN_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
+                const userEmail = session.user.email?.toLowerCase() || '';
 
                 try {
-                    // If user exists in DB, enrich session with more data
                     const dbUser = await (prisma as any).user.findUnique({
                         where: { email: session.user.email }
                     }) as BBLAWUser | null
 
                     if (dbUser) {
-                        sessionUser.id = dbUser.id; // Override with real DB ID
+                        sessionUser.id = dbUser.id;
                         sessionUser.fullName = dbUser.fullName || dbUser.name;
                         sessionUser.document = dbUser.document;
                         sessionUser.birthDate = dbUser.birthDate;
                         sessionUser.phone = dbUser.phone;
                         sessionUser.origemLead = dbUser.origemLead;
 
-                        // Force ADMIN role for this specific email
-                        if (session.user.email === process.env.ADMIN_EMAIL) {
+                        if (userEmail === adminEmail) {
                             sessionUser.role = 'ADMIN';
                         } else {
                             sessionUser.role = dbUser.role || "USER";
                         }
-                    } else if (session.user.email === process.env.ADMIN_EMAIL) {
+                    } else if (userEmail === adminEmail) {
                         sessionUser.name = 'Administrador BBLAW';
                         sessionUser.role = 'ADMIN';
-                    } else if (session.user.email === process.env.TEST_USER_EMAIL) {
-                        sessionUser.name = 'Usuário de Teste';
-                        sessionUser.role = 'USER';
                     }
                 } catch (error: any) {
                     console.error("AUTH SESSION CALLBACK ERROR:", error);
                 }
+
+                // Final safety override
+                if (userEmail === adminEmail) {
+                    sessionUser.role = 'ADMIN';
+                }
             }
             return session
         },
-        async jwt({ token, user, account }) {
+        async jwt({ token, user }) {
             if (user) {
                 token.role = (user as any).role;
                 token.email = user.email;
             }
 
-            // Critical: Ensure admin email always gets admin role in token
-            if (token.email === process.env.ADMIN_EMAIL) {
+            const adminEmail = (process.env.ADMIN_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
+            if (token.email?.toLowerCase() === adminEmail) {
                 token.role = 'ADMIN';
             }
 

@@ -11,7 +11,12 @@ export default auth((req) => {
 
     if (isAdminPage) {
         if (!isLoggedIn) return NextResponse.redirect(new URL("/auth/signin", req.nextUrl))
-        if ((req.auth?.user as any)?.role !== "ADMIN") {
+
+        const userEmail = (req.auth?.user?.email || "").toLowerCase()
+        const adminEmail = (process.env.ADMIN_EMAIL || "").replace(/"/g, "").trim().toLowerCase()
+        const isActuallyAdmin = (req.auth?.user as any)?.role === "ADMIN" || userEmail === adminEmail
+
+        if (!isActuallyAdmin) {
             const redirectUrl = ((req.auth?.user as any)?.role === "USER" || (req.auth?.user as any)?.role === "CLIENT") ? "/funnels" : "/dashboard"
             return NextResponse.redirect(new URL(redirectUrl, req.nextUrl))
         }
