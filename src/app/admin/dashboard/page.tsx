@@ -79,9 +79,10 @@ export default function AdminDashboard() {
     const fetchSubmissions = async () => {
         try {
             const res = await fetch('/api/admin/submissions');
-            let data = await res.json();
-            if (!Array.isArray(data)) data = [];
-            setSubmissions(data);
+            if (res.ok) {
+                const data = await res.json();
+                setSubmissions(Array.isArray(data) ? data : []);
+            } else { setSubmissions([]); }
         } catch (err) { setSubmissions([]); }
         finally { setLoading(false); }
     };
@@ -89,18 +90,20 @@ export default function AdminDashboard() {
     const fetchLeads = async () => {
         try {
             const res = await fetch('/api/admin/leads');
-            let data = await res.json();
-            if (!Array.isArray(data)) data = [];
-            setLeads(data);
+            if (res.ok) {
+                const data = await res.json();
+                setLeads(Array.isArray(data) ? data : []);
+            } else { setLeads([]); }
         } catch (err) { setLeads([]); }
     };
 
     const fetchUsers = async () => {
         try {
             const res = await fetch('/api/admin/users');
-            let data = await res.json();
-            if (!Array.isArray(data)) data = [];
-            setUsers(data);
+            if (res.ok) {
+                const data = await res.json();
+                setUsers(Array.isArray(data) ? data : []);
+            } else { setUsers([]); }
         } catch (err) { setUsers([]); }
     };
 
@@ -712,17 +715,23 @@ export default function AdminDashboard() {
                                     />
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-                                    <h4 style={{ fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em' }}>INFORMAÇÕES ADICIONAIS DO FORMULÁRIO</h4>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                                    <h4 style={{ gridColumn: '1 / -1', fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginTop: '1rem' }}>RESPOSTAS DO FORMULÁRIO</h4>
                                     {Object.entries(selectedLead).map(([key, value]) => {
-                                        if (['id', 'createdAt', 'userId', 'nome_completo_pessoal', 'email', 'whatsapp', 'cpf_nit', 'ocupacao', 'jurisdicao', 'relacao_empresa'].includes(key)) return null;
+                                        // Filtra campos internos ou já mostrados no cabeçalho
+                                        if (['id', 'userId', 'createdAt', 'updatedAt', 'user'].includes(key)) return null;
                                         if (value === null || value === undefined || value === '') return null;
 
+                                        // Formata a label
+                                        const label = key.replace(/_/g, ' ').toUpperCase();
+
                                         return (
-                                            <div key={key}>
-                                                <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.75rem' }}>{key.replace(/_/g, ' ')}</p>
-                                                <p style={{ fontSize: '1rem', fontWeight: 700, lineHeight: 1.5 }}>
-                                                    {Array.isArray(value) ? value.join(', ') : (typeof value === 'object' ? JSON.stringify(value) : String(value))}
+                                            <div key={key} style={{ background: 'rgba(255,255,255,0.02)', padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                                <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, marginBottom: '0.5rem', letterSpacing: '0.05em' }}>{label}</p>
+                                                <p style={{ fontSize: '0.9rem', fontWeight: 800, lineHeight: 1.4, color: 'rgba(255,255,255,0.9)' }}>
+                                                    {Array.isArray(value) ? value.join(', ') :
+                                                        (typeof value === 'boolean' ? (value ? 'SIM' : 'NÃO') :
+                                                            (typeof value === 'object' ? JSON.stringify(value) : String(value)))}
                                                 </p>
                                             </div>
                                         );

@@ -56,7 +56,8 @@ export async function POST(request: Request) {
                 declaracao_aceite: !!data.declaracao_aceite,
                 documento_residencia: data.documento_residencia,
                 documento_identidade: data.documento_identidade,
-                userId: session?.user?.id
+                userId: session?.user?.id,
+                priority: 'A DEFINIR'
             } as any
         });
 
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
                     userName: data.nome_completo_pessoal || session?.user?.name,
                     funnelType: 'OFFSHORE_CUSTOM', // Distinguish this form
                     data: data,
-                    priority: 'NORMAL',
+                    priority: 'A DEFINIR',
                     tags: ['CustomForm'],
                     score: 0,
                     submissionId: lead.id,
