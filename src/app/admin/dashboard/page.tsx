@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { logOut } from '@/app/actions/auth';
 import {
     Users,
     LogOut,
@@ -117,7 +116,7 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                     <button
-                        onClick={() => logOut()}
+                        onClick={() => signOut({ callbackUrl: '/' })}
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, transition: 'opacity 0.2s', padding: '0.5rem' }}
                         onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
                         onMouseOut={(e) => (e.currentTarget.style.opacity = '0.5')}

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, X, ClipboardList, Database, LogOut, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { logOut } from '@/app/actions/auth';
+import { signOut } from 'next-auth/react';
 import { funnelConfig } from '@/lib/funnels';
 import styles from '@/styles/Funnels.module.css';
 
@@ -134,7 +134,7 @@ export default function UserMenu({ userName }: { userName: string }) {
 
                             <footer style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                                 <button
-                                    onClick={() => logOut()}
+                                    onClick={() => signOut({ callbackUrl: '/' })}
                                     style={{
                                         width: '100%',
                                         display: 'flex',
