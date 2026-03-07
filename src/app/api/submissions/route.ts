@@ -113,3 +113,31 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: "Erro ao processar formulário" }, { status: 500 })
     }
 }
+
+export async function GET() {
+    try {
+        const session = await auth()
+        if (!session || !session.user) {
+            return NextResponse.json({ message: "Não autorizado" }, { status: 401 })
+        }
+
+        // Robust userId lookup fallback
+        let userId = (session.user as any).id
+        if (!userId || userId === 'admin' || userId === 'test-user') {
+            const dbUser = await (prisma as any).user.findUnique({
+                where: { email: session.user.email }
+            })
+            if (dbUser) userId = dbUser.id
+        }
+
+        const submissions = await (prisma as any).submission.findMany({
+            where: userId ? { userId } : { user: { email: session.user.email } },
+            orderBy: { createdAt: 'desc' }
+        })
+
+        return NextResponse.json(submissions)
+    } catch (error) {
+        console.error("Fetch submissions error:", error)
+        return NextResponse.json({ message: "Erro ao buscar respostas" }, { status: 500 })
+    }
+}

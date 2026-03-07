@@ -25,7 +25,8 @@ import {
     ArrowUpRight,
     FileText,
     Download,
-    Menu as MenuIcon
+    Menu as MenuIcon,
+    FileUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { funnelConfig } from '@/lib/funnels';
@@ -48,6 +49,7 @@ export default function AdminDashboard() {
     const [filterType, setFilterType] = useState('ALL');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [docCount, setDocCount] = useState(0);
     const router = useRouter();
 
     useEffect(() => {
@@ -70,7 +72,18 @@ export default function AdminDashboard() {
                 fetchSubmissions();
                 fetchLeads();
                 fetchUsers();
+                fetchMetrics();
             }
+        };
+
+        const fetchMetrics = async () => {
+            try {
+                const res = await fetch('/api/admin/documents');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) setDocCount(data.length);
+                }
+            } catch (err) { }
         };
 
         checkAuth();
@@ -133,11 +146,26 @@ export default function AdminDashboard() {
         }
     };
 
+    const PRIORITY_ORDER: Record<string, number> = {
+        'VIP': 1,
+        'URGENTE': 2,
+        'ALTA': 3,
+        'NORMAL': 4,
+        'A DEFINIR': 5,
+    };
+
+    const sortData = (a: any, b: any) => {
+        const pA = PRIORITY_ORDER[a.priority as string] || 99;
+        const pB = PRIORITY_ORDER[b.priority as string] || 99;
+        if (pA !== pB) return pA - pB;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    };
+
     const filteredLeads = (Array.isArray(leads) ? leads : []).filter(lead =>
         (lead.nome_completo_pessoal || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (lead.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (lead.whatsapp || '').toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    ).sort(sortData);
 
     const filteredSubmissions = (Array.isArray(submissions) ? submissions : []).filter(sub => {
         const matchesSearch =
@@ -146,7 +174,7 @@ export default function AdminDashboard() {
             (sub.user?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter = filterType === 'ALL' || sub.funnelType.toLowerCase() === filterType.toLowerCase();
         return matchesSearch && matchesFilter;
-    });
+    }).sort(sortData);
 
     const filteredUsers = (Array.isArray(users) ? users : []).filter(user =>
         (user.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -312,7 +340,8 @@ export default function AdminDashboard() {
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
                     <SidebarLink icon={<LayoutDashboard size={16} />} label="Overview" active={activeTab === 'OVERVIEW'} onClick={() => { setActiveTab('OVERVIEW'); setIsSidebarOpen(false); }} />
                     <SidebarLink icon={<FileText size={16} />} label="Leads Detalhados" active={activeTab === 'LEADS'} onClick={() => { setActiveTab('LEADS'); setIsSidebarOpen(false); }} />
-                    <SidebarLink icon={<ClipboardList size={16} />} label="Formulários Recebidos" active={activeTab === 'SUBMISSIONS'} onClick={() => { setActiveTab('SUBMISSIONS'); setIsSidebarOpen(false); }} />
+                    <SidebarLink icon={<ClipboardList size={16} />} label="Gestão de Respostas" active={false} onClick={() => router.push('/admin/submissions')} />
+                    <SidebarLink icon={<FileUp size={16} />} label="Repositório Docs" active={false} onClick={() => router.push('/admin/documentos')} />
                     <SidebarLink icon={<Users size={16} />} label="Usuários Registrados" active={activeTab === 'USERS'} onClick={() => { setActiveTab('USERS'); setIsSidebarOpen(false); }} />
                     <SidebarLink icon={<Settings size={16} />} label="Configurações" active={false} onClick={() => { }} />
                 </nav>
@@ -389,8 +418,31 @@ export default function AdminDashboard() {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                             <OverviewCard icon={<FileText size={16} />} label="LEADS" value={leads.length} />
                             <OverviewCard icon={<ClipboardList size={16} />} label="PROTOCOLOS" value={submissions.length} />
-                            <OverviewCard icon={<Users size={16} />} label="USUÁRIOS" value={users.length} />
-                            <OverviewCard icon={<ShieldCheck size={16} />} label="VIP/ALTA" value={submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length} />
+                            <OverviewCard icon={<FileUp size={16} />} label="DOCUMENTOS" value={docCount} />
+                            <OverviewCard icon={<ShieldCheck size={16} />} label="VIP/ALTA/URGENTE" value={submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length} />
+
+                            <div style={{ gridColumn: '1 / -1', marginTop: '2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: '2rem' }}>
+                                <h4 style={{ fontSize: '0.65rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '2rem', textAlign: 'center' }}>DISTRIBUIÇÃO DE PROTOCOLOS POR STATUS</h4>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '2rem' }}>
+                                    {[
+                                        { id: 'PENDING', label: 'PENDENTE', color: '#f97316' },
+                                        { id: 'REVIEWING', label: 'ANÁLISE', color: '#3b82f6' },
+                                        { id: 'COMPLETED', label: 'CONCLUÍDO', color: '#22c55e' }
+                                    ].map(st => {
+                                        const count = submissions.filter(s => s.status === st.id).length;
+                                        const percent = submissions.length ? (count / submissions.length) * 100 : 0;
+                                        return (
+                                            <div key={st.id} style={{ textAlign: 'center' }}>
+                                                <div style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.25rem', color: st.color }}>{count}</div>
+                                                <div style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.4, marginBottom: '1rem' }}>{st.label}</div>
+                                                <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
+                                                    <div style={{ height: '100%', width: `${percent}%`, background: st.color }} />
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
                         </div>
                     ) : (
                         <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '10px', overflowX: 'auto' }}>

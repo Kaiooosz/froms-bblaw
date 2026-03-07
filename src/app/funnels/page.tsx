@@ -6,6 +6,7 @@ import {
     CaseLower,
     Gavel,
     Coins,
+    FileUp
 } from 'lucide-react';
 import styles from '@/styles/Funnels.module.css';
 import { auth } from "@/auth";
@@ -113,6 +114,22 @@ export default async function FunnelsPage() {
                         </Link>
                     );
                 })}
+
+                {/* Card de Documentação */}
+                <Link href="/documentos" className={styles.card} style={{ borderColor: 'rgba(255,255,255,0.15)', background: 'linear-gradient(45deg, rgba(255,255,255,0.03), transparent)' }}>
+                    <div className={styles.cardHeader}>
+                        <div className={styles.cardIcon} style={{ background: '#fff', color: '#000' }}><FileUp size={20} /></div>
+                    </div>
+                    <div className={styles.cardBody}>
+                        <span className={styles.category} style={{ color: '#fff' }}>CHECKLIST</span>
+                        <h3 className={styles.cardTitle}>Documentação de Suporte</h3>
+                        <p style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.5rem' }}>Envie seus documentos de identificação e residência.</p>
+                    </div>
+                    <div className={styles.cardAction}>
+                        <span>ENVIAR DOCS</span>
+                        <span className={styles.arrow}>→</span>
+                    </div>
+                </Link>
             </div>
         </div>
     );

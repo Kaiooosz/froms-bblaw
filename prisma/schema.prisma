@@ -53,6 +53,7 @@ model User {
   sessions          Session[]
   leads             Lead[]
   submissions       Submission[]
+  documents         Document[]
 }
 
 model VerificationToken {
@@ -126,4 +127,17 @@ model Lead {
   priority              String?  @default("A DEFINIR")
 
   @@map("leads")
+}
+
+model Document {
+  id         String   @id @default(cuid())
+  userId     String
+  funnelType String   // qual funil pertence: PARAGUAI | OFFSHORE | HOLDING | CRIPTO | SUCESSORIO | CONTENCIOSO | GERAL
+  tipo       String   // identidade | residencia | contrato | foto | outro
+  filename   String
+  path       String
+  size       Int
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("documents")
 }
