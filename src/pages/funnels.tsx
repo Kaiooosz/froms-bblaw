@@ -56,10 +56,24 @@ const funnels = [
     }
 ];
 
-import { signOut } from 'next-auth/react';
-// ... existing imports ...
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 export default function FunnelsPage() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (status === 'unauthenticated') {
+            router.replace('/auth/signin');
+        }
+    }, [status, router]);
+
+    if (status === 'loading' || status === 'unauthenticated') {
+        return <div style={{ minHeight: '100vh', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Carregando...</div>;
+    }
+
     return (
         <div className={styles.container}>
             <Head>
@@ -68,9 +82,14 @@ export default function FunnelsPage() {
 
             <nav className={styles.nav}>
                 <img src="/LogoBranco.svg" alt="BBLAW" className={styles.navLogo} />
-                <div className={styles.userInfo} style={{ cursor: 'pointer' }} onClick={() => signOut({ callbackUrl: '/' })}>
-                    <div className={styles.userIcon}><User size={16} /></div>
-                    <span>SAIR</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                    <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>
+                        Olá, <span style={{ fontWeight: 800, color: '#fff' }}>{session?.user?.name}</span>
+                    </div>
+                    <div className={styles.userInfo} style={{ cursor: 'pointer' }} onClick={() => signOut({ callbackUrl: '/' })}>
+                        <div className={styles.userIcon}><User size={16} /></div>
+                        <span>SAIR</span>
+                    </div>
                 </div>
             </nav>
 
