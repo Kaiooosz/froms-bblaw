@@ -108,6 +108,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 }
             }
             return session;
+        },
+        async redirect({ url, baseUrl }) {
+            // Se o destino for a base ou login, vai para /funnels
+            if (url === baseUrl || url.includes('/auth/signin')) {
+                return `${baseUrl}/funnels`;
+            }
+            return url.startsWith(baseUrl) ? url : baseUrl;
         }
     },
     pages: {

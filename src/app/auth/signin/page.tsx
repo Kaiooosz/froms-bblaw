@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, ArrowRight, ShieldCheck, Mail, Lock, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
-export default function SignInPage() {
+function SignInContent() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -45,7 +45,7 @@ export default function SignInPage() {
             } else {
                 // Sincronização forçada para evitar loop de middleware
                 router.refresh();
-                window.location.href = '/dashboard';
+                window.location.href = '/funnels'; // Forçado para funnels como solicitado
             }
         } catch (loginErr) {
             setError('Ocorreu um erro no servidor. Tente novamente.');
@@ -54,7 +54,7 @@ export default function SignInPage() {
     };
 
     const handleGoogleLogin = () => {
-        signIn('google', { callbackUrl: '/dashboard' });
+        signIn('google', { callbackUrl: '/funnels' });
     };
 
     return (
@@ -314,5 +314,17 @@ export default function SignInPage() {
                 }
             `}</style>
         </div>
+    );
+}
+
+export default function SignInPage() {
+    return (
+        <Suspense fallback={
+            <div style={{ background: '#000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Loader2 className="animate-spin" color="#fff" size={40} />
+            </div>
+        }>
+            <SignInContent />
+        </Suspense>
     );
 }
