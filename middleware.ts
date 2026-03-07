@@ -5,14 +5,16 @@ export default auth((req) => {
     const isLoggedIn = !!req.auth
     const pathname = req.nextUrl.pathname
 
-    console.log("MIDDLEWARE_CHECK:", { pathname, isLoggedIn, user: req.auth?.user?.email, role: (req.auth?.user as any)?.role })
+    // 1. SILENT ROOT REDIRECT
+    if (pathname === "/") {
+        return NextResponse.redirect(new URL("/funnels", req.nextUrl))
+    }
 
-    const isDashboardPage = pathname.startsWith("/dashboard")
     const isAdminPage = pathname.startsWith("/admin")
-    const isAuthPage = pathname.startsWith("/auth")
     const isFormPage = pathname.startsWith("/form")
     const isFunnelsPage = pathname.startsWith("/funnels")
 
+    // 2. ADMIN PROTECTION
     if (isAdminPage) {
         if (!isLoggedIn) return NextResponse.redirect(new URL("/auth/signin", req.nextUrl))
 
@@ -22,18 +24,17 @@ export default auth((req) => {
         if (!isActuallyAdmin) {
             return NextResponse.redirect(new URL("/funnels", req.nextUrl))
         }
-        return NextResponse.next()
     }
 
-    if (isDashboardPage || isFormPage || isFunnelsPage) {
+    // 3. AUTH PROTECTION
+    if (isFormPage || isFunnelsPage) {
         if (!isLoggedIn) return NextResponse.redirect(new URL("/auth/signin", req.nextUrl))
-        return NextResponse.next()
     }
 
     return NextResponse.next()
 })
 
 export const config = {
-    matcher: ["/dashboard/:path*", "/admin/:path*", "/auth/:path*", "/form/:path*", "/funnels/:path*"],
+    matcher: ["/", "/admin/:path*", "/auth/:path*", "/form/:path*", "/funnels/:path*"],
 }
 
