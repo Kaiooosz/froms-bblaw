@@ -44,8 +44,9 @@ export default function AdminDashboard() {
     const [selectedSubmission, setSelectedSubmission] = useState<any | null>(null);
     const [selectedLead, setSelectedLead] = useState<any | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'LEADS' | 'SUBMISSIONS' | 'USERS' | 'WEBHOOKS'>('LEADS');
+    const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'LEADS' | 'SUBMISSIONS' | 'USERS' | 'WEBHOOKS' | 'DOCS'>('LEADS');
     const [users, setUsers] = useState<any[]>([]);
+    const [allDocs, setAllDocs] = useState<any[]>([]);
     const [filterType, setFilterType] = useState('ALL');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
@@ -81,7 +82,10 @@ export default function AdminDashboard() {
                 const res = await fetch('/api/admin/documents');
                 if (res.ok) {
                     const data = await res.json();
-                    if (Array.isArray(data)) setDocCount(data.length);
+                    if (Array.isArray(data)) {
+                        setDocCount(data.length);
+                        setAllDocs(data);
+                    }
                 }
             } catch (err) { }
         };
@@ -180,6 +184,12 @@ export default function AdminDashboard() {
         (user.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (user.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (user.email || '').toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const filteredDocs = (Array.isArray(allDocs) ? allDocs : []).filter(doc =>
+        (doc.filename || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (doc.user?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (doc.user?.email || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const exportSubmissionPDF = (sub: any) => {
@@ -311,6 +321,22 @@ export default function AdminDashboard() {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#000', color: '#fff' }}>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                body { background-color: #000 !important; }
+                .admin-main { background-color: #000 !important; }
+                @media (max-width: 768px) {
+                    .admin-sidebar { width: 100% !important; max-width: 300px; }
+                    .mobile-hide { display: none !important; }
+                    .mobile-small { font-size: 0.65rem !important; }
+                    .mobile-stack { flex-direction: column !important; align-items: flex-start !important; }
+                    table { min-width: 500px !important; }
+                    h2 { font-size: 1rem !important; }
+                    .overview-grid { grid-template-columns: 1fr !important; }
+                    .modal-content { padding: 1.5rem !important; width: 100% !important; margin: 0 !important; border-radius: 0 !important; }
+                    .detail-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+                }
+            `}} />
             {/* Sidebar Lateral Minimalista */}
             <aside style={{
                 width: '280px',
@@ -340,8 +366,8 @@ export default function AdminDashboard() {
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
                     <SidebarLink icon={<LayoutDashboard size={16} />} label="Overview" active={activeTab === 'OVERVIEW'} onClick={() => { setActiveTab('OVERVIEW'); setIsSidebarOpen(false); }} />
                     <SidebarLink icon={<FileText size={16} />} label="Leads Detalhados" active={activeTab === 'LEADS'} onClick={() => { setActiveTab('LEADS'); setIsSidebarOpen(false); }} />
-                    <SidebarLink icon={<ClipboardList size={16} />} label="Gestão de Respostas" active={false} onClick={() => router.push('/admin/submissions')} />
-                    <SidebarLink icon={<FileUp size={16} />} label="Repositório Docs" active={false} onClick={() => router.push('/admin/documentos')} />
+                    <SidebarLink icon={<ClipboardList size={16} />} label="Gestão de Respostas" active={activeTab === 'SUBMISSIONS'} onClick={() => { setActiveTab('SUBMISSIONS'); setIsSidebarOpen(false); }} />
+                    <SidebarLink icon={<FileUp size={16} />} label="Repositório Docs" active={activeTab === 'DOCS'} onClick={() => { setActiveTab('DOCS'); setIsSidebarOpen(false); }} />
                     <SidebarLink icon={<Users size={16} />} label="Usuários Registrados" active={activeTab === 'USERS'} onClick={() => { setActiveTab('USERS'); setIsSidebarOpen(false); }} />
                     <SidebarLink icon={<Settings size={16} />} label="Configurações" active={false} onClick={() => { }} />
                 </nav>
@@ -397,9 +423,9 @@ export default function AdminDashboard() {
                     <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                         <div>
                             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>
-                                {activeTab === 'OVERVIEW' ? 'Overview' : activeTab === 'LEADS' ? 'Leads Estratégicos' : activeTab === 'SUBMISSIONS' ? 'Formulários Recebidos' : activeTab === 'WEBHOOKS' ? 'MindTech Webhook' : 'Usuários'}
+                                {activeTab === 'OVERVIEW' ? 'Overview' : activeTab === 'LEADS' ? 'Leads Estratégicos' : activeTab === 'SUBMISSIONS' ? 'Formulários Recebidos' : activeTab === 'DOCS' ? 'Repositório de Documentos' : activeTab === 'WEBHOOKS' ? 'MindTech Webhook' : 'Usuários'}
                             </h2>
-                            <p style={{ fontSize: '0.75rem', opacity: 0.4 }}>{activeTab === 'OVERVIEW' ? 'Resumo da rede.' : activeTab === 'LEADS' ? 'Gestão de leads.' : activeTab === 'SUBMISSIONS' ? 'Dados dos formulários preenchidos.' : activeTab === 'WEBHOOKS' ? 'Integração em tempo real.' : 'Diretório de clientes.'}</p>
+                            <p style={{ fontSize: '0.75rem', opacity: 0.4 }}>{activeTab === 'OVERVIEW' ? 'Resumo da rede.' : activeTab === 'LEADS' ? 'Gestão de leads.' : activeTab === 'SUBMISSIONS' ? 'Dados dos formulários preenchidos.' : activeTab === 'DOCS' ? 'Arquivos enviados pelos clientes.' : activeTab === 'WEBHOOKS' ? 'Integração em tempo real.' : 'Diretório de clientes.'}</p>
                         </div>
 
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -415,7 +441,7 @@ export default function AdminDashboard() {
 
                     {/* Espaço de Dados Estilo SaaS */}
                     {activeTab === 'OVERVIEW' ? (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }} className="overview-grid">
                             <OverviewCard icon={<FileText size={16} />} label="LEADS" value={leads.length} />
                             <OverviewCard icon={<ClipboardList size={16} />} label="PROTOCOLOS" value={submissions.length} />
                             <OverviewCard icon={<FileUp size={16} />} label="DOCUMENTOS" value={docCount} />
@@ -445,7 +471,7 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                     ) : (
-                        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '10px', overflowX: 'auto' }}>
+                        <div style={{ background: '#000', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '10px', overflowX: 'auto' }}>
                             {activeTab === 'LEADS' ? (
                                 <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                                     <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
@@ -570,6 +596,55 @@ export default function AdminDashboard() {
                                         )}
                                     </tbody>
                                 </table>
+                            ) : activeTab === 'DOCS' ? (
+                                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
+                                    <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <tr>
+                                            <AdminTh>CLIENTE</AdminTh>
+                                            <AdminTh>ARQUIVO</AdminTh>
+                                            <AdminTh>TIPO</AdminTh>
+                                            <AdminTh align="right">AÇÃO</AdminTh>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredDocs.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={4} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                    <FileUp size={24} style={{ margin: '0 auto 1rem' }} />
+                                                    <p style={{ fontSize: '0.6rem', fontWeight: 900 }}>SEM DOCUMENTOS</p>
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            filteredDocs.map((doc) => (
+                                                <tr key={doc.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                                                    <AdminTd>
+                                                        <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.user?.name || doc.user?.fullName}</p>
+                                                        <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.user?.email}</p>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <p style={{ fontSize: '0.65rem', fontWeight: 700, opacity: 0.6 }}>{doc.filename}</p>
+                                                        <p style={{ fontSize: '0.5rem', opacity: 0.2 }}>{doc.funnelType}</p>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <span style={{ fontSize: '0.55rem', fontWeight: 900, padding: '2px 6px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', textTransform: 'uppercase' }}>{doc.tipo}</span>
+                                                    </AdminTd>
+                                                    <AdminTd align="right">
+                                                        <button
+                                                            onClick={() => {
+                                                                fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
+                                                                    if (d.url) window.open(d.url, '_blank');
+                                                                });
+                                                            }}
+                                                            style={{ padding: '0.5rem', borderRadius: '8px', background: '#fff', color: '#000' }}
+                                                        >
+                                                            <Download size={14} />
+                                                        </button>
+                                                    </AdminTd>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
                             ) : activeTab === 'WEBHOOKS' ? (
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
                                     <ShieldCheck size={32} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
@@ -658,7 +733,7 @@ export default function AdminDashboard() {
                             </header>
 
                             <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '4rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '4rem' }} className="detail-grid">
                                     <DetailGroup label="Cliente Final" value={selectedSubmission.user?.fullName || selectedSubmission.user?.name} icon={<Users size={12} />} />
                                     <DetailGroup label="Tipo de Fluxo" value={funnelConfig[selectedSubmission.funnelType]?.title || selectedSubmission.funnelType} icon={<ClipboardList size={12} />} />
                                     <DetailGroup label="Canal de E-mail" value={selectedSubmission.user?.email} icon={<Mail size={12} />} />
@@ -667,6 +742,35 @@ export default function AdminDashboard() {
                                     <DetailGroup label="Prioridade" value={selectedSubmission.priority || 'A DEFINIR'} icon={<ShieldCheck size={12} />} />
                                     <DetailGroup label="Tags" value={selectedSubmission.tags?.join(', ') || 'Nenhuma'} icon={<FileText size={12} />} />
                                     <DetailGroup label="Pontuação (Score)" value={selectedSubmission.score || '0'} icon={<CheckCircle2 size={12} />} />
+                                </div>
+
+                                {/* Seção de Documentos Vinculados */}
+                                <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Documentos Enviados</h4>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        {allDocs.filter(d => d.userId === selectedSubmission.userId && d.funnelType === selectedSubmission.funnelType).length === 0 ? (
+                                            <p style={{ fontSize: '0.7rem', opacity: 0.3 }}>Nenhum documento vinculado a este protocolo.</p>
+                                        ) : (
+                                            allDocs.filter(d => d.userId === selectedSubmission.userId && d.funnelType === selectedSubmission.funnelType).map(doc => (
+                                                <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                                    <div>
+                                                        <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.filename}</p>
+                                                        <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.tipo.toUpperCase()}</p>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => {
+                                                            fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
+                                                                if (d.url) window.open(d.url, '_blank');
+                                                            });
+                                                        }}
+                                                        style={{ padding: '0.5rem', borderRadius: '8px', background: '#fff', color: '#000', cursor: 'pointer' }}
+                                                    >
+                                                        <Download size={14} />
+                                                    </button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -746,7 +850,7 @@ export default function AdminDashboard() {
                             </header>
 
                             <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '4rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '4rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }} className="detail-grid">
                                     <DetailGroup label="Nome Completo" value={selectedLead.nome_completo_pessoal} icon={<Users size={12} />} />
                                     <DetailGroup label="E-mail" value={selectedLead.email} icon={<Mail size={12} />} />
                                     <DetailGroup label="WhatsApp" value={selectedLead.whatsapp} icon={<ExternalLink size={12} />} />
@@ -756,6 +860,35 @@ export default function AdminDashboard() {
                                     <DetailGroup label="Relação Empresa" value={selectedLead.relacao_empresa} icon={<Settings size={12} />} />
                                     <DetailGroup label="Prioridade" value={selectedLead.priority || 'NORMAL'} icon={<ShieldCheck size={12} />} />
                                     <DetailGroup label="Criado em" value={new Date(selectedLead.createdAt).toLocaleString('pt-BR')} icon={<Calendar size={12} />} />
+                                </div>
+
+                                {/* Seção de Documentos Vinculados ao Lead */}
+                                <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Documentos Enviados pelo Lead</h4>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        {allDocs.filter(d => d.userId === selectedLead.userId).length === 0 ? (
+                                            <p style={{ fontSize: '0.7rem', opacity: 0.3 }}>Nenhum documento vinculado a este lead.</p>
+                                        ) : (
+                                            allDocs.filter(d => d.userId === selectedLead.userId).map(doc => (
+                                                <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                                    <div>
+                                                        <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.filename}</p>
+                                                        <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.tipo.toUpperCase()} - {doc.funnelType}</p>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => {
+                                                            fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
+                                                                if (d.url) window.open(d.url, '_blank');
+                                                            });
+                                                        }}
+                                                        style={{ padding: '0.5rem', borderRadius: '8px', background: '#fff', color: '#000', cursor: 'pointer' }}
+                                                    >
+                                                        <Download size={14} />
+                                                    </button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -905,8 +1038,8 @@ const priorities_list = [
 function DetailGroup({ label, value, icon }: any) {
     return (
         <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem', letterSpacing: '0.12em' }}>{icon} {label}</p>
-            <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{value || '—'}</p>
+            <p style={{ fontSize: 'min(0.55rem, 3vw)', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.4rem', letterSpacing: '0.12em' }}>{icon} {label}</p>
+            <p style={{ fontSize: 'min(0.85rem, 4vw)', fontWeight: 700, color: 'rgba(255,255,255,0.9)', overflowWrap: 'break-word', wordBreak: 'break-word' }}>{value || '—'}</p>
         </div>
     );
 }
