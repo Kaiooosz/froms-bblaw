@@ -10,7 +10,7 @@ import {
 import styles from '@/styles/Funnels.module.css';
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import SignOutButton from './SignOutButton';
+import SignOutButton from '@/app/funnels/SignOutButton';
 
 const funnels = [
     {
