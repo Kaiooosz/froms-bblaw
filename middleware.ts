@@ -23,10 +23,6 @@ export default auth((req) => {
         return NextResponse.next()
     }
 
-    if (isAuthPage && isLoggedIn) {
-        return NextResponse.redirect(new URL("/dashboard", req.nextUrl))
-    }
-
     return NextResponse.next()
 })
 

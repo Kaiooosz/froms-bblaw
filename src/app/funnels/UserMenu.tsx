@@ -136,7 +136,7 @@ export default function UserMenu({ userName }: { userName: string }) {
                                 <button
                                     onClick={async () => {
                                         await signOut({ redirect: false });
-                                        window.location.href = '/';
+                                        window.location.href = '/auth/signin';
                                     }}
                                     style={{
                                         width: '100%',
