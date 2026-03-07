@@ -11,34 +11,28 @@ export async function POST(request: Request) {
 
         const email = (rawEmail || "").toLowerCase().trim()
 
-        // 1. VALIDAÇÃO BÁSICA
+        // 1. VALIDAÇÃO DE CAMPOS OBRIGATÓRIOS
         if (!email || !password || !name) {
-            return NextResponse.json({ message: "Dados obrigatórios ausentes (nome, e-mail ou senha)" }, { status: 400 })
+            return NextResponse.json({ message: "Nome, e-mail e senha são obrigatórios" }, { status: 400 })
         }
 
         if (password.length < 6) {
             return NextResponse.json({ message: "A senha deve ter pelo menos 6 caracteres" }, { status: 400 })
         }
 
-        // 2. VERIFICAÇÃO DE PRISMA / DB
-        if (!prisma) {
-            console.error("PRISMA_NOT_FOUND: Instância do Prisma não encontrada.");
-            return NextResponse.json({ message: "Erro de configuração do servidor (DB)" }, { status: 500 })
-        }
-
-        // 3. VERIFICAÇÃO DE USUÁRIO EXISTENTE
+        // 2. VERIFICAÇÃO DE USUÁRIO EXISTENTE
         const existingUser = await (prisma as any).user.findUnique({
             where: { email }
         })
 
         if (existingUser) {
-            return NextResponse.json({ message: "Este e-mail já está em uso" }, { status: 400 })
+            return NextResponse.json({ message: "Este e-mail já está cadastrado" }, { status: 400 })
         }
 
-        // 4. HASH DA SENHA
-        const hashedPassword = await bcrypt.hash(password, 12)
+        // 3. HASH DA SENHA (BCRYPT 10)
+        const hashedPassword = await bcrypt.hash(password, 10)
 
-        // 5. CRIAÇÃO DO USUÁRIO
+        // 4. CRIAÇÃO DO USUÁRIO (Sincronizado com schema.prisma)
         const user = await (prisma as any).user.create({
             data: {
                 name,
@@ -56,24 +50,19 @@ export async function POST(request: Request) {
         return NextResponse.json({
             success: true,
             message: "Conta criada com sucesso",
-            user: { id: user.id, email: user.email }
-        })
+            userId: user.id
+        }, { status: 201 })
 
     } catch (error: any) {
         console.error("SIGNUP_API_CRITICAL_ERROR:", {
             message: error.message,
             stack: error.stack,
-            code: error.code // Prisma error codes
+            code: error.code
         });
-
-        // Erro específico do Prisma (ex: P2002 para unique constraint)
-        if (error.code === 'P2002') {
-            return NextResponse.json({ message: "E-mail ou documento já cadastrado" }, { status: 400 })
-        }
 
         return NextResponse.json({
             message: "Erro interno ao processar seu cadastro no servidor",
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            details: error.message
         }, { status: 500 })
     }
 }
