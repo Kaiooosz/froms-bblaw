@@ -24,7 +24,8 @@ import {
     ChevronRight,
     ArrowUpRight,
     FileText,
-    Download
+    Download,
+    Menu as MenuIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { funnelConfig } from '@/lib/funnels';
@@ -45,6 +46,7 @@ export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'LEADS' | 'SUBMISSIONS' | 'USERS' | 'WEBHOOKS'>('LEADS');
     const [users, setUsers] = useState<any[]>([]);
     const [filterType, setFilterType] = useState('ALL');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -252,118 +254,100 @@ export default function AdminDashboard() {
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#000', color: '#fff' }}>
             {/* Sidebar Lateral Minimalista */}
-            <aside style={{ width: '280px', borderRight: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', padding: '2rem 1.5rem', position: 'fixed', height: '100vh', zIndex: 100 }}>
-                <div style={{ marginBottom: '4rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <img src="/LogoBranco.svg" alt="BBLAW" style={{ maxWidth: '100px' }} />
-                    <span style={{ fontSize: '0.45rem', fontWeight: 900, background: '#fff', color: '#000', padding: '2px 5px', borderRadius: '3px', letterSpacing: '0.05em' }}>ADM</span>
+            <aside style={{
+                width: '280px',
+                borderRight: '1px solid rgba(255,255,255,0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                padding: '2rem 1.5rem',
+                position: 'fixed',
+                height: '100vh',
+                zIndex: 100,
+                background: '#000',
+                transition: 'transform 0.3s ease',
+                transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+                left: 0,
+                top: 0
+            }} className="admin-sidebar">
+                <div style={{ marginBottom: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <img src="/LogoBranco.svg" alt="BBLAW" style={{ maxWidth: '80px' }} />
+                        <span style={{ fontSize: '0.4rem', fontWeight: 900, background: '#fff', color: '#000', padding: '2px 5px', borderRadius: '3px', letterSpacing: '0.05em' }}>ADM</span>
+                    </div>
+                    <button onClick={() => setIsSidebarOpen(false)} style={{ background: 'transparent', border: 'none', color: '#fff', padding: '0.5rem' }} className="mobile-only">
+                        <X size={20} />
+                    </button>
                 </div>
 
-                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                    <SidebarLink icon={<LayoutDashboard size={18} />} label="Overview" active={activeTab === 'OVERVIEW'} onClick={() => setActiveTab('OVERVIEW')} />
-                    <SidebarLink icon={<FileText size={18} />} label="Leads Detalhados" active={activeTab === 'LEADS'} onClick={() => setActiveTab('LEADS')} />
-                    <SidebarLink icon={<ClipboardList size={18} />} label="Respostas & Webhooks" active={activeTab === 'SUBMISSIONS'} onClick={() => setActiveTab('SUBMISSIONS')} />
-                    <SidebarLink icon={<Users size={18} />} label="Usuários Registrados" active={activeTab === 'USERS'} onClick={() => setActiveTab('USERS')} />
-                    <SidebarLink icon={<ShieldCheck size={18} />} label="Monitor MindTech" active={activeTab === 'WEBHOOKS'} onClick={() => setActiveTab('WEBHOOKS')} />
-                    <SidebarLink icon={<Settings size={18} />} label="Configurações" active={false} onClick={() => { }} />
+                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
+                    <SidebarLink icon={<LayoutDashboard size={16} />} label="Overview" active={activeTab === 'OVERVIEW'} onClick={() => { setActiveTab('OVERVIEW'); setIsSidebarOpen(false); }} />
+                    <SidebarLink icon={<FileText size={16} />} label="Leads Detalhados" active={activeTab === 'LEADS'} onClick={() => { setActiveTab('LEADS'); setIsSidebarOpen(false); }} />
+                    <SidebarLink icon={<ClipboardList size={16} />} label="Formulários Recebidos" active={activeTab === 'SUBMISSIONS'} onClick={() => { setActiveTab('SUBMISSIONS'); setIsSidebarOpen(false); }} />
+                    <SidebarLink icon={<Users size={16} />} label="Usuários Registrados" active={activeTab === 'USERS'} onClick={() => { setActiveTab('USERS'); setIsSidebarOpen(false); }} />
+                    <SidebarLink icon={<Settings size={16} />} label="Configurações" active={false} onClick={() => { }} />
                 </nav>
 
-                <div style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem', padding: '0 0.5rem' }}>
-                        <div style={{ width: '36px', height: '36px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 900 }}>
+                <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', padding: '0 0.5rem' }}>
+                        <div style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 900 }}>
                             {session?.user?.name?.[0]}
                         </div>
                         <div style={{ overflow: 'hidden' }}>
-                            <p style={{ fontSize: '0.75rem', fontWeight: 800, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{session?.user?.name}</p>
-                            <p style={{ fontSize: '0.6rem', opacity: 0.4, fontWeight: 700 }}>Master Admin</p>
+                            <p style={{ fontSize: '0.7rem', fontWeight: 800, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{session?.user?.name}</p>
+                            <p style={{ fontSize: '0.55rem', opacity: 0.4, fontWeight: 700 }}>Master Admin</p>
                         </div>
                     </div>
                     <button
                         onClick={() => {
                             signOut({ callbackUrl: '/auth/signin', redirect: true });
                         }}
-                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem', fontWeight: 900, color: '#ff4b4b', transition: 'all 0.2s', padding: '1rem', background: 'rgba(255,75,75,0.05)', borderRadius: '12px', border: '1px solid rgba(255,75,75,0.1)' }}
-                        onMouseOver={(e) => {
-                            e.currentTarget.style.background = 'rgba(255,75,75,0.1)';
-                            e.currentTarget.style.borderColor = 'rgba(255,75,75,0.2)';
-                        }}
-                        onMouseOut={(e) => {
-                            e.currentTarget.style.background = 'rgba(255,75,75,0.05)';
-                            e.currentTarget.style.borderColor = 'rgba(255,75,75,0.1)';
-                        }}
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.7rem', fontWeight: 900, color: '#ff4b4b', transition: 'all 0.2s', padding: '0.75rem', background: 'rgba(255,75,75,0.05)', borderRadius: '10px', border: '1px solid rgba(255,75,75,0.1)' }}
                     >
-                        <LogOut size={18} /> DESCONECTAR ACESSO
+                        <LogOut size={16} /> DESCONECTAR
                     </button>
                 </div>
             </aside>
 
             {/* Viewport Principal */}
-            <main style={{ flex: 1, marginLeft: '280px', display: 'flex', flexDirection: 'column' }}>
+            <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }} className="admin-main">
                 {/* Header Superior */}
-                <header style={{ height: '80px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 3rem', position: 'sticky', top: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 10 }}>
-                    <div style={{ position: 'relative', width: '400px' }}>
-                        <Search size={14} style={{ position: 'absolute', left: '0', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
-                        <input
-                            type="text"
-                            placeholder="Pesquisa rápida em toda a rede..."
-                            style={{ background: 'transparent', border: 'none', padding: '0.5rem 0 0.5rem 1.5rem', width: '100%', fontSize: '0.8rem', color: '#fff', outline: 'none' }}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                <header style={{ height: '70px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.5rem', position: 'sticky', top: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <button onClick={() => setIsSidebarOpen(true)} style={{ background: 'transparent', border: 'none', color: '#fff' }} className="mobile-only">
+                            <MenuIcon size={20} />
+                        </button>
+                        <div style={{ position: 'relative', width: 'min(300px, 50vw)' }}>
+                            <Search size={12} style={{ position: 'absolute', left: '0', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
+                            <input
+                                type="text"
+                                placeholder="Pesquisar..."
+                                style={{ background: 'transparent', border: 'none', padding: '0.5rem 0 0.5rem 1.25rem', width: '100%', fontSize: '0.75rem', color: '#fff', outline: 'none' }}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-                        <button style={{ opacity: 0.3 }}><Bell size={18} /></button>
-                        <button onClick={toggleTheme} style={{ opacity: 0.3 }}>{theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <button style={{ opacity: 0.3 }}><Bell size={16} /></button>
+                        <button onClick={toggleTheme} style={{ opacity: 0.3 }}>{theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}</button>
                     </div>
                 </header>
 
-                <div style={{ padding: '3rem' }}>
-                    <header style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ padding: '1.5rem' }}>
+                    <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                         <div>
-                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>
-                                {activeTab === 'OVERVIEW' ? 'Visão Geral (Overview)' : activeTab === 'LEADS' ? 'Banco de Leads Estratégicos' : activeTab === 'SUBMISSIONS' ? 'Monitor de Respostas & Webhooks' : activeTab === 'WEBHOOKS' ? 'Integração Webhook MindTech' : 'Diretório de Usuários'}
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>
+                                {activeTab === 'OVERVIEW' ? 'Overview' : activeTab === 'LEADS' ? 'Leads Estratégicos' : activeTab === 'SUBMISSIONS' ? 'Formulários Recebidos' : activeTab === 'WEBHOOKS' ? 'MindTech Webhook' : 'Usuários'}
                             </h2>
-                            <p style={{ fontSize: '0.9rem', opacity: 0.4 }}>{activeTab === 'OVERVIEW' ? 'Resumo de todos os fluxos e cadastros em andamento.' : activeTab === 'LEADS' ? 'Controle completo de informações enviadas pelos leads via formulários customizados.' : activeTab === 'SUBMISSIONS' ? 'Fluxo de dados estratégicos e eventos de integração.' : activeTab === 'WEBHOOKS' ? 'Eventos disparados em tempo real para o n8n MindTech.' : 'Base completa de clientes autenticados no ecossistema BBLAW.'}</p>
+                            <p style={{ fontSize: '0.75rem', opacity: 0.4 }}>{activeTab === 'OVERVIEW' ? 'Resumo da rede.' : activeTab === 'LEADS' ? 'Gestão de leads.' : activeTab === 'SUBMISSIONS' ? 'Dados dos formulários preenchidos.' : activeTab === 'WEBHOOKS' ? 'Integração em tempo real.' : 'Diretório de clientes.'}</p>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            {activeTab === 'LEADS' && (
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            {(activeTab === 'LEADS' || activeTab === 'SUBMISSIONS') && (
                                 <>
-                                    <button
-                                        onClick={() => exportListPDF('LEADS')}
-                                        style={{ background: '#fff', color: '#000', padding: '0.75rem 1.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'transform 0.2s' }}
-                                        onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                                        onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                                    >
-                                        <Download size={16} /> PDF
-                                    </button>
-                                    <button
-                                        onClick={() => exportToCSV(leads, 'leads_bblaw')}
-                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.75rem 1.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'transform 0.2s' }}
-                                        onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                                        onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                                    >
-                                        <Download size={16} /> CSV
-                                    </button>
-                                </>
-                            )}
-                            {activeTab === 'SUBMISSIONS' && (
-                                <>
-                                    <button
-                                        onClick={() => exportListPDF('SUBMISSIONS')}
-                                        style={{ background: '#fff', color: '#000', padding: '0.75rem 1.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'transform 0.2s' }}
-                                        onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                                        onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                                    >
-                                        <Download size={16} /> PDF
-                                    </button>
-                                    <button
-                                        onClick={() => exportToCSV(submissions, 'protocolos_bblaw')}
-                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.75rem 1.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'transform 0.2s' }}
-                                        onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                                        onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                                    >
-                                        <Download size={16} /> CSV
+                                    <button onClick={() => activeTab === 'LEADS' ? exportListPDF('LEADS') : exportListPDF('SUBMISSIONS')} style={{ background: '#fff', color: '#000', padding: '0.5rem 1rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <Download size={14} /> PDF
                                     </button>
                                 </>
                             )}
@@ -372,58 +356,68 @@ export default function AdminDashboard() {
 
                     {/* Espaço de Dados Estilo SaaS */}
                     {activeTab === 'OVERVIEW' ? (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-                            <OverviewCard icon={<FileText size={20} />} label="TOTAL DE LEADS" value={leads.length} />
-                            <OverviewCard icon={<ClipboardList size={20} />} label="PROTOCOLOS ATIVOS" value={submissions.length} />
-                            <OverviewCard icon={<Users size={20} />} label="USUÁRIOS CADASTRADOS" value={users.length} />
-                            <OverviewCard icon={<ShieldCheck size={20} />} label="PRIORIDADE MÁXIMA" value={submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length} />
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                            <OverviewCard icon={<FileText size={16} />} label="LEADS" value={leads.length} />
+                            <OverviewCard icon={<ClipboardList size={16} />} label="PROTOCOLOS" value={submissions.length} />
+                            <OverviewCard icon={<Users size={16} />} label="USUÁRIOS" value={users.length} />
+                            <OverviewCard icon={<ShieldCheck size={16} />} label="VIP/ALTA" value={submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length} />
                         </div>
                     ) : (
-                        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', overflow: 'hidden' }}>
+                        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '10px', overflowX: 'auto' }}>
                             {activeTab === 'LEADS' ? (
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                                     <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                         <tr>
-                                            <AdminTh>LEAD / CONTATO</AdminTh>
+                                            <AdminTh>LEAD</AdminTh>
                                             <AdminTh>IDENTIFICAÇÃO</AdminTh>
-                                            <AdminTh>INTERESSE / JURISDIÇÃO</AdminTh>
-                                            <AdminTh>DATA / HORA</AdminTh>
+                                            <AdminTh>JURISDIÇÃO</AdminTh>
+                                            <AdminTh>DATA</AdminTh>
                                             <AdminTh align="right">AÇÃO</AdminTh>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {filteredLeads.length === 0 ? (
                                             <tr>
-                                                <td colSpan={5} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
-                                                    <FileText size={32} style={{ margin: '0 auto 1.5rem' }} />
-                                                    <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM LEADS REGISTRADOS</p>
+                                                <td colSpan={5} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                    <FileText size={24} style={{ margin: '0 auto 1rem' }} />
+                                                    <p style={{ fontSize: '0.6rem', fontWeight: 900 }}>SEM DADOS</p>
                                                 </td>
                                             </tr>
                                         ) : (
                                             filteredLeads.map((lead) => (
                                                 <tr key={lead.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s', cursor: 'pointer' }}
                                                     onClick={() => setSelectedLead(lead)}
-                                                    onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
-                                                    onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
                                                 >
                                                     <AdminTd>
-                                                        <p style={{ fontWeight: 800 }}>{lead.nome_completo_pessoal}</p>
-                                                        <p style={{ fontSize: '0.65rem', opacity: 0.3 }}>{lead.email} • {lead.whatsapp}</p>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 800 }}>{lead.nome_completo_pessoal}</p>
+                                                        <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{lead.email}</p>
                                                     </AdminTd>
                                                     <AdminTd>
-                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6 }}>{lead.cpf_nit || '—'}</p>
-                                                        <p style={{ fontSize: '0.6rem', opacity: 0.4 }}>{lead.ocupacao || '—'}</p>
+                                                        <p style={{ fontSize: '0.7rem', fontWeight: 700, opacity: 0.6 }}>{lead.cpf_nit || '—'}</p>
                                                     </AdminTd>
                                                     <AdminTd>
-                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{lead.jurisdicao || '—'}</p>
-                                                        <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{lead.relacao_empresa || '—'}</p>
+                                                        <p style={{ fontSize: '0.7rem', fontWeight: 700 }}>{lead.jurisdicao || '—'}</p>
                                                     </AdminTd>
                                                     <AdminTd>
-                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{new Date(lead.createdAt).toLocaleDateString('pt-BR')}</p>
-                                                        <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{new Date(lead.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                                                        <p style={{ fontSize: '0.7rem', fontWeight: 700 }}>{new Date(lead.createdAt).toLocaleDateString('pt-BR')}</p>
                                                     </AdminTd>
                                                     <AdminTd align="right">
-                                                        <button style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', opacity: 0.5 }}><ChevronRight size={14} /></button>
+                                                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); exportLeadPDF(lead); }}
+                                                                style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', color: '#fff' }}
+                                                                title="Download PDF"
+                                                            >
+                                                                <Download size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setSelectedLead(lead)}
+                                                                style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', color: '#fff' }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <FileText size={14} />
+                                                            </button>
+                                                        </div>
                                                     </AdminTd>
                                                 </tr>
                                             ))
@@ -431,13 +425,12 @@ export default function AdminDashboard() {
                                     </tbody>
                                 </table>
                             ) : activeTab === 'SUBMISSIONS' ? (
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                                     <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                         <tr>
-                                            <AdminTh>CLIENTE / E-MAIL</AdminTh>
+                                            <AdminTh>CLIENTE</AdminTh>
                                             <AdminTh>PROTOCOLO</AdminTh>
-                                            <AdminTh>STATUS / PRIORIDADE</AdminTh>
-                                            <AdminTh>WEBHOOK (MINDTECH)</AdminTh>
+                                            <AdminTh>PRIORIDADE</AdminTh>
                                             <AdminTh>DATA / HORA</AdminTh>
                                             <AdminTh align="right">AÇÕES</AdminTh>
                                         </tr>
@@ -445,42 +438,50 @@ export default function AdminDashboard() {
                                     <tbody>
                                         {filteredSubmissions.length === 0 ? (
                                             <tr>
-                                                <td colSpan={6} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
-                                                    <ClipboardList size={32} style={{ margin: '0 auto 1.5rem' }} />
-                                                    <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM PROTOCOLOS REGISTRADOS</p>
+                                                <td colSpan={5} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                    <ClipboardList size={24} style={{ margin: '0 auto 1rem' }} />
+                                                    <p style={{ fontSize: '0.6rem', fontWeight: 900 }}>SEM DADOS</p>
                                                 </td>
                                             </tr>
                                         ) : (
                                             filteredSubmissions.map((sub) => (
-                                                <tr key={sub.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'background 0.2s' }}
-                                                    onClick={() => setSelectedSubmission(sub)}
+                                                <tr key={sub.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s', cursor: 'pointer' }}
                                                     onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
                                                     onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
                                                 >
-                                                    <AdminTd>
-                                                        <p style={{ fontWeight: 800 }}>{sub.user?.fullName || sub.user?.name}</p>
-                                                        <p style={{ fontSize: '0.65rem', opacity: 0.3 }}>{sub.user?.email}</p>
+                                                    <AdminTd onClick={() => setSelectedSubmission(sub)}>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 800 }}>{sub.user?.fullName || sub.user?.name}</p>
+                                                        <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{sub.user?.email}</p>
                                                     </AdminTd>
-                                                    <AdminTd>
-                                                        <span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '3px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', textTransform: 'uppercase' }}>
+                                                    <AdminTd onClick={() => setSelectedSubmission(sub)}>
+                                                        <span style={{ fontSize: '0.6rem', fontWeight: 700, padding: '2px 6px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
                                                             {funnelConfig[sub.funnelType]?.title || sub.funnelType}
                                                         </span>
                                                     </AdminTd>
-                                                    <AdminTd>
+                                                    <AdminTd onClick={() => setSelectedSubmission(sub)}>
                                                         <StatusBadge priority={sub.priority} />
                                                     </AdminTd>
-                                                    <AdminTd>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', fontSize: '0.6rem', fontWeight: 900, opacity: 0.6 }}>
-                                                            <div style={{ width: '4px', height: '4px', background: '#fff', borderRadius: '50%' }} />
-                                                            SINCRONIZADO
-                                                        </div>
-                                                    </AdminTd>
-                                                    <AdminTd>
-                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{new Date(sub.createdAt).toLocaleDateString('pt-BR')}</p>
+                                                    <AdminTd onClick={() => setSelectedSubmission(sub)}>
+                                                        <p style={{ fontSize: '0.7rem', fontWeight: 700 }}>{new Date(sub.createdAt).toLocaleDateString('pt-BR')}</p>
                                                         <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{new Date(sub.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
                                                     </AdminTd>
                                                     <AdminTd align="right">
-                                                        <button style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', opacity: 0.5 }}><ChevronRight size={14} /></button>
+                                                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); exportSubmissionPDF(sub); }}
+                                                                style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', color: '#fff' }}
+                                                                title="Download PDF"
+                                                            >
+                                                                <Download size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setSelectedSubmission(sub)}
+                                                                style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', color: '#fff' }}
+                                                                title="Visualizar Respostas"
+                                                            >
+                                                                <FileText size={14} />
+                                                            </button>
+                                                        </div>
                                                     </AdminTd>
                                                 </tr>
                                             ))
@@ -488,72 +489,44 @@ export default function AdminDashboard() {
                                     </tbody>
                                 </table>
                             ) : activeTab === 'WEBHOOKS' ? (
-                                <div style={{ padding: '4rem', textAlign: 'center' }}>
-                                    <div style={{ display: 'inline-flex', padding: '2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', marginBottom: '2rem' }}>
-                                        <ShieldCheck size={48} color="#fff" />
-                                    </div>
-                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1rem' }}>Integração n8n MindTech Ativa</h3>
-                                    <p style={{ fontSize: '0.9rem', opacity: 0.4, maxWidth: '500px', margin: '0 auto 3rem' }}>
-                                        Todos os formulários preenchidos estão sendo transmitidos em tempo real para a plataforma de inteligência MindTech.
-                                    </p>
-
-                                    <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'left', background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <div style={{ marginBottom: '1.5rem' }}>
-                                            <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase', marginBottom: '0.5rem' }}>URL do Receptor</p>
-                                            <p style={{ fontSize: '0.8rem', fontWeight: 700, fontFamily: 'monospace', color: 'rgba(255,255,255,0.8)' }}>https://n8n.mindtechbusiness.com.br/webhook-test/forms</p>
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '2rem' }}>
-                                            <div>
-                                                <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Status da Conexão</p>
-                                                <p style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff' }}>ESTÁVEL / ONLINE</p>
-                                            </div>
-                                            <div>
-                                                <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Latência Média</p>
-                                                <p style={{ fontSize: '0.8rem', fontWeight: 800 }}>124ms</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div style={{ padding: '2rem', textAlign: 'center' }}>
+                                    <ShieldCheck size={32} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
+                                    <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.5rem' }}>MindTech Ativa</h3>
+                                    <p style={{ fontSize: '0.75rem', opacity: 0.4, maxWidth: '400px', margin: '0 auto' }}>Sincronização estável com o n8n.</p>
                                 </div>
                             ) : (
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                                     <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                         <tr>
                                             <AdminTh>USUÁRIO</AdminTh>
-                                            <AdminTh>DOCUMENTO / CPF</AdminTh>
-                                            <AdminTh>CONTATO</AdminTh>
+                                            <AdminTh>DOC</AdminTh>
                                             <AdminTh>ORIGEM</AdminTh>
-                                            <AdminTh align="right">PROCESSO</AdminTh>
+                                            <AdminTh align="right">AÇÃO</AdminTh>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {filteredUsers.length === 0 ? (
                                             <tr>
-                                                <td colSpan={5} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
-                                                    <Users size={32} style={{ margin: '0 auto 1.5rem' }} />
-                                                    <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM USUÁRIOS REGISTRADOS</p>
+                                                <td colSpan={4} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                    <Users size={24} style={{ margin: '0 auto 1rem' }} />
+                                                    <p style={{ fontSize: '0.6rem', fontWeight: 900 }}>SEM DADOS</p>
                                                 </td>
                                             </tr>
                                         ) : (
                                             filteredUsers.map((user) => (
-                                                <tr key={user.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }}
-                                                    onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
-                                                    onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
-                                                >
+                                                <tr key={user.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
                                                     <AdminTd>
-                                                        <p style={{ fontWeight: 800 }}>{user.fullName || user.name}</p>
-                                                        <p style={{ fontSize: '0.65rem', opacity: 0.3 }}>{user.email}</p>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 800 }}>{user.fullName || user.name}</p>
+                                                        <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{user.email}</p>
                                                     </AdminTd>
                                                     <AdminTd>
-                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6 }}>{user.document || '—'}</p>
+                                                        <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>{user.document || '—'}</p>
                                                     </AdminTd>
                                                     <AdminTd>
-                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{user.phone || '—'}</p>
-                                                    </AdminTd>
-                                                    <AdminTd>
-                                                        <span style={{ fontSize: '0.6rem', fontWeight: 900, background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '100px', textTransform: 'uppercase' }}>{user.origemLead}</span>
+                                                        <span style={{ fontSize: '0.55rem', fontWeight: 900, background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '100px' }}>{user.origemLead}</span>
                                                     </AdminTd>
                                                     <AdminTd align="right">
-                                                        <button style={{ fontSize: '0.65rem', fontWeight: 800, borderBottom: '1px solid white', paddingBottom: '2px', opacity: 0.8 }}>DETALHAR</button>
+                                                        <button style={{ fontSize: '0.6rem', fontWeight: 800 }}>DETALHAR</button>
                                                     </AdminTd>
                                                 </tr>
                                             ))
@@ -564,6 +537,28 @@ export default function AdminDashboard() {
                         </div>
                     )}
                 </div>
+
+                <style jsx global>{`
+                    .admin-sidebar {
+                        z-index: 1000;
+                    }
+                    .admin-main {
+                        margin-left: 280px;
+                        transition: margin 0.3s ease;
+                    }
+                    .mobile-only {
+                        display: none !important;
+                    }
+
+                    @media (max-width: 1024px) {
+                        .admin-main {
+                            margin-left: 0 !important;
+                        }
+                        .mobile-only {
+                            display: flex !important;
+                        }
+                    }
+                `}</style>
             </main>
             {/* Modal de Detalhes do Protocolo (Lateral Direita) */}
             <AnimatePresence>
@@ -574,8 +569,8 @@ export default function AdminDashboard() {
                             style={{ position: 'relative', width: 'min(640px, 90vw)', background: '#080808', borderLeft: '1px solid rgba(255,255,255,0.1)', height: '100%', display: 'flex', flexDirection: 'column', padding: '3rem' }}>
                             <header style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                 <div>
-                                    <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '1rem' }}>RECURSOS ESTRATÉGICOS</p>
-                                    <h3 style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.1 }}>Detalhes do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Protocolo</span></h3>
+                                    <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '0.75rem' }}>RECURSOS ESTRATÉGICOS</p>
+                                    <h3 style={{ fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1 }}>Detalhes do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Protocolo</span></h3>
                                 </div>
                                 <button onClick={() => setSelectedSubmission(null)} style={{ opacity: 0.3, padding: '0.5rem' }}><X size={32} /></button>
                             </header>
@@ -621,8 +616,8 @@ export default function AdminDashboard() {
 
                                             return (
                                                 <div key={key}>
-                                                    <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.75rem' }}>{key.replace(/_/g, ' ')}</p>
-                                                    <p style={{ fontSize: '1rem', fontWeight: 700, lineHeight: 1.5 }}>
+                                                    <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{key.replace(/_/g, ' ')}</p>
+                                                    <p style={{ fontSize: '0.85rem', fontWeight: 700, lineHeight: 1.5 }}>
                                                         {Array.isArray(val) ? val.join(', ') : (typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val))}
                                                     </p>
                                                 </div>
@@ -706,39 +701,39 @@ export default function AdminDashboard() {
 function OverviewCard({ icon, label, value }: { icon: any, label: string, value: number }) {
     return (
         <motion.div
-            whileHover={{ y: -5, background: 'rgba(255,255,255,0.06)' }}
+            whileHover={{ y: -3, background: 'rgba(255,255,255,0.06)' }}
             style={{
-                padding: '2.5rem',
+                padding: '1.5rem',
                 background: 'rgba(255,255,255,0.04)',
                 border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '20px',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                borderRadius: '16px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
                 transition: 'background 0.3s ease'
             }}
         >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem', color: 'rgba(255,255,255,0.5)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'rgba(255,255,255,0.5)' }}>
                 {icon}
-                <h3 style={{ fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.2em' }}>{label}</h3>
+                <h3 style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.15em' }}>{label}</h3>
             </div>
-            <p style={{ fontSize: '4.5rem', fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '-0.02em' }}>{value}</p>
+            <p style={{ fontSize: '2.5rem', fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '-0.02em' }}>{value}</p>
         </motion.div>
     );
 }
 
 function SidebarLink({ icon, label, active, onClick }: { icon: any, label: string, active: boolean, onClick: () => void }) {
     return (
-        <button onClick={onClick} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.25rem', borderRadius: '14px', background: active ? 'rgba(255,255,255,0.08)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.3)', transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)', fontWeight: 800, fontSize: '0.8rem', border: 'none', cursor: 'pointer' }}>
+        <button onClick={onClick} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 1rem', borderRadius: '10px', background: active ? 'rgba(255,255,255,0.08)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.3)', transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)', fontWeight: 800, fontSize: '0.75rem', border: 'none', cursor: 'pointer' }}>
             {icon} {label}
         </button>
     );
 }
 
 function AdminTh({ children, align = 'left', style = {} }: any) {
-    return <th style={{ padding: '1.5rem 2.5rem', fontSize: '0.625rem', fontWeight: 900, opacity: 0.2, letterSpacing: '0.25em', textAlign: align, textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', ...style }}>{children}</th>;
+    return <th style={{ padding: '1rem 1.5rem', fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, letterSpacing: '0.2em', textAlign: align, textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', ...style }}>{children}</th>;
 }
 
 function AdminTd({ children, align = 'left' }: any) {
-    return <td style={{ padding: '1.75rem 2.5rem', textAlign: align, verticalAlign: 'middle' }}>{children}</td>;
+    return <td style={{ padding: '1rem 1.5rem', textAlign: align, verticalAlign: 'middle' }}>{children}</td>;
 }
 
 function StatusBadge({ priority }: any) {
@@ -753,9 +748,9 @@ function StatusBadge({ priority }: any) {
 
 function DetailGroup({ label, value, icon }: any) {
     return (
-        <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '0.15em' }}>{icon} {label}</p>
-            <p style={{ fontSize: '1rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{value || '—'}</p>
+        <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem', letterSpacing: '0.12em' }}>{icon} {label}</p>
+            <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{value || '—'}</p>
         </div>
     );
 }
