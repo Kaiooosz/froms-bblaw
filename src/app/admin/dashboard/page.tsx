@@ -34,52 +34,83 @@ export default function AdminDashboard() {
     const { data: session, status } = useSession();
     const { theme, toggleTheme } = useTheme();
     const [submissions, setSubmissions] = useState<any[]>([]);
+    const [leads, setLeads] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedSubmission, setSelectedSubmission] = useState<any | null>(null);
+    const [selectedLead, setSelectedLead] = useState<any | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'SUBMISSIONS' | 'USERS'>('OVERVIEW');
+    const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'LEADS' | 'SUBMISSIONS' | 'USERS'>('LEADS');
     const [users, setUsers] = useState<any[]>([]);
     const [filterType, setFilterType] = useState('ALL');
     const router = useRouter();
 
     useEffect(() => {
-        if (status === 'unauthenticated' || (status === 'authenticated' && (session?.user as any)?.role !== 'ADMIN')) {
-            window.location.href = '/auth/signin';
-        } else if (status === 'authenticated') {
-            fetchSubmissions();
-            fetchUsers();
-        }
+        const checkAuth = () => {
+            if (status === 'loading') return;
+
+            const userEmail = session?.user?.email?.toLowerCase() || '';
+            const adminEmailFromEnv = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'bezerraborges@gmail.com').toLowerCase();
+            const isAdmin = (session?.user as any)?.role === 'ADMIN' || userEmail === adminEmailFromEnv;
+
+            if (status === 'unauthenticated' || (!isAdmin && status === 'authenticated')) {
+                window.location.href = '/auth/signin';
+            } else if (isAdmin) {
+                fetchSubmissions();
+                fetchLeads();
+                fetchUsers();
+            }
+        };
+
+        checkAuth();
     }, [status, session]);
 
     const fetchSubmissions = async () => {
         try {
             const res = await fetch('/api/admin/submissions');
-            const data = await res.json();
-            setSubmissions(data || []);
-        } catch (err) { console.error(err); } finally { setLoading(false); }
+            let data = await res.json();
+            if (!Array.isArray(data)) data = [];
+            setSubmissions(data);
+        } catch (err) { setSubmissions([]); }
+        finally { setLoading(false); }
+    };
+
+    const fetchLeads = async () => {
+        try {
+            const res = await fetch('/api/admin/leads');
+            let data = await res.json();
+            if (!Array.isArray(data)) data = [];
+            setLeads(data);
+        } catch (err) { setLeads([]); }
     };
 
     const fetchUsers = async () => {
         try {
             const res = await fetch('/api/admin/users');
-            const data = await res.json();
-            setUsers(data || []);
-        } catch (err) { console.error(err); }
+            let data = await res.json();
+            if (!Array.isArray(data)) data = [];
+            setUsers(data);
+        } catch (err) { setUsers([]); }
     };
 
-    const filteredSubmissions = (submissions || []).filter(sub => {
+    const filteredLeads = (Array.isArray(leads) ? leads : []).filter(lead =>
+        (lead.nome_completo_pessoal || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (lead.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (lead.whatsapp || '').toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const filteredSubmissions = (Array.isArray(submissions) ? submissions : []).filter(sub => {
         const matchesSearch =
-            sub.user?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            sub.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            sub.user?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+            (sub.user?.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (sub.user?.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (sub.user?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter = filterType === 'ALL' || sub.funnelType.toLowerCase() === filterType.toLowerCase();
         return matchesSearch && matchesFilter;
     });
 
-    const filteredUsers = (users || []).filter(user =>
-        user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredUsers = (Array.isArray(users) ? users : []).filter(user =>
+        (user.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (user.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (user.email || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     if (loading) return (
@@ -100,8 +131,9 @@ export default function AdminDashboard() {
 
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
                     <SidebarLink icon={<LayoutDashboard size={18} />} label="Overview" active={activeTab === 'OVERVIEW'} onClick={() => setActiveTab('OVERVIEW')} />
+                    <SidebarLink icon={<FileText size={18} />} label="Leads Detalhados" active={activeTab === 'LEADS'} onClick={() => setActiveTab('LEADS')} />
                     <SidebarLink icon={<ClipboardList size={18} />} label="Protocolos" active={activeTab === 'SUBMISSIONS'} onClick={() => setActiveTab('SUBMISSIONS')} />
-                    <SidebarLink icon={<Users size={18} />} label="Base de Usuários" active={activeTab === 'USERS'} onClick={() => setActiveTab('USERS')} />
+                    <SidebarLink icon={<Users size={18} />} label="Usuários Registrados" active={activeTab === 'USERS'} onClick={() => setActiveTab('USERS')} />
                     <SidebarLink icon={<Settings size={18} />} label="Configurações" active={false} onClick={() => { }} />
                 </nav>
 
@@ -116,9 +148,8 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                     <button
-                        onClick={async () => {
-                            await signOut({ redirect: false });
-                            window.location.href = '/auth/signin';
+                        onClick={() => {
+                            signOut({ callbackUrl: '/auth/signin' });
                         }}
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, transition: 'opacity 0.2s', padding: '0.5rem' }}
                         onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
@@ -154,9 +185,9 @@ export default function AdminDashboard() {
                     <header style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
                             <h2 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>
-                                {activeTab === 'OVERVIEW' ? 'Visão Geral (Overview)' : activeTab === 'SUBMISSIONS' ? 'Monitor de Protocolos' : 'Diretório de Usuários'}
+                                {activeTab === 'OVERVIEW' ? 'Visão Geral (Overview)' : activeTab === 'LEADS' ? 'Banco de Leads Estratégicos' : activeTab === 'SUBMISSIONS' ? 'Monitor de Protocolos' : 'Diretório de Usuários'}
                             </h2>
-                            <p style={{ fontSize: '0.9rem', opacity: 0.4 }}>{activeTab === 'OVERVIEW' ? 'Resumo de todos os fluxos e cadastros em andamento.' : activeTab === 'SUBMISSIONS' ? 'Fluxo de dados estratégicos recebidos em tempo real.' : 'Base completa de clientes autenticados no ecossistema BBLAW.'}</p>
+                            <p style={{ fontSize: '0.9rem', opacity: 0.4 }}>{activeTab === 'OVERVIEW' ? 'Resumo de todos os fluxos e cadastros em andamento.' : activeTab === 'LEADS' ? 'Controle completo de informações enviadas pelos leads via formulários customizados.' : activeTab === 'SUBMISSIONS' ? 'Fluxo de dados estratégicos recebidos em tempo real.' : 'Base completa de clientes autenticados no ecossistema BBLAW.'}</p>
                         </div>
 
                         {activeTab === 'SUBMISSIONS' && (
@@ -178,8 +209,15 @@ export default function AdminDashboard() {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
                             <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: 'var(--foreground)', opacity: 0.5 }}>
+                                    <FileText size={24} />
+                                    <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>TOTAL DE LEADS</h3>
+                                </div>
+                                <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>{leads.length}</p>
+                            </div>
+                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: 'var(--foreground)', opacity: 0.5 }}>
                                     <ClipboardList size={24} />
-                                    <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>TOTAL DE PROTOCOLOS</h3>
+                                    <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>PROTOCOLOS ATIVOS</h3>
                                 </div>
                                 <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>{submissions.length}</p>
                             </div>
@@ -200,7 +238,52 @@ export default function AdminDashboard() {
                         </div>
                     ) : (
                         <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', overflow: 'hidden' }}>
-                            {activeTab === 'SUBMISSIONS' ? (
+                            {activeTab === 'LEADS' ? (
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <tr>
+                                            <AdminTh>LEAD / CONTATO</AdminTh>
+                                            <AdminTh>IDENTIFICAÇÃO</AdminTh>
+                                            <AdminTh>INTERESSE / JURISDIÇÃO</AdminTh>
+                                            <AdminTh>DATA / HORA</AdminTh>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredLeads.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={4} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                    <FileText size={32} style={{ margin: '0 auto 1.5rem' }} />
+                                                    <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM LEADS REGISTRADOS</p>
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            filteredLeads.map((lead) => (
+                                                <tr key={lead.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }}
+                                                    onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                                                    onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+                                                >
+                                                    <AdminTd>
+                                                        <p style={{ fontWeight: 800 }}>{lead.nome_completo_pessoal}</p>
+                                                        <p style={{ fontSize: '0.65rem', opacity: 0.3 }}>{lead.email} • {lead.whatsapp}</p>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6 }}>{lead.cpf_nit || '—'}</p>
+                                                        <p style={{ fontSize: '0.6rem', opacity: 0.4 }}>{lead.ocupacao || '—'}</p>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{lead.jurisdicao || '—'}</p>
+                                                        <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{lead.relacao_empresa || '—'}</p>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{new Date(lead.createdAt).toLocaleDateString('pt-BR')}</p>
+                                                        <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{new Date(lead.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                                                    </AdminTd>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            ) : activeTab === 'SUBMISSIONS' ? (
                                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                     <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                         <tr>

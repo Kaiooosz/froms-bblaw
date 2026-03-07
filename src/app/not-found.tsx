@@ -37,10 +37,10 @@ export default function NotFound() {
                 }}>
                     <AlertCircle size={48} style={{ color: 'rgba(255,255,255,0.2)', marginBottom: '1.5rem' }} />
                     <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
-                        Ops! Página não encontrada
+                        Deu um erro!
                     </h1>
                     <p style={{ fontSize: '0.9rem', opacity: 0.4, lineHeight: 1.6, marginBottom: '2rem' }}>
-                        Parece que o link que você tentou acessar não existe ou foi removido.
+                        Não foi possível encontrar o que você procurava. Por favor, volte para o início.
                     </p>
 
                     <Link href="/" style={{

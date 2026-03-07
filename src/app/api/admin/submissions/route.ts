@@ -5,7 +5,11 @@ import { NextResponse } from "next/server"
 export async function GET() {
     try {
         const session = await auth()
-        if (!session || (session.user as any)?.role !== "ADMIN") {
+        const userEmail = session?.user?.email?.toLowerCase() || ""
+        const adminEmail = (process.env.ADMIN_EMAIL || "").replace(/"/g, "").trim().toLowerCase()
+        const isAdmin = (session?.user as any)?.role === "ADMIN" || userEmail === adminEmail
+
+        if (!session || !isAdmin) {
             return NextResponse.json({ message: "Acesso negado" }, { status: 403 })
         }
 

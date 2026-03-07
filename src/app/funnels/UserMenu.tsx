@@ -134,9 +134,8 @@ export default function UserMenu({ userName }: { userName: string }) {
 
                             <footer style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                                 <button
-                                    onClick={async () => {
-                                        await signOut({ redirect: false });
-                                        window.location.href = '/auth/signin';
+                                    onClick={() => {
+                                        signOut({ callbackUrl: '/auth/signin' });
                                     }}
                                     style={{
                                         width: '100%',
