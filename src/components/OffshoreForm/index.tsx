@@ -77,7 +77,8 @@ export default function OffshoreForm() {
             let docEnderecoUrl = null;
             let docPassaporteUrl = null;
 
-            const { supabase } = await import('@/lib/supabase');
+            const { getSupabaseClient } = await import('@/lib/supabase');
+            const supabase = getSupabaseClient();
 
             if (data.doc_endereco?.[0]) {
                 const file = data.doc_endereco[0];
