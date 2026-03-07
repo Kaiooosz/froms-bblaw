@@ -171,7 +171,7 @@ export default function AdminDashboard() {
                 ['E-mail', sub.user?.email || '—'],
                 ['Documento', sub.user?.document || '—'],
                 ['Contato', sub.user?.phone || '—'],
-                ['Prioridade', sub.priority || 'NORMAL'],
+                ['Prioridade', sub.priority || 'A DEFINIR'],
                 ['Score', String(sub.score || '0')],
             ],
             theme: 'grid',
@@ -609,7 +609,7 @@ export default function AdminDashboard() {
                                     <DetailGroup label="Canal de E-mail" value={selectedSubmission.user?.email} icon={<Mail size={12} />} />
                                     <DetailGroup label="Contato / WhatsApp" value={selectedSubmission.user?.phone} icon={<Users size={12} />} />
                                     <DetailGroup label="Registro / Doc" value={selectedSubmission.user?.document || 'PENDENTE'} icon={<ShieldCheck size={12} />} />
-                                    <DetailGroup label="Prioridade" value={selectedSubmission.priority} icon={<ShieldCheck size={12} />} />
+                                    <DetailGroup label="Prioridade" value={selectedSubmission.priority || 'A DEFINIR'} icon={<ShieldCheck size={12} />} />
                                     <DetailGroup label="Tags" value={selectedSubmission.tags?.join(', ') || 'Nenhuma'} icon={<FileText size={12} />} />
                                     <DetailGroup label="Pontuação (Score)" value={selectedSubmission.score || '0'} icon={<CheckCircle2 size={12} />} />
                                 </div>
@@ -784,6 +784,7 @@ function AdminTd({ children, align = 'left' }: any) {
 
 function PrioritySelector({ current, onSelect, loading }: any) {
     const priorities = [
+        { id: 'A DEFINIR', color: '#666' },
         { id: 'NORMAL', color: '#fff' },
         { id: 'ALTA', color: '#ffb300' },
         { id: 'URGENTE', color: '#ff4b4b' },
@@ -793,7 +794,7 @@ function PrioritySelector({ current, onSelect, loading }: any) {
     return (
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {priorities.map(p => {
-                const isActive = (current || 'NORMAL').toUpperCase() === p.id;
+                const isActive = (current || 'A DEFINIR').toUpperCase() === p.id;
                 return (
                     <button
                         key={p.id}
@@ -822,17 +823,18 @@ function PrioritySelector({ current, onSelect, loading }: any) {
 
 function StatusBadge({ priority }: any) {
     const p = priorities_list.find(pl => pl.id === priority?.toUpperCase()) || priorities_list[0];
-    const isHigh = ['ALTA', 'URGENTE', 'VIP'].includes(priority?.toUpperCase());
+    const isSpecial = ['ALTA', 'URGENTE', 'VIP', 'NORMAL'].includes(priority?.toUpperCase());
 
     return (
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 14px', borderRadius: '100px', background: 'rgba(255,255,255,0.03)', color: isHigh ? p.color : 'rgba(255,255,255,0.5)', fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', border: isHigh ? `1px solid ${p.color}33` : '1px solid transparent' }}>
-            <div style={{ width: '5px', height: '5px', background: isHigh ? p.color : 'rgba(255,255,255,0.3)', borderRadius: '50%' }} />
-            {priority || 'NORMAL'}
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 14px', borderRadius: '100px', background: 'rgba(255,255,255,0.03)', color: isSpecial ? p.color : 'rgba(255,255,255,0.3)', fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', border: isSpecial ? `1px solid ${p.color}33` : '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ width: '5px', height: '5px', background: isSpecial ? p.color : 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
+            {priority || 'A DEFINIR'}
         </div>
     );
 }
 
 const priorities_list = [
+    { id: 'A DEFINIR', color: '#666' },
     { id: 'NORMAL', color: '#fff' },
     { id: 'ALTA', color: '#ffb300' },
     { id: 'URGENTE', color: '#ff4b4b' },

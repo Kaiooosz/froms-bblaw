@@ -4,16 +4,16 @@ import { NextResponse } from "next/server"
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const session = await auth()
         if (!session || (session.user as any).role !== "ADMIN") {
             return NextResponse.json({ message: "Acesso negado" }, { status: 403 })
         }
 
         const { priority } = await req.json()
-        const { id } = params
 
         const updated = await (prisma as any).lead.update({
             where: { id },
