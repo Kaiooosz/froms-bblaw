@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Link from 'next/link';
 import {
     Globe,
@@ -7,9 +6,11 @@ import {
     CaseLower,
     Gavel,
     Coins,
-    User
 } from 'lucide-react';
 import styles from '@/styles/Funnels.module.css';
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import SignOutButton from './SignOutButton';
 
 const funnels = [
     {
@@ -56,39 +57,26 @@ const funnels = [
     }
 ];
 
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+export const metadata = {
+    title: "Formulários Estratégicos – Bezerra Borges",
+};
 
-export default function FunnelsPage() {
-    const { data: session, status } = useSession();
+export default async function FunnelsPage() {
+    const session = await auth();
 
-    useEffect(() => {
-        if (status === 'unauthenticated') {
-            window.location.href = '/auth/signin';
-        }
-    }, [status]);
-
-    if (status === 'loading' || status === 'unauthenticated') {
-        return <div style={{ minHeight: '100vh', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Carregando...</div>;
+    if (!session) {
+        redirect("/auth/signin");
     }
 
     return (
         <div className={styles.container}>
-            <Head>
-                <title>Formulários Estratégicos – Bezerra Borges</title>
-            </Head>
-
             <nav className={styles.nav}>
                 <img src="/LogoBranco.svg" alt="BBLAW" className={styles.navLogo} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                     <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>
                         Olá, <span style={{ fontWeight: 800, color: '#fff' }}>{session?.user?.name}</span>
                     </div>
-                    <div className={styles.userInfo} style={{ cursor: 'pointer' }} onClick={() => signOut({ callbackUrl: '/' })}>
-                        <div className={styles.userIcon}><User size={16} /></div>
-                        <span>SAIR</span>
-                    </div>
+                    <SignOutButton />
                 </div>
             </nav>
 
