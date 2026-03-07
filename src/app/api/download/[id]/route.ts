@@ -1,6 +1,6 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { supabase } from "@/lib/supabase"
+import { getSupabaseClient } from "@/lib/supabase"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
@@ -27,6 +27,8 @@ export async function GET(
         if (!isAdmin && !isOwner) {
             return NextResponse.json({ message: "Sem permissão para baixar este arquivo" }, { status: 403 })
         }
+
+        const supabase = getSupabaseClient()
 
         // Gera signed URL do Supabase (expira em 60s)
         const { data: signedData, error: signedError } = await supabase.storage

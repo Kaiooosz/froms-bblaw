@@ -1,6 +1,6 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { supabase } from "@/lib/supabase"
+import { getSupabaseClient } from "@/lib/supabase"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
@@ -37,6 +37,8 @@ export async function POST(req: Request) {
 
         const arrayBuffer = await file.arrayBuffer()
         const buffer = Buffer.from(arrayBuffer)
+
+        const supabase = getSupabaseClient()
 
         // Upload para Supabase Storage (Bucket: documentos)
         const { data: uploadData, error: uploadError } = await supabase.storage
