@@ -47,6 +47,7 @@ export default function AdminDashboard() {
     const [users, setUsers] = useState<any[]>([]);
     const [filterType, setFilterType] = useState('ALL');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -101,6 +102,32 @@ export default function AdminDashboard() {
             if (!Array.isArray(data)) data = [];
             setUsers(data);
         } catch (err) { setUsers([]); }
+    };
+
+    const updatePriority = async (id: string, type: 'lead' | 'submission', priority: string) => {
+        setIsUpdating(true);
+        try {
+            const endpoint = type === 'lead' ? `/api/admin/leads/${id}` : `/api/admin/submissions/${id}`;
+            const res = await fetch(endpoint, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ priority })
+            });
+
+            if (res.ok) {
+                if (type === 'lead') {
+                    setLeads(leads.map(l => l.id === id ? { ...l, priority } : l));
+                    if (selectedLead?.id === id) setSelectedLead({ ...selectedLead, priority });
+                } else {
+                    setSubmissions(submissions.map(s => s.id === id ? { ...s, priority } : s));
+                    if (selectedSubmission?.id === id) setSelectedSubmission({ ...selectedSubmission, priority });
+                }
+            }
+        } catch (err) {
+            console.error("Update error:", err);
+        } finally {
+            setIsUpdating(false);
+        }
     };
 
     const filteredLeads = (Array.isArray(leads) ? leads : []).filter(lead =>
@@ -370,7 +397,7 @@ export default function AdminDashboard() {
                                         <tr>
                                             <AdminTh>LEAD</AdminTh>
                                             <AdminTh>IDENTIFICAÇÃO</AdminTh>
-                                            <AdminTh>JURISDIÇÃO</AdminTh>
+                                            <AdminTh>PRIORIDADE</AdminTh>
                                             <AdminTh>DATA</AdminTh>
                                             <AdminTh align="right">AÇÃO</AdminTh>
                                         </tr>
@@ -395,10 +422,10 @@ export default function AdminDashboard() {
                                                     <AdminTd>
                                                         <p style={{ fontSize: '0.7rem', fontWeight: 700, opacity: 0.6 }}>{lead.cpf_nit || '—'}</p>
                                                     </AdminTd>
-                                                    <AdminTd>
-                                                        <p style={{ fontSize: '0.7rem', fontWeight: 700 }}>{lead.jurisdicao || '—'}</p>
+                                                    <AdminTd onClick={() => setSelectedLead(lead)}>
+                                                        <StatusBadge priority={lead.priority} />
                                                     </AdminTd>
-                                                    <AdminTd>
+                                                    <AdminTd onClick={() => setSelectedLead(lead)}>
                                                         <p style={{ fontSize: '0.7rem', fontWeight: 700 }}>{new Date(lead.createdAt).toLocaleDateString('pt-BR')}</p>
                                                     </AdminTd>
                                                     <AdminTd align="right">
@@ -587,6 +614,15 @@ export default function AdminDashboard() {
                                     <DetailGroup label="Pontuação (Score)" value={selectedSubmission.score || '0'} icon={<CheckCircle2 size={12} />} />
                                 </div>
 
+                                <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Configuração de Urgência</h4>
+                                    <PrioritySelector
+                                        current={selectedSubmission.priority}
+                                        onSelect={(p: string) => updatePriority(selectedSubmission.id, 'submission', p)}
+                                        loading={isUpdating}
+                                    />
+                                </div>
+
                                 <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '3rem' }}>
                                     <h4 style={{ fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginBottom: '2.5rem' }}>DADOS DA TRANSMISSÃO</h4>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
@@ -663,7 +699,17 @@ export default function AdminDashboard() {
                                     <DetailGroup label="Ocupação / Cargo" value={selectedLead.ocupacao} icon={<LayoutDashboard size={12} />} />
                                     <DetailGroup label="Jurisdição" value={selectedLead.jurisdicao} icon={<FileText size={12} />} />
                                     <DetailGroup label="Relação Empresa" value={selectedLead.relacao_empresa} icon={<Settings size={12} />} />
+                                    <DetailGroup label="Prioridade" value={selectedLead.priority || 'NORMAL'} icon={<ShieldCheck size={12} />} />
                                     <DetailGroup label="Criado em" value={new Date(selectedLead.createdAt).toLocaleString('pt-BR')} icon={<Calendar size={12} />} />
+                                </div>
+
+                                <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Definir Prioridade do Lead</h4>
+                                    <PrioritySelector
+                                        current={selectedLead.priority}
+                                        onSelect={(p: string) => updatePriority(selectedLead.id, 'lead', p)}
+                                        loading={isUpdating}
+                                    />
                                 </div>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
@@ -736,15 +782,62 @@ function AdminTd({ children, align = 'left' }: any) {
     return <td style={{ padding: '1rem 1.5rem', textAlign: align, verticalAlign: 'middle' }}>{children}</td>;
 }
 
-function StatusBadge({ priority }: any) {
-    const isHigh = ['ALTA', 'URGENTE', 'VIP'].includes(priority);
+function PrioritySelector({ current, onSelect, loading }: any) {
+    const priorities = [
+        { id: 'NORMAL', color: '#fff' },
+        { id: 'ALTA', color: '#ffb300' },
+        { id: 'URGENTE', color: '#ff4b4b' },
+        { id: 'VIP', color: '#7e22ce' }
+    ];
+
     return (
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 14px', borderRadius: '100px', background: 'rgba(255,255,255,0.03)', color: isHigh ? '#fff' : 'rgba(255,255,255,0.5)', fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', border: isHigh ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent' }}>
-            <div style={{ width: '5px', height: '5px', background: isHigh ? '#fff' : 'rgba(255,255,255,0.3)', borderRadius: '50%' }} />
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {priorities.map(p => {
+                const isActive = (current || 'NORMAL').toUpperCase() === p.id;
+                return (
+                    <button
+                        key={p.id}
+                        disabled={loading}
+                        onClick={() => onSelect(p.id)}
+                        style={{
+                            padding: '0.5rem 1rem',
+                            borderRadius: '100px',
+                            background: isActive ? p.color : 'rgba(255,255,255,0.05)',
+                            color: isActive ? (p.color === '#fff' ? '#000' : '#fff') : 'rgba(255,255,255,0.3)',
+                            fontSize: '0.6rem',
+                            fontWeight: 900,
+                            border: '1px solid ' + (isActive ? p.color : 'rgba(255,255,255,0.1)'),
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            opacity: loading ? 0.5 : 1,
+                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                        }}
+                    >
+                        {p.id}
+                    </button>
+                );
+            })}
+        </div>
+    );
+}
+
+function StatusBadge({ priority }: any) {
+    const p = priorities_list.find(pl => pl.id === priority?.toUpperCase()) || priorities_list[0];
+    const isHigh = ['ALTA', 'URGENTE', 'VIP'].includes(priority?.toUpperCase());
+
+    return (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 14px', borderRadius: '100px', background: 'rgba(255,255,255,0.03)', color: isHigh ? p.color : 'rgba(255,255,255,0.5)', fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', border: isHigh ? `1px solid ${p.color}33` : '1px solid transparent' }}>
+            <div style={{ width: '5px', height: '5px', background: isHigh ? p.color : 'rgba(255,255,255,0.3)', borderRadius: '50%' }} />
             {priority || 'NORMAL'}
         </div>
     );
 }
+
+const priorities_list = [
+    { id: 'NORMAL', color: '#fff' },
+    { id: 'ALTA', color: '#ffb300' },
+    { id: 'URGENTE', color: '#ff4b4b' },
+    { id: 'VIP', color: '#7e22ce' }
+];
 
 function DetailGroup({ label, value, icon }: any) {
     return (

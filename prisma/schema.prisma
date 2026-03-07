@@ -122,6 +122,7 @@ model Lead {
   documento_residencia  String?
   userId                String?
   user                  User?    @relation(fields: [userId], references: [id])
+  priority              String?  @default("NORMAL")
 
   @@map("leads")
 }
