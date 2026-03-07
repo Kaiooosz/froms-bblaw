@@ -77,7 +77,7 @@ export default function ForgotPasswordPage() {
                                 background: 'rgba(255,255,255,0.02)',
                                 border: '1px solid rgba(255, 255, 255, 0.05)',
                                 borderRadius: '14px',
-                                padding: '18px 20px 18px 50px', // Corrigido padding para não sobrepor ícone
+                                padding: '18px 20px 18px 50px',
                                 color: '#fff',
                                 fontSize: '0.75rem',
                                 fontWeight: 700,
@@ -125,6 +125,14 @@ export default function ForgotPasswordPage() {
                 }
                 .animate-spin {
                     animation: spin 1s linear infinite;
+                }
+                
+                input:-webkit-autofill,
+                input:-webkit-autofill:hover, 
+                input:-webkit-autofill:focus, 
+                input:-webkit-autofill:active{
+                    -webkit-box-shadow: 0 0 0 30px #080808 inset !important;
+                    -webkit-text-fill-color: white !important;
                 }
             `}</style>
         </div>

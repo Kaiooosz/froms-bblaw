@@ -50,6 +50,20 @@ export default function SignUpPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const inputStyle: React.CSSProperties = {
+        width: '100%',
+        background: 'rgba(255, 255, 255, 0.03)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        borderRadius: '14px',
+        padding: '16px 20px 16px 50px',
+        color: '#fff',
+        fontSize: '0.75rem',
+        fontWeight: 700,
+        letterSpacing: '0.05em',
+        outline: 'none',
+        transition: 'all 0.3s ease'
+    };
+
     return (
         <div style={{
             minHeight: '100vh',
@@ -64,7 +78,7 @@ export default function SignUpPage() {
             position: 'relative',
             overflow: 'hidden'
         }}>
-            {/* Efeito de luz ambiente */}
+            {/* Efeito de luz ambiente de fundo */}
             <div style={{
                 position: 'absolute',
                 top: '-15%',
@@ -140,123 +154,73 @@ export default function SignUpPage() {
                 </AnimatePresence>
 
                 <form onSubmit={handleSignUp} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ position: 'relative' }}>
+                    <div className="input-field" style={{ position: 'relative' }}>
                         <User size={14} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', opacity: 0.2 }} />
                         <input
+                            className="premium-input"
                             name="name"
                             type="text"
                             placeholder="NOME COMPLETO"
                             value={formData.name}
                             onChange={handleChange}
                             required
-                            style={{
-                                width: '100%',
-                                background: 'rgba(255,255,255,0.02)',
-                                border: '1px solid rgba(255, 255, 255, 0.05)',
-                                borderRadius: '14px',
-                                padding: '16px 20px 16px 50px',
-                                color: '#fff',
-                                fontSize: '0.75rem',
-                                fontWeight: 700,
-                                letterSpacing: '0.05em',
-                                outline: 'none'
-                            }}
+                            style={inputStyle}
                         />
                     </div>
 
-                    <div style={{ position: 'relative' }}>
+                    <div className="input-field" style={{ position: 'relative' }}>
                         <FileText size={14} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', opacity: 0.2 }} />
                         <input
+                            className="premium-input"
                             name="document"
                             type="text"
                             placeholder="CPF / CNPJ"
                             value={formData.document}
                             onChange={handleChange}
                             required
-                            style={{
-                                width: '100%',
-                                background: 'rgba(255,255,255,0.02)',
-                                border: '1px solid rgba(255, 255, 255, 0.05)',
-                                borderRadius: '14px',
-                                padding: '16px 20px 16px 50px',
-                                color: '#fff',
-                                fontSize: '0.75rem',
-                                fontWeight: 700,
-                                letterSpacing: '0.05em',
-                                outline: 'none'
-                            }}
+                            style={inputStyle}
                         />
                     </div>
 
-                    <div style={{ position: 'relative' }}>
+                    <div className="input-field" style={{ position: 'relative' }}>
                         <Smartphone size={14} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', opacity: 0.2 }} />
                         <input
+                            className="premium-input"
                             name="phone"
                             type="text"
                             placeholder="WHATSAPP / TELEFONE"
                             value={formData.phone}
                             onChange={handleChange}
                             required
-                            style={{
-                                width: '100%',
-                                background: 'rgba(255,255,255,0.02)',
-                                border: '1px solid rgba(255, 255, 255, 0.05)',
-                                borderRadius: '14px',
-                                padding: '16px 20px 16px 50px',
-                                color: '#fff',
-                                fontSize: '0.75rem',
-                                fontWeight: 700,
-                                letterSpacing: '0.05em',
-                                outline: 'none'
-                            }}
+                            style={inputStyle}
                         />
                     </div>
 
-                    <div style={{ position: 'relative' }}>
+                    <div className="input-field" style={{ position: 'relative' }}>
                         <Mail size={14} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', opacity: 0.2 }} />
                         <input
+                            className="premium-input"
                             name="email"
                             type="email"
                             placeholder="E-MAIL INSTITUCIONAL"
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            style={{
-                                width: '100%',
-                                background: 'rgba(255,255,255,0.02)',
-                                border: '1px solid rgba(255, 255, 255, 0.05)',
-                                borderRadius: '14px',
-                                padding: '16px 20px 16px 50px',
-                                color: '#fff',
-                                fontSize: '0.75rem',
-                                fontWeight: 700,
-                                letterSpacing: '0.05em',
-                                outline: 'none'
-                            }}
+                            style={inputStyle}
                         />
                     </div>
 
-                    <div style={{ position: 'relative' }}>
+                    <div className="input-field" style={{ position: 'relative' }}>
                         <Lock size={14} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', opacity: 0.2 }} />
                         <input
+                            className="premium-input"
                             name="password"
                             type="password"
                             placeholder="SENHA DE ACESSO"
                             value={formData.password}
                             onChange={handleChange}
                             required
-                            style={{
-                                width: '100%',
-                                background: 'rgba(255,255,255,0.02)',
-                                border: '1px solid rgba(255, 255, 255, 0.05)',
-                                borderRadius: '14px',
-                                padding: '16px 20px 16px 50px',
-                                color: '#fff',
-                                fontSize: '0.75rem',
-                                fontWeight: 700,
-                                letterSpacing: '0.05em',
-                                outline: 'none'
-                            }}
+                            style={inputStyle}
                         />
                     </div>
 
@@ -305,6 +269,20 @@ export default function SignUpPage() {
                 }
                 .animate-spin {
                     animation: spin 1s linear infinite;
+                }
+                
+                /* HACK PARA REMOVER FUNDO BRANCO DO AUTOFILL NO CHROME */
+                input:-webkit-autofill,
+                input:-webkit-autofill:hover, 
+                input:-webkit-autofill:focus, 
+                input:-webkit-autofill:active{
+                    -webkit-box-shadow: 0 0 0 30px #080808 inset !important;
+                    -webkit-text-fill-color: white !important;
+                }
+
+                .premium-input:focus {
+                    border-color: rgba(255,255,255,0.3) !important;
+                    background: rgba(255,255,255,0.05) !important;
                 }
             `}</style>
         </div>
