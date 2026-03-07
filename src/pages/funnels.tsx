@@ -64,17 +64,9 @@ export default function FunnelsPage() {
     const { data: session, status } = useSession();
 
     useEffect(() => {
-        let timeout: NodeJS.Timeout;
-
         if (status === 'unauthenticated') {
             window.location.href = '/auth/signin';
-        } else if (status === 'loading') {
-            timeout = setTimeout(() => {
-                window.location.href = '/auth/signin';
-            }, 5000);
         }
-
-        return () => clearTimeout(timeout);
     }, [status]);
 
     if (status === 'loading' || status === 'unauthenticated') {

@@ -43,20 +43,12 @@ export default function AdminDashboard() {
     const router = useRouter();
 
     useEffect(() => {
-        let timeout: NodeJS.Timeout;
-
         if (status === 'unauthenticated' || (status === 'authenticated' && (session?.user as any)?.role !== 'ADMIN')) {
             window.location.href = '/auth/signin';
         } else if (status === 'authenticated') {
             fetchSubmissions();
             fetchUsers();
-        } else if (status === 'loading') {
-            timeout = setTimeout(() => {
-                window.location.href = '/auth/signin';
-            }, 5000);
         }
-
-        return () => clearTimeout(timeout);
     }, [status, session]);
 
     const fetchSubmissions = async () => {
