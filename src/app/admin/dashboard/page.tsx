@@ -254,8 +254,8 @@ export default function AdminDashboard() {
             {/* Sidebar Lateral Minimalista */}
             <aside style={{ width: '280px', borderRight: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', padding: '2rem 1.5rem', position: 'fixed', height: '100vh', zIndex: 100 }}>
                 <div style={{ marginBottom: '4rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <img src="/logo-branco.svg" alt="BBLAW" style={{ maxWidth: '100px' }} />
-                    <span style={{ fontSize: '0.5rem', fontWeight: 900, background: '#fff', color: '#000', padding: '2px 6px', borderRadius: '3px' }}>ADM</span>
+                    <img src="/LogoBranco.svg" alt="BBLAW" style={{ maxWidth: '100px' }} />
+                    <span style={{ fontSize: '0.45rem', fontWeight: 900, background: '#fff', color: '#000', padding: '2px 5px', borderRadius: '3px', letterSpacing: '0.05em' }}>ADM</span>
                 </div>
 
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
@@ -373,34 +373,10 @@ export default function AdminDashboard() {
                     {/* Espaço de Dados Estilo SaaS */}
                     {activeTab === 'OVERVIEW' ? (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#fff' }}>
-                                    <FileText size={24} />
-                                    <h3 style={{ fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.9)' }}>TOTAL DE LEADS</h3>
-                                </div>
-                                <p style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, color: '#fff', textShadow: '0 4px 20px rgba(255,255,255,0.1)' }}>{leads.length}</p>
-                            </div>
-                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#fff' }}>
-                                    <ClipboardList size={24} />
-                                    <h3 style={{ fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.9)' }}>PROTOCOLOS ATIVOS</h3>
-                                </div>
-                                <p style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, color: '#fff', textShadow: '0 4px 20px rgba(255,255,255,0.1)' }}>{submissions.length}</p>
-                            </div>
-                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#fff' }}>
-                                    <Users size={24} />
-                                    <h3 style={{ fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.9)' }}>USUÁRIOS CADASTRADOS</h3>
-                                </div>
-                                <p style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, color: '#fff', textShadow: '0 4px 20px rgba(255,255,255,0.1)' }}>{users.length}</p>
-                            </div>
-                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#fff' }}>
-                                    <ShieldCheck size={24} />
-                                    <h3 style={{ fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.9)' }}>LEADS VIP / ALTA PRIORIDADE</h3>
-                                </div>
-                                <p style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, color: '#fff', textShadow: '0 4px 20px rgba(255,255,255,0.1)' }}>{submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length}</p>
-                            </div>
+                            <OverviewCard icon={<FileText size={20} />} label="TOTAL DE LEADS" value={leads.length} />
+                            <OverviewCard icon={<ClipboardList size={20} />} label="PROTOCOLOS ATIVOS" value={submissions.length} />
+                            <OverviewCard icon={<Users size={20} />} label="USUÁRIOS CADASTRADOS" value={users.length} />
+                            <OverviewCard icon={<ShieldCheck size={20} />} label="PRIORIDADE MÁXIMA" value={submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length} />
                         </div>
                     ) : (
                         <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', overflow: 'hidden' }}>
@@ -727,27 +703,49 @@ export default function AdminDashboard() {
     );
 }
 
+function OverviewCard({ icon, label, value }: { icon: any, label: string, value: number }) {
+    return (
+        <motion.div
+            whileHover={{ y: -5, background: 'rgba(255,255,255,0.06)' }}
+            style={{
+                padding: '2.5rem',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '20px',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                transition: 'background 0.3s ease'
+            }}
+        >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem', color: 'rgba(255,255,255,0.5)' }}>
+                {icon}
+                <h3 style={{ fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.2em' }}>{label}</h3>
+            </div>
+            <p style={{ fontSize: '4.5rem', fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '-0.02em' }}>{value}</p>
+        </motion.div>
+    );
+}
+
 function SidebarLink({ icon, label, active, onClick }: { icon: any, label: string, active: boolean, onClick: () => void }) {
     return (
-        <button onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.85rem 1.25rem', borderRadius: '12px', background: active ? 'rgba(255,255,255,0.05)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.4)', transition: 'all 0.2s ease', fontWeight: 800, fontSize: '0.85rem' }}>
+        <button onClick={onClick} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.25rem', borderRadius: '14px', background: active ? 'rgba(255,255,255,0.08)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.3)', transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)', fontWeight: 800, fontSize: '0.8rem', border: 'none', cursor: 'pointer' }}>
             {icon} {label}
         </button>
     );
 }
 
 function AdminTh({ children, align = 'left', style = {} }: any) {
-    return <th style={{ padding: '1.25rem 2rem', fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', textAlign: align, textTransform: 'uppercase', ...style }}>{children}</th>;
+    return <th style={{ padding: '1.5rem 2.5rem', fontSize: '0.625rem', fontWeight: 900, opacity: 0.2, letterSpacing: '0.25em', textAlign: align, textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', ...style }}>{children}</th>;
 }
 
 function AdminTd({ children, align = 'left' }: any) {
-    return <td style={{ padding: '1.5rem 2rem', textAlign: align, verticalAlign: 'middle' }}>{children}</td>;
+    return <td style={{ padding: '1.75rem 2.5rem', textAlign: align, verticalAlign: 'middle' }}>{children}</td>;
 }
 
 function StatusBadge({ priority }: any) {
-    const isHigh = priority === 'ALTA' || priority === 'URGENTE' || priority === 'VIP';
+    const isHigh = ['ALTA', 'URGENTE', 'VIP'].includes(priority);
     return (
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '4px 12px', borderRadius: '100px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', border: isHigh ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ width: '6px', height: '6px', background: '#fff', borderRadius: '50%', opacity: isHigh ? 1 : 0.2 }} />
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 14px', borderRadius: '100px', background: 'rgba(255,255,255,0.03)', color: isHigh ? '#fff' : 'rgba(255,255,255,0.5)', fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', border: isHigh ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent' }}>
+            <div style={{ width: '5px', height: '5px', background: isHigh ? '#fff' : 'rgba(255,255,255,0.3)', borderRadius: '50%' }} />
             {priority || 'NORMAL'}
         </div>
     );
@@ -755,9 +753,9 @@ function StatusBadge({ priority }: any) {
 
 function DetailGroup({ label, value, icon }: any) {
     return (
-        <div>
-            <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '0.1em' }}>{icon} {label}</p>
-            <p style={{ fontSize: '1.1rem', fontWeight: 800 }}>{value || '—'}</p>
+        <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '0.15em' }}>{icon} {label}</p>
+            <p style={{ fontSize: '1rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{value || '—'}</p>
         </div>
     );
 }

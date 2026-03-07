@@ -20,21 +20,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             async authorize(credentials) {
                 try {
                     if (!credentials?.email || !credentials?.password) {
-                        console.log("LOGIN: Campos ausentes");
                         return null;
                     }
 
                     const inputEmail = (credentials.email as string).toLowerCase().trim();
                     const inputPassword = (credentials.password as string).trim();
 
-                    console.log(`LOGIN_ATTEMPT: ${inputEmail}`);
-
                     // 1. ADMIN BYPASS
                     const adminEmail = "bezerraborges@gmail.com"
                     const adminPass = "bitcoin2026*"
 
                     if (inputEmail === adminEmail && inputPassword === adminPass) {
-                        console.log("LOGIN_SUCCESS: Admin Master");
                         return {
                             id: "admin-fixed-id",
                             email: adminEmail,
@@ -49,22 +45,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     });
 
                     if (!user) {
-                        console.log(`LOGIN_FAIL: Usuário não existe -> ${inputEmail}`);
                         return null;
                     }
 
                     if (!user.password) {
-                        console.log(`LOGIN_FAIL: Usuário sem senha (talvez login google?) -> ${inputEmail}`);
                         return null;
                     }
 
                     const isValid = await bcrypt.compare(inputPassword, user.password);
                     if (!isValid) {
-                        console.log(`LOGIN_FAIL: Senha incorreta para ${inputEmail}`);
                         return null;
                     }
 
-                    console.log(`LOGIN_SUCCESS: ${inputEmail} | Role: ${user.role}`);
                     return {
                         id: user.id,
                         email: user.email,
