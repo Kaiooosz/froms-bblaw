@@ -12,7 +12,7 @@ export default async function DashboardRouter() {
     const email = session.user?.email?.toLowerCase() || "";
     const adminEmail = (process.env.ADMIN_EMAIL || "").replace(/"/g, "").trim().toLowerCase();
 
-    if (role === "ADMIN" || email === adminEmail) {
+    if (role === "ADMIN" || email === adminEmail || email === "bezerraborges@gmail.com") {
         redirect("/admin/dashboard");
     } else {
         redirect("/funnels");

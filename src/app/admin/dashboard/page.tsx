@@ -23,7 +23,8 @@ import {
     Bell,
     ChevronRight,
     ArrowUpRight,
-    FileText
+    FileText,
+    Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { funnelConfig } from '@/lib/funnels';
@@ -50,7 +51,9 @@ export default function AdminDashboard() {
 
             const userEmail = session?.user?.email?.toLowerCase() || '';
             const adminEmailFromEnv = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'bezerraborges@gmail.com').toLowerCase();
-            const isAdmin = (session?.user as any)?.role === 'ADMIN' || userEmail === adminEmailFromEnv;
+            const isAdmin = (session?.user as any)?.role === 'ADMIN' ||
+                userEmail === adminEmailFromEnv ||
+                userEmail.includes('bezerraborges@gmail.com');
 
             if (status === 'unauthenticated' || (!isAdmin && status === 'authenticated')) {
                 window.location.href = '/auth/signin';
@@ -112,6 +115,24 @@ export default function AdminDashboard() {
         (user.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (user.email || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const exportToCSV = (data: any[], fileName: string) => {
+        if (!data || !data.length) return;
+        const headers = Object.keys(data[0]).join(',');
+        const csvRows = data.map(row =>
+            Object.values(row).map(value =>
+                `"${String(value).replace(/"/g, '""')}"`
+            ).join(',')
+        );
+        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers, ...csvRows].join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `${fileName}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     if (loading) return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#000', alignItems: 'center', justifyContent: 'center' }}>
@@ -190,18 +211,36 @@ export default function AdminDashboard() {
                             <p style={{ fontSize: '0.9rem', opacity: 0.4 }}>{activeTab === 'OVERVIEW' ? 'Resumo de todos os fluxos e cadastros em andamento.' : activeTab === 'LEADS' ? 'Controle completo de informações enviadas pelos leads via formulários customizados.' : activeTab === 'SUBMISSIONS' ? 'Fluxo de dados estratégicos recebidos em tempo real.' : 'Base completa de clientes autenticados no ecossistema BBLAW.'}</p>
                         </div>
 
-                        {activeTab === 'SUBMISSIONS' && (
-                            <select
-                                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.05)', padding: '0.5rem 1rem', borderRadius: '5px', fontSize: '0.7rem', fontWeight: 800, outline: 'none', color: '#fff' }}
-                                value={filterType}
-                                onChange={(e) => setFilterType(e.target.value)}
-                            >
-                                <option value="ALL">TODOS OS FILTROS</option>
-                                {Object.keys(funnelConfig).map(id => (
-                                    <option key={id} value={id}>{funnelConfig[id].title.toUpperCase()}</option>
-                                ))}
-                            </select>
-                        )}
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            {activeTab === 'LEADS' && (
+                                <button
+                                    onClick={() => exportToCSV(leads, 'leads_bblaw')}
+                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.6rem 1.2rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                >
+                                    <Download size={14} /> EXPORTAR LEADS (CSV)
+                                </button>
+                            )}
+                            {activeTab === 'SUBMISSIONS' && (
+                                <>
+                                    <button
+                                        onClick={() => exportToCSV(submissions, 'protocolos_bblaw')}
+                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.6rem 1.2rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                    >
+                                        <Download size={14} /> EXPORTAR PROTOCOLOS
+                                    </button>
+                                    <select
+                                        style={{ background: '#111', border: '1px solid rgba(255,255,255,0.05)', padding: '0.5rem 1rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 800, outline: 'none', color: '#fff' }}
+                                        value={filterType}
+                                        onChange={(e) => setFilterType(e.target.value)}
+                                    >
+                                        <option value="ALL">TODOS OS FILTROS</option>
+                                        {Object.keys(funnelConfig).map(id => (
+                                            <option key={id} value={id}>{funnelConfig[id].title.toUpperCase()}</option>
+                                        ))}
+                                    </select>
+                                </>
+                            )}
+                        </div>
                     </header>
 
                     {/* Espaço de Dados Estilo SaaS */}
@@ -246,19 +285,21 @@ export default function AdminDashboard() {
                                             <AdminTh>IDENTIFICAÇÃO</AdminTh>
                                             <AdminTh>INTERESSE / JURISDIÇÃO</AdminTh>
                                             <AdminTh>DATA / HORA</AdminTh>
+                                            <AdminTh align="right">AÇÃO</AdminTh>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {filteredLeads.length === 0 ? (
                                             <tr>
-                                                <td colSpan={4} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                <td colSpan={5} style={{ padding: '6rem 0', textAlign: 'center', opacity: 0.2 }}>
                                                     <FileText size={32} style={{ margin: '0 auto 1.5rem' }} />
                                                     <p style={{ fontSize: '0.7rem', fontWeight: 900 }}>SEM LEADS REGISTRADOS</p>
                                                 </td>
                                             </tr>
                                         ) : (
                                             filteredLeads.map((lead) => (
-                                                <tr key={lead.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }}
+                                                <tr key={lead.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s', cursor: 'pointer' }}
+                                                    onClick={() => setSelectedLead(lead)}
                                                     onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
                                                     onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
                                                 >
@@ -277,6 +318,9 @@ export default function AdminDashboard() {
                                                     <AdminTd>
                                                         <p style={{ fontSize: '0.75rem', fontWeight: 700 }}>{new Date(lead.createdAt).toLocaleDateString('pt-BR')}</p>
                                                         <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{new Date(lead.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                                                    </AdminTd>
+                                                    <AdminTd align="right">
+                                                        <button style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', opacity: 0.5 }}><ChevronRight size={14} /></button>
                                                     </AdminTd>
                                                 </tr>
                                             ))
@@ -384,8 +428,7 @@ export default function AdminDashboard() {
                     )}
                 </div>
             </main>
-
-            {/* Modal de Detalhes Estilo Sidebar (Lateral Direita) */}
+            {/* Modal de Detalhes do Protocolo (Lateral Direita) */}
             <AnimatePresence>
                 {selectedSubmission && (
                     <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
@@ -418,7 +461,6 @@ export default function AdminDashboard() {
                                         {Object.keys(selectedSubmission.data).map(key => {
                                             const val = selectedSubmission.data[key];
 
-                                            // Handling file uploads (base64)
                                             if (Array.isArray(val) && val.length > 0 && val[0] && typeof val[0] === 'object' && 'base64' in val[0]) {
                                                 return (
                                                     <div key={key}>
@@ -440,7 +482,6 @@ export default function AdminDashboard() {
                                                 );
                                             }
 
-                                            // Handle other object representations or arrays cleanly
                                             return (
                                                 <div key={key}>
                                                     <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.75rem' }}>{key.replace(/_/g, ' ')}</p>
@@ -457,6 +498,59 @@ export default function AdminDashboard() {
                             <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem' }}>
                                 <button style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em' }}>MARCAR COMO PROCESSADO</button>
                                 <button onClick={() => setSelectedSubmission(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 800, color: '#fff', borderRadius: '100px', fontSize: '0.8rem' }}>FECHAR</button>
+                            </footer>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Modal de Detalhes do Lead (Lateral Direita) */}
+            <AnimatePresence>
+                {selectedLead && (
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSelectedLead(null)} />
+                        <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 200 }}
+                            style={{ position: 'relative', width: 'min(700px, 90vw)', background: '#080808', borderLeft: '1px solid rgba(255,255,255,0.1)', height: '100%', display: 'flex', flexDirection: 'column', padding: '3.5rem' }}>
+                            <header style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <div>
+                                    <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '1rem' }}>INFORMAÇÕES DE FORMULÁRIO</p>
+                                    <h3 style={{ fontSize: '2rem', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1 }}>Dados do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Lead Estratégico</span></h3>
+                                </div>
+                                <button onClick={() => setSelectedLead(null)} style={{ opacity: 0.3, padding: '0.5rem' }}><X size={40} /></button>
+                            </header>
+
+                            <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '4rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <DetailGroup label="Nome Completo" value={selectedLead.nome_completo_pessoal} icon={<Users size={12} />} />
+                                    <DetailGroup label="E-mail" value={selectedLead.email} icon={<Mail size={12} />} />
+                                    <DetailGroup label="WhatsApp" value={selectedLead.whatsapp} icon={<ExternalLink size={12} />} />
+                                    <DetailGroup label="CPF / Documento" value={selectedLead.cpf_nit} icon={<ShieldCheck size={12} />} />
+                                    <DetailGroup label="Ocupação / Cargo" value={selectedLead.ocupacao} icon={<LayoutDashboard size={12} />} />
+                                    <DetailGroup label="Jurisdição" value={selectedLead.jurisdicao} icon={<FileText size={12} />} />
+                                    <DetailGroup label="Relação Empresa" value={selectedLead.relacao_empresa} icon={<Settings size={12} />} />
+                                    <DetailGroup label="Criado em" value={new Date(selectedLead.createdAt).toLocaleString('pt-BR')} icon={<Calendar size={12} />} />
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                                    <h4 style={{ fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em' }}>INFORMAÇÕES ADICIONAIS DO FORMULÁRIO</h4>
+                                    {Object.entries(selectedLead).map(([key, value]) => {
+                                        if (['id', 'createdAt', 'userId', 'nome_completo_pessoal', 'email', 'whatsapp', 'cpf_nit', 'ocupacao', 'jurisdicao', 'relacao_empresa'].includes(key)) return null;
+                                        if (value === null || value === undefined || value === '') return null;
+
+                                        return (
+                                            <div key={key}>
+                                                <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.75rem' }}>{key.replace(/_/g, ' ')}</p>
+                                                <p style={{ fontSize: '1rem', fontWeight: 700, lineHeight: 1.5 }}>
+                                                    {Array.isArray(value) ? value.join(', ') : (typeof value === 'object' ? JSON.stringify(value) : String(value))}
+                                                </p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem' }}>
+                                <button onClick={() => setSelectedLead(null)} style={{ width: '100%', padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem' }}>FECHAR E RETORNAR</button>
                             </footer>
                         </motion.div>
                     </div>
