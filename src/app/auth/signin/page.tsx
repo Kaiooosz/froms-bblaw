@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, ArrowRight, ShieldCheck, Mail, Lock, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SignInPage() {
@@ -13,6 +13,18 @@ export default function SignInPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        if (!searchParams) return;
+
+        if (searchParams.get('error')) {
+            setError('Falha na autenticação. Verifique seu e-mail e senha.');
+        }
+        if (searchParams.get('success')) {
+            // Pode mostrar mensagem de "Conta criada" aqui se quiser
+        }
+    }, [searchParams]);
 
     const handleCredentialsLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,23 +33,22 @@ export default function SignInPage() {
 
         try {
             const result = await signIn('credentials', {
-                email,
-                password,
+                email: email.toLowerCase().trim(),
+                password: password.trim(),
                 redirect: false,
             });
 
-            console.log("SIGN_IN_RESULT:", result);
-
             if (result?.error) {
-                console.log("SIGN_IN_ERROR:", result.error);
-                setError('Credenciais inválidas.');
+                console.error("SIGN_IN_ERROR:", result.error);
+                setError('Credenciais inválidas ou conta não encontrada.');
                 setLoading(false);
             } else {
-                console.log("SIGN_IN_SUCCESS: Redirecting to /dashboard");
+                // Sincronização forçada para evitar loop de middleware
+                router.refresh();
                 window.location.href = '/dashboard';
             }
         } catch (loginErr) {
-            setError('Falha na autenticação.');
+            setError('Ocorreu um erro no servidor. Tente novamente.');
             setLoading(false);
         }
     };
@@ -56,98 +67,140 @@ export default function SignInPage() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '48px 24px',
-            position: 'relative'
+            padding: '40px 24px',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
+            {/* Efeito de luz ambiente de fundo */}
+            <div style={{
+                position: 'absolute',
+                top: '-10%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '100vw',
+                height: '40vh',
+                background: 'radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%)',
+                zIndex: 0
+            }} />
+
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                     width: '100%',
-                    maxWidth: '400px',
-                    textAlign: 'center'
+                    maxWidth: '420px',
+                    textAlign: 'center',
+                    zIndex: 1
                 }}
             >
-                <div style={{ marginBottom: '48px' }}>
+                <div style={{ marginBottom: '60px' }}>
                     <Link href="/">
-                        <img
+                        <motion.img
+                            whileHover={{ scale: 1.05 }}
                             src="/LogoBranco.svg"
                             alt="BBLAW"
-                            style={{ height: '100px', width: 'auto', marginBottom: '32px' }}
+                            style={{ height: '120px', width: 'auto', marginBottom: '40px' }}
                         />
                     </Link>
                     <h1 style={{
-                        fontSize: '1.75rem',
-                        fontWeight: 800,
-                        letterSpacing: '-0.03em',
-                        marginBottom: '12px'
+                        fontSize: '2rem',
+                        fontWeight: 300,
+                        letterSpacing: '-0.02em',
+                        marginBottom: '16px',
+                        color: 'rgba(255,255,255,0.9)'
                     }}>
-                        Acesso Restrito
+                        Acesso <span style={{ fontWeight: 800 }}>Restrito</span>
                     </h1>
                     <p style={{
-                        fontSize: '0.9rem',
-                        color: 'rgba(255, 255, 255, 0.4)',
-                        lineHeight: 1.5
+                        fontSize: '0.85rem',
+                        color: 'rgba(255, 255, 255, 0.3)',
+                        lineHeight: 1.6,
+                        maxWidth: '280px',
+                        margin: '0 auto'
                     }}>
-                        Portal de formulários estratégicos para segurança patrimonial.
+                        Portal de formulários estratégicos para segurança patrimonial e jurídica.
                     </p>
                 </div>
 
-                {error && (
-                    <div style={{
-                        background: 'rgba(255, 68, 68, 0.1)',
-                        border: '1px solid rgba(255, 68, 68, 0.2)',
-                        color: '#ff4444',
-                        padding: '12px',
-                        borderRadius: '12px',
-                        marginBottom: '24px',
-                        fontSize: '0.8125rem',
-                        fontWeight: 700,
-                        letterSpacing: '0.05em'
-                    }}>
-                        {error}
+                <AnimatePresence>
+                    {error && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            style={{
+                                background: 'rgba(255, 68, 68, 0.05)',
+                                border: '1px solid rgba(255, 68, 68, 0.15)',
+                                color: '#ff4444',
+                                padding: '14px 20px',
+                                borderRadius: '12px',
+                                marginBottom: '24px',
+                                fontSize: '0.8rem',
+                                fontWeight: 700,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px'
+                            }}
+                        >
+                            <AlertCircle size={16} />
+                            {error}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <form onSubmit={handleCredentialsLogin} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ position: 'relative' }}>
+                        <Mail size={14} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', opacity: 0.2 }} />
+                        <input
+                            type="email"
+                            placeholder="E-MAIL INSTITUCIONAL"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            style={{
+                                width: '100%',
+                                background: 'rgba(255,255,255,0.02)',
+                                border: '1px solid rgba(255, 255, 255, 0.05)',
+                                borderRadius: '14px',
+                                padding: '18px 20px 18px 50px',
+                                color: '#fff',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                letterSpacing: '0.05em',
+                                outline: 'none',
+                                transition: 'border 0.3s ease'
+                            }}
+                            onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
+                            onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)')}
+                        />
                     </div>
-                )}
 
-                <form onSubmit={handleCredentialsLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <input
-                        type="email"
-                        placeholder="E-MAIL INSTITUCIONAL"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        style={{
-                            width: '100%',
-                            background: '#050505',
-                            border: '1px solid rgba(255, 255, 255, 0.05)',
-                            borderRadius: '12px',
-                            padding: '18px 24px',
-                            color: '#fff',
-                            fontSize: '0.75rem',
-                            fontWeight: 700,
-                            letterSpacing: '0.1em'
-                        }}
-                    />
-
-                    <input
-                        type="password"
-                        placeholder="SENHA DE ACESSO"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        style={{
-                            width: '100%',
-                            background: '#050505',
-                            border: '1px solid rgba(255, 255, 255, 0.05)',
-                            borderRadius: '12px',
-                            padding: '18px 24px',
-                            color: '#fff',
-                            fontSize: '0.75rem',
-                            fontWeight: 700,
-                            letterSpacing: '0.1em'
-                        }}
-                    />
+                    <div style={{ position: 'relative' }}>
+                        <Lock size={14} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', opacity: 0.2 }} />
+                        <input
+                            type="password"
+                            placeholder="SENHA DE ACESSO"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            style={{
+                                width: '100%',
+                                background: 'rgba(255,255,255,0.02)',
+                                border: '1px solid rgba(255, 255, 255, 0.05)',
+                                borderRadius: '14px',
+                                padding: '18px 20px 18px 50px',
+                                color: '#fff',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                letterSpacing: '0.05em',
+                                outline: 'none',
+                                transition: 'border 0.3s ease'
+                            }}
+                            onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
+                            onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)')}
+                        />
+                    </div>
 
                     <Link
                         href="/auth/forgot-password"
@@ -157,85 +210,97 @@ export default function SignInPage() {
                             color: 'rgba(255, 255, 255, 0.3)',
                             fontWeight: 700,
                             textDecoration: 'none',
-                            marginTop: '-4px'
+                            marginTop: '4px',
+                            letterSpacing: '0.05em'
                         }}
                     >
                         ESQUECEU SUA SENHA?
                     </Link>
 
-                    <button
+                    <motion.button
                         type="submit"
                         disabled={loading}
+                        whileHover={{ scale: 1.01, background: '#fff', color: '#000' }}
+                        whileTap={{ scale: 0.98 }}
                         style={{
-                            background: '#fff',
-                            color: '#000',
-                            border: 'none',
+                            background: 'transparent',
+                            color: '#fff',
+                            border: '1px solid rgba(255,255,255,0.8)',
                             borderRadius: '100px',
                             padding: '18px',
-                            fontSize: '0.875rem',
+                            fontSize: '0.9rem',
                             fontWeight: 900,
-                            letterSpacing: '0.1em',
+                            letterSpacing: '0.15em',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            marginTop: '12px'
+                            marginTop: '20px',
+                            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
                         }}
                     >
-                        {loading ? 'PROCESSANDO...' : 'CONECTAR'}
-                    </button>
+                        {loading ? <Loader2 className="animate-spin" size={20} /> : 'CONECTAR ACESSO'}
+                    </motion.button>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: '24px 0', opacity: 0.1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: '30px 0', opacity: 0.1 }}>
                         <div style={{ flex: 1, height: '1px', background: '#fff' }}></div>
-                        <span style={{ fontSize: '0.625rem', fontWeight: 900, letterSpacing: '0.2em' }}>OU</span>
+                        <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.4em' }}>OU</span>
                         <div style={{ flex: 1, height: '1px', background: '#fff' }}></div>
                     </div>
 
-                    <button
+                    <motion.button
                         type="button"
                         onClick={handleGoogleLogin}
+                        whileHover={{ background: 'rgba(255,255,255,0.05)' }}
                         style={{
                             background: 'transparent',
                             color: 'rgba(255, 255, 255, 0.6)',
                             border: '1px solid rgba(255, 255, 255, 0.1)',
                             borderRadius: '100px',
-                            padding: '14px',
-                            fontSize: '0.7rem',
+                            padding: '16px',
+                            fontSize: '0.75rem',
                             fontWeight: 800,
-                            letterSpacing: '0.05em',
-                            cursor: 'pointer'
+                            letterSpacing: '0.1em',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px'
                         }}
                     >
-                        AUTH GOOGLE
-                    </button>
+                        AUTH VIA GOOGLE
+                    </motion.button>
 
                     <Link
                         href="/auth/signup"
                         style={{
                             background: 'none',
                             border: 'none',
-                            color: 'rgba(255, 255, 255, 0.4)',
-                            fontSize: '0.625rem',
+                            color: 'rgba(255, 255, 255, 0.3)',
+                            fontSize: '0.65rem',
                             fontWeight: 800,
                             letterSpacing: '0.1em',
                             textTransform: 'uppercase',
                             textDecoration: 'none',
-                            marginTop: '24px'
+                            marginTop: '32px',
+                            transition: 'color 0.3s'
                         }}
+                        onMouseOver={(e) => (e.currentTarget.style.color = '#fff')}
+                        onMouseOut={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
                     >
-                        AINDA NÃO POSSUI ACESSO? CRIAR CONTA
+                        AINDA NÃO POSSUI ACESSO? <span style={{ color: '#fff', textDecoration: 'underline' }}>CRIAR CONTA</span>
                     </Link>
                 </form>
             </motion.div>
 
-            <footer style={{ marginTop: 'auto', padding: '40px 0', textAlign: 'center', width: '100%' }}>
+            <footer style={{ marginTop: 'auto', padding: '60px 0', textAlign: 'center', width: '100%', zIndex: 1 }}>
                 <p style={{
-                    color: 'rgba(255, 255, 255, 0.2)',
-                    fontSize: '0.625rem',
+                    color: 'rgba(255, 255, 255, 0.15)',
+                    fontSize: '0.6rem',
                     fontWeight: 700,
-                    letterSpacing: '0.1rem'
+                    letterSpacing: '0.2rem'
                 }}>
-                    © 2025 BBLAW. TODOS OS DIREITOS RESERVADOS.
+                    © 2025 BBLAW. EXCELÊNCIA EM SEGURANÇA JURÍDICA.
                 </p>
             </footer>
 
@@ -243,6 +308,9 @@ export default function SignInPage() {
                 @keyframes spin {
                     from { transform: rotate(0deg); }
                     to { transform: rotate(360deg); }
+                }
+                .animate-spin {
+                    animation: spin 1s linear infinite;
                 }
             `}</style>
         </div>

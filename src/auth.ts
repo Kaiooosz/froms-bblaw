@@ -45,18 +45,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     });
 
                     if (!user) {
+                        console.log(`AUTH_FAIL: Usuário não encontrado -> ${inputEmail}`);
                         return null;
                     }
 
                     if (!user.password) {
+                        console.log(`AUTH_FAIL: Usuário sem senha cadastrada -> ${inputEmail}`);
                         return null;
                     }
 
                     const isValid = await bcrypt.compare(inputPassword, user.password);
                     if (!isValid) {
+                        console.log(`AUTH_FAIL: Senha incorreta para -> ${inputEmail}`);
                         return null;
                     }
 
+                    console.log(`AUTH_SUCCESS: ${inputEmail} login realizado.`);
                     return {
                         id: user.id,
                         email: user.email,
