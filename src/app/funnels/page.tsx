@@ -10,7 +10,7 @@ import {
 import styles from '@/styles/Funnels.module.css';
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import SignOutButton from '@/app/funnels/SignOutButton';
+import UserMenu from '@/app/funnels/UserMenu';
 
 const funnels = [
     {
@@ -85,10 +85,7 @@ export default async function FunnelsPage() {
             <nav className={styles.nav}>
                 <img src="/LogoBranco.svg" alt="BBLAW" className={styles.navLogo} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                    <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>
-                        Olá, <span style={{ fontWeight: 800, color: '#fff' }}>{session?.user?.name}</span>
-                    </div>
-                    <SignOutButton />
+                    <UserMenu userName={session?.user?.name || ''} />
                 </div>
             </nav>
 
