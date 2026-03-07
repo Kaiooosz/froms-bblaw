@@ -117,7 +117,7 @@ export default function AdminDashboard() {
                     </div>
                     <button
                         onClick={async () => {
-                            await signOut({ redirect: true, callbackUrl: '/auth/signin' });
+                            await signOut({ redirect: true, callbackUrl: '/' });
                         }}
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, transition: 'opacity 0.2s', padding: '0.5rem' }}
                         onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}

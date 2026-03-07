@@ -6,7 +6,7 @@ import styles from '@/styles/Funnels.module.css';
 
 export default function SignOutButton() {
     const handleSignOut = async () => {
-        await signOut({ redirect: true, callbackUrl: '/auth/signin' });
+        await signOut({ redirect: true, callbackUrl: '/' });
     };
 
     return (
