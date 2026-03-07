@@ -43,7 +43,7 @@ export default function NotFound() {
                         Não foi possível encontrar o que você procurava. Por favor, volte para o início.
                     </p>
 
-                    <Link href="/" style={{
+                    <Link href="/auth/signin" style={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -60,7 +60,7 @@ export default function NotFound() {
                         onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
                         onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                     >
-                        <ArrowLeft size={16} /> VOLTAR PARA O INÍCIO
+                        <ArrowLeft size={16} /> TENTAR LOGAR NOVAMENTE
                     </Link>
                 </div>
 
