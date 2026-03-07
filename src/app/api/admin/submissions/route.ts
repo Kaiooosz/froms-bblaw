@@ -5,18 +5,22 @@ import { NextResponse } from "next/server"
 export async function GET() {
     try {
         const session = await auth()
-        const userEmail = (session?.user?.email || "").toLowerCase().trim()
-        const adminEmail = (process.env.ADMIN_EMAIL || "").replace(/"/g, "").trim().toLowerCase()
-        const isAdmin = (session?.user as any)?.role === "ADMIN" ||
-            userEmail === adminEmail ||
-            userEmail === "bezerraborges@gmail.com" ||
-            userEmail.includes("bezerraborges")
 
-        if (!session || !isAdmin) {
-            return NextResponse.json({ message: "Acesso negado" }, { status: 403 })
+        if (!session) {
+            return NextResponse.json({ message: "Não autenticado" }, { status: 401 })
         }
 
-        const submissions = await (prisma as any).submission.findMany({
+        const userEmail = (session.user?.email || "").toLowerCase().trim()
+        const adminEmail = (process.env.ADMIN_EMAIL || "").replace(/"/g, "").trim().toLowerCase()
+        const isAdmin = (session.user as any)?.role === "ADMIN" ||
+            userEmail === adminEmail ||
+            userEmail === "bezerraborges@gmail.com"
+
+        if (!isAdmin) {
+            return NextResponse.json({ message: "Acesso negado: Somente administradores" }, { status: 403 })
+        }
+
+        const submissions = await prisma.submission.findMany({
             include: {
                 user: {
                     select: {
@@ -36,8 +40,12 @@ export async function GET() {
         })
 
         return NextResponse.json(submissions)
-    } catch (error) {
-        console.error("Admin fetch error:", error)
-        return NextResponse.json({ message: "Erro ao buscar dados" }, { status: 500 })
+    } catch (error: any) {
+        console.error("DEBUG: FETCH_SUBMISSIONS_ERROR:", error)
+        return NextResponse.json({
+            message: "Erro interno ao buscar protocolos",
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        }, { status: 500 })
     }
 }
