@@ -26,10 +26,14 @@ export default function SignInPage() {
                 redirect: false,
             });
 
+            console.log("SIGN_IN_RESULT:", result);
+
             if (result?.error) {
+                console.log("SIGN_IN_ERROR:", result.error);
                 setError('Credenciais inválidas.');
                 setLoading(false);
             } else {
+                console.log("SIGN_IN_SUCCESS: Redirecting to /dashboard");
                 window.location.href = '/dashboard';
             }
         } catch (loginErr) {
@@ -161,15 +165,10 @@ export default function SignInPage() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '12px',
                             marginTop: '12px'
                         }}
                     >
-                        {loading ? <Loader2 style={{ animation: 'spin 1s linear infinite' }} /> : (
-                            <>
-                                CONECTAR <ArrowRight size={18} />
-                            </>
-                        )}
+                        {loading ? 'PROCESSANDO...' : 'CONECTAR'}
                     </button>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: '24px 0', opacity: 0.1 }}>

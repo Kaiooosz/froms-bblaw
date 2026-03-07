@@ -48,19 +48,20 @@ export default function AdminDashboard() {
     useEffect(() => {
         const checkAuth = () => {
             if (status === 'loading') return;
+            if (!session) {
+                router.push('/auth/signin');
+                return;
+            }
 
-            const userEmail = (session?.user?.email || '').toLowerCase().trim();
-            const adminEnv = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'bezerraborges@gmail.com').toLowerCase().trim();
-            const role = String((session?.user as any)?.role || "").toUpperCase();
+            const userEmail = (session.user?.email || "").toLowerCase().trim();
+            const role = (session.user as any)?.role;
 
-            const isActuallyAdmin = role === 'ADMIN' ||
-                userEmail === adminEnv ||
-                userEmail === 'bezerraborges@gmail.com' ||
-                userEmail.includes('bezerraborges');
+            const isActuallyAdmin = role === "ADMIN" || userEmail === "bezerraborges@gmail.com";
 
-            if (status === 'unauthenticated' || (!isActuallyAdmin && status === 'authenticated')) {
-                window.location.href = '/auth/signin';
-            } else if (isActuallyAdmin) {
+            if (!isActuallyAdmin) {
+                console.log("CLIENT_SIDE_ADMIN_CHECK_FAILED:", { userEmail, role });
+                router.push('/dashboard')
+            } else {
                 fetchSubmissions();
                 fetchLeads();
                 fetchUsers();
@@ -391,7 +392,7 @@ export default function AdminDashboard() {
                             ) : activeTab === 'WEBHOOKS' ? (
                                 <div style={{ padding: '4rem', textAlign: 'center' }}>
                                     <div style={{ display: 'inline-flex', padding: '2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', marginBottom: '2rem' }}>
-                                        <ShieldCheck size={48} color="#44ff44" />
+                                        <ShieldCheck size={48} color="#fff" />
                                     </div>
                                     <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1rem' }}>Integração n8n MindTech Ativa</h3>
                                     <p style={{ fontSize: '0.9rem', opacity: 0.4, maxWidth: '500px', margin: '0 auto 3rem' }}>

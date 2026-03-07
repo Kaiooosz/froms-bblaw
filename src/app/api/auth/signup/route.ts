@@ -4,7 +4,8 @@ import bcrypt from "bcryptjs"
 
 export async function POST(request: Request) {
     try {
-        const { name, email, password, document, birthDate, phone, origemLead } = await request.json()
+        const { name, email: rawEmail, password, document, birthDate, phone, origemLead } = await request.json()
+        const email = (rawEmail || "").toLowerCase().trim()
 
         if (!email || !password || !name) {
             return NextResponse.json({ message: "Dados incompletos" }, { status: 400 })
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
                 birthDate,
                 phone,
                 origemLead: origemLead || "DIRETO",
-                role: "USER"
+                role: "CLIENT"
             }
         })
 

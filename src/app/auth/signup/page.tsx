@@ -233,15 +233,10 @@ export default function SignUpPage() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '12px',
                             marginTop: '12px'
                         }}
                     >
-                        {loading ? <Loader2 style={{ animation: 'spin 1s linear infinite' }} /> : (
-                            <>
-                                CADASTRAR <ArrowRight size={18} />
-                            </>
-                        )}
+                        {loading ? 'CADASTRANDO...' : 'CADASTRAR'}
                     </button>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: '24px 0', opacity: 0.1 }}>

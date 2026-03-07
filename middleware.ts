@@ -3,21 +3,21 @@ import { NextResponse } from "next/server"
 
 export default auth((req) => {
     const isLoggedIn = !!req.auth
-    const isDashboardPage = req.nextUrl.pathname.startsWith("/dashboard")
-    const isAdminPage = req.nextUrl.pathname.startsWith("/admin")
-    const isAuthPage = req.nextUrl.pathname.startsWith("/auth")
-    const isFormPage = req.nextUrl.pathname.startsWith("/form")
-    const isFunnelsPage = req.nextUrl.pathname.startsWith("/funnels")
+    const pathname = req.nextUrl.pathname
+
+    console.log("MIDDLEWARE_CHECK:", { pathname, isLoggedIn, user: req.auth?.user?.email, role: (req.auth?.user as any)?.role })
+
+    const isDashboardPage = pathname.startsWith("/dashboard")
+    const isAdminPage = pathname.startsWith("/admin")
+    const isAuthPage = pathname.startsWith("/auth")
+    const isFormPage = pathname.startsWith("/form")
+    const isFunnelsPage = pathname.startsWith("/funnels")
 
     if (isAdminPage) {
         if (!isLoggedIn) return NextResponse.redirect(new URL("/auth/signin", req.nextUrl))
 
         const userEmail = (req.auth?.user?.email || "").toLowerCase().trim()
-        const adminEmail = (process.env.ADMIN_EMAIL || "").replace(/"/g, "").trim().toLowerCase()
-        const isActuallyAdmin = (req.auth?.user as any)?.role === "ADMIN" ||
-            userEmail === adminEmail ||
-            userEmail === "bezerraborges@gmail.com" ||
-            userEmail.includes("bezerraborges")
+        const isActuallyAdmin = (req.auth?.user as any)?.role === "ADMIN" || userEmail === "bezerraborges@gmail.com";
 
         if (!isActuallyAdmin) {
             return NextResponse.redirect(new URL("/funnels", req.nextUrl))

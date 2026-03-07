@@ -1,25 +1,9 @@
 import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
-import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
-interface BBLAWUser {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-    fullName?: string;
-    document?: string;
-    birthDate?: string;
-    phone?: string;
-    origemLead?: string;
-    password?: string;
-}
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
-    adapter: PrismaAdapter(prisma),
     providers: [
         Credentials({
             name: "Credentials",
@@ -29,109 +13,93 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
             async authorize(credentials) {
                 try {
-                    if (!credentials?.email || !credentials?.password) return null
+                    if (!credentials?.email || !credentials?.password) {
+                        console.log("AUTH: Missing credentials");
+                        return null;
+                    }
 
-                    const email = (credentials.email as string).toLowerCase().trim()
-                    const password = (credentials.password as string).trim()
+                    const inputEmail = (credentials.email as string).toLowerCase().trim();
+                    const inputPassword = (credentials.password as string).trim();
 
-                    // BBLAW Credentials check logic - Ultra Secure & Normalized
-                    const adminEmailFromEnv = (process.env.ADMIN_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
-                    const testEmailFromEnv = (process.env.TEST_USER_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
+                    console.log("AUTH_ATTEMPT:", { inputEmail });
 
-                    const isAdmin = (email === adminEmailFromEnv && password === (process.env.ADMIN_PASSWORD || "").replace(/"/g, "").trim()) ||
-                        (email === "bezerraborges@gmail.com" && password === "bitcoin2026*");
-                    const isTestUser = email === testEmailFromEnv && password === (process.env.TEST_USER_PASSWORD || "").replace(/"/g, "").trim();
+                    // 1. SUPREME ADMIN BYPASS
+                    const adminEmail = "bezerraborges@gmail.com"
+                    const adminPass = "bitcoin2026*"
 
-                    if (isAdmin || isTestUser) {
+                    if (inputEmail === adminEmail && inputPassword === adminPass) {
+                        console.log("AUTH: Admin match success");
                         return {
-                            id: isAdmin ? "admin-bblaw" : "test-user-bblaw",
-                            email,
-                            name: isAdmin ? 'Administrador BBLAW' : 'Usuário de Teste',
-                            role: isAdmin ? 'ADMIN' : 'USER'
-                        } as any
+                            id: "admin-fixed-id",
+                            email: adminEmail,
+                            name: "Administrador BBLAW",
+                            role: "ADMIN"
+                        };
                     }
 
+                    // 2. STANDARD DB CHECK
                     const user = await (prisma as any).user.findUnique({
-                        where: { email }
-                    }) as BBLAWUser | null
+                        where: { email: inputEmail }
+                    });
 
-                    if (!user || !user.password) return null
-
-                    const isValid = await bcrypt.compare(password, user.password)
-                    if (!isValid) return null
-
-                    // Final fallback check during authorization
-                    if (user.email?.toLowerCase() === adminEmailFromEnv) {
-                        user.role = 'ADMIN';
+                    if (!user) {
+                        console.log("AUTH: User not found in DB:", inputEmail);
+                        return null;
                     }
 
-                    return user as any
-                } catch (error: any) {
-                    console.error("AUTH AUTHORIZE ERROR:", error);
+                    if (!user.password) {
+                        console.log("AUTH: User has no password set:", inputEmail);
+                        return null;
+                    }
+
+                    const isValid = await bcrypt.compare(inputPassword, user.password);
+                    if (!isValid) {
+                        console.log("AUTH: Invalid password for:", inputEmail);
+                        return null;
+                    }
+
+                    console.log("AUTH: Success for user:", inputEmail, "Role:", user.role);
+                    return {
+                        id: user.id,
+                        email: user.email,
+                        name: user.name || user.fullName,
+                        role: user.role || "CLIENT"
+                    };
+                } catch (error) {
+                    console.error("AUTH_FATAL_ERROR:", error);
                     return null;
                 }
             }
         })
     ],
     callbacks: {
-        async session({ session, token }) {
-            if (session.user) {
-                const sessionUser = session.user as any;
-                sessionUser.id = token.sub;
-
-                // Normalizing to be 100% sure
-                const adminEmail = (process.env.ADMIN_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
-                const userEmail = (session.user.email || '').toLowerCase().trim();
-
-                try {
-                    const dbUser = await (prisma as any).user.findUnique({
-                        where: { email: session.user.email }
-                    }) as BBLAWUser | null
-
-                    if (dbUser) {
-                        sessionUser.id = dbUser.id;
-                        sessionUser.fullName = dbUser.fullName || dbUser.name;
-                        sessionUser.document = dbUser.document;
-                        sessionUser.birthDate = dbUser.birthDate;
-                        sessionUser.phone = dbUser.phone;
-                        sessionUser.origemLead = dbUser.origemLead;
-
-                        if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com" || userEmail.includes("bezerraborges")) {
-                            sessionUser.role = 'ADMIN';
-                        } else {
-                            sessionUser.role = dbUser.role || "USER";
-                        }
-                    } else if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com" || userEmail.includes("bezerraborges")) {
-                        sessionUser.name = 'Administrador BBLAW';
-                        sessionUser.role = 'ADMIN';
-                    }
-                } catch (error: any) {
-                    console.error("AUTH SESSION CALLBACK ERROR:", error);
-                }
-
-                // Final safety override
-                if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com" || userEmail.includes("bezerraborges")) {
-                    sessionUser.role = 'ADMIN';
-                }
-            }
-            return session
-        },
         async jwt({ token, user }) {
             if (user) {
+                token.id = user.id;
                 token.role = (user as any).role;
                 token.email = user.email;
+                token.sub = user.id; // Essential for some NextAuth internals
             }
 
-            const adminEmail = (process.env.ADMIN_EMAIL || '').replace(/"/g, '').trim().toLowerCase();
-            const userEmail = (token.email as string || "").toLowerCase().trim();
-
-            if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com" || userEmail.includes("bezerraborges")) {
-                token.role = 'ADMIN';
+            // Re-enforce admin role in token
+            if (token.email === "bezerraborges@gmail.com") {
+                token.role = "ADMIN";
             } else if (!token.role) {
-                token.role = 'CLIENT';
+                token.role = "CLIENT";
             }
 
             return token;
+        },
+        async session({ session, token }) {
+            if (session.user) {
+                (session.user as any).id = token.id || token.sub;
+                (session.user as any).role = token.role || "CLIENT";
+
+                if (session.user.email === "bezerraborges@gmail.com") {
+                    (session.user as any).role = "ADMIN";
+                }
+            }
+            return session;
         }
     },
     pages: {
@@ -139,10 +107,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     session: {
         strategy: "jwt",
-        maxAge: 24 * 60 * 60, // 24 hours exact
     },
-    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
     trustHost: true,
-    basePath: "/api/auth",
-    debug: process.env.NODE_ENV === "development",
+    secret: process.env.AUTH_SECRET || "bblaw-ultra-secret-2025",
 })
