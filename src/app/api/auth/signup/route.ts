@@ -40,7 +40,10 @@ export async function POST(request: Request) {
             user: { id: user.id, email: user.email }
         })
     } catch (error: any) {
-        console.error("Signup error:", error)
-        return NextResponse.json({ message: "Erro ao criar conta" }, { status: 500 })
+        console.error("SIGNUP_API_CRITICAL_ERROR:", error);
+        return NextResponse.json({
+            message: "Erro interno ao processar cadastro",
+            details: error.message
+        }, { status: 500 })
     }
 }

@@ -56,7 +56,7 @@ export default function SignInPage() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '24px',
+            padding: '48px 24px',
             position: 'relative'
         }}>
             <motion.div
@@ -149,6 +149,20 @@ export default function SignInPage() {
                         }}
                     />
 
+                    <Link
+                        href="/auth/forgot-password"
+                        style={{
+                            alignSelf: 'flex-end',
+                            fontSize: '0.65rem',
+                            color: 'rgba(255, 255, 255, 0.3)',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                            marginTop: '-4px'
+                        }}
+                    >
+                        ESQUECEU SUA SENHA?
+                    </Link>
+
                     <button
                         type="submit"
                         disabled={loading}
@@ -214,12 +228,12 @@ export default function SignInPage() {
                 </form>
             </motion.div>
 
-            <footer style={{ position: 'absolute', bottom: '40px', textAlign: 'center' }}>
+            <footer style={{ marginTop: 'auto', padding: '40px 0', textAlign: 'center', width: '100%' }}>
                 <p style={{
                     color: 'rgba(255, 255, 255, 0.2)',
                     fontSize: '0.625rem',
                     fontWeight: 700,
-                    letterSpacing: '0.1em'
+                    letterSpacing: '0.1rem'
                 }}>
                     © 2025 BBLAW. TODOS OS DIREITOS RESERVADOS.
                 </p>

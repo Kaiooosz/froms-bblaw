@@ -34,22 +34,24 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  name          String?
-  email         String?      @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  fullName      String?
-  document      String?
-  birthDate     String?
-  role          String       @default("USER")
-  origemLead    String?      @default("DIRETO")
-  phone         String?
-  accounts      Account[]
-  sessions      Session[]
-  leads         Lead[]
-  submissions   Submission[]
+  id                String       @id @default(cuid())
+  name              String?
+  email             String?      @unique
+  emailVerified     DateTime?
+  image             String?
+  password          String?
+  fullName          String?
+  document          String?
+  birthDate         String?
+  role              String       @default("USER")
+  origemLead        String?      @default("DIRETO")
+  phone             String?
+  resetToken        String?      @unique
+  resetTokenExpires DateTime?
+  accounts          Account[]
+  sessions          Session[]
+  leads             Lead[]
+  submissions       Submission[]
 }
 
 model VerificationToken {

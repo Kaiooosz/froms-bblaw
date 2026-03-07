@@ -29,6 +29,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { funnelConfig } from '@/lib/funnels';
 import { useTheme } from '@/components/ThemeProvider';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import '@/app/forms.css';
 
 export default function AdminDashboard() {
@@ -120,6 +122,108 @@ export default function AdminDashboard() {
         (user.email || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const exportSubmissionPDF = (sub: any) => {
+        const doc = new jsPDF() as any;
+        const config = funnelConfig[sub.funnelType] || { title: sub.funnelType };
+
+        doc.setFontSize(22);
+        doc.text("DOSSIÊ DE PROTOCOLO BBLAW", 20, 25);
+        doc.setFontSize(10);
+        doc.text(`ID: ${sub.id}`, 20, 32);
+        doc.text(`Data: ${new Date(sub.createdAt).toLocaleString('pt-BR')}`, 20, 37);
+
+        doc.setFontSize(14);
+        doc.text("1. INFORMAÇÕES DO CLIENTE", 20, 50);
+        doc.autoTable({
+            startY: 55,
+            head: [['Campo', 'Informação']],
+            body: [
+                ['Nome', sub.user?.fullName || sub.user?.name || '—'],
+                ['E-mail', sub.user?.email || '—'],
+                ['Documento', sub.user?.document || '—'],
+                ['Contato', sub.user?.phone || '—'],
+                ['Prioridade', sub.priority || 'NORMAL'],
+                ['Score', String(sub.score || '0')],
+            ],
+            theme: 'grid',
+            headStyles: { fillColor: [30, 30, 30] }
+        });
+
+        doc.setFontSize(14);
+        doc.text("2. RESPOSTAS DO FORMULÁRIO", 20, doc.lastAutoTable.finalY + 20);
+
+        const responseData = Object.entries(sub.data).map(([k, v]) => [
+            k.replace(/_/g, ' ').toUpperCase(),
+            Array.isArray(v) ? v.join(', ') : (typeof v === 'object' ? 'Documento/Arquivo' : String(v))
+        ]);
+
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 25,
+            head: [['Pergunta', 'Resposta']],
+            body: responseData,
+            theme: 'striped',
+            headStyles: { fillColor: [60, 60, 60] }
+        });
+
+        doc.save(`protocolo_${sub.id}.pdf`);
+    };
+
+    const exportLeadPDF = (lead: any) => {
+        const doc = new jsPDF() as any;
+
+        doc.setFontSize(22);
+        doc.text("DETALHAMENTO DE LEAD BBLAW", 20, 25);
+        doc.setFontSize(10);
+        doc.text(`Data: ${new Date(lead.createdAt).toLocaleString('pt-BR')}`, 20, 32);
+
+        doc.setFontSize(14);
+        doc.text("DADOS PESSOAIS E CADASTRAIS", 20, 50);
+
+        const leadData = Object.entries(lead).map(([k, v]) => [
+            k.replace(/_/g, ' ').toUpperCase(),
+            Array.isArray(v) ? v.join(', ') : String(v || '—')
+        ]).filter(([k]) => !['ID', 'CREATEDAT', 'USERID', 'USER'].includes(k));
+
+        doc.autoTable({
+            startY: 55,
+            head: [['Chave', 'Valor Gravado']],
+            body: leadData,
+            theme: 'grid',
+            headStyles: { fillColor: [40, 40, 40] }
+        });
+
+        doc.save(`lead_detalhado_${lead.id}.pdf`);
+    };
+
+    const exportListPDF = (type: 'LEADS' | 'SUBMISSIONS') => {
+        const doc = new jsPDF() as any;
+        const data = type === 'LEADS' ? filteredLeads : filteredSubmissions;
+        const title = type === 'LEADS' ? "LISTAGEM DE LEADS BBLAW" : "LISTAGEM DE PROTOCOLOS BBLAW";
+
+        doc.setFontSize(20);
+        doc.text(title, 20, 20);
+        doc.setFontSize(10);
+        doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 20, 28);
+
+        const tableHead = type === 'LEADS'
+            ? [['Nome', 'Email', 'WhatsApp', 'Data']]
+            : [['Cliente', 'Fluxo', 'Status', 'Data']];
+
+        const tableBody = type === 'LEADS'
+            ? data.map(l => [l.nome_completo_pessoal, l.email, l.whatsapp, new Date(l.createdAt).toLocaleDateString('pt-BR')])
+            : data.map(s => [s.user?.fullName || s.user?.name, funnelConfig[s.funnelType]?.title || s.funnelType, s.priority, new Date(s.createdAt).toLocaleDateString('pt-BR')]);
+
+        doc.autoTable({
+            startY: 35,
+            head: tableHead,
+            body: tableBody,
+            theme: 'grid',
+            headStyles: { fillColor: [0, 0, 0] }
+        });
+
+        doc.save(`${type.toLowerCase()}_bblaw_${Date.now()}.pdf`);
+    };
+
     const exportToCSV = (data: any[], fileName: string) => {
         if (!data || !data.length) return;
         const headers = Object.keys(data[0]).join(',');
@@ -175,13 +279,19 @@ export default function AdminDashboard() {
                     </div>
                     <button
                         onClick={() => {
-                            signOut({ callbackUrl: '/auth/signin' });
+                            signOut({ callbackUrl: '/auth/signin', redirect: true });
                         }}
-                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, transition: 'opacity 0.2s', padding: '0.5rem' }}
-                        onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
-                        onMouseOut={(e) => (e.currentTarget.style.opacity = '0.5')}
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem', fontWeight: 900, color: '#ff4b4b', transition: 'all 0.2s', padding: '1rem', background: 'rgba(255,75,75,0.05)', borderRadius: '12px', border: '1px solid rgba(255,75,75,0.1)' }}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.background = 'rgba(255,75,75,0.1)';
+                            e.currentTarget.style.borderColor = 'rgba(255,75,75,0.2)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.background = 'rgba(255,75,75,0.05)';
+                            e.currentTarget.style.borderColor = 'rgba(255,75,75,0.1)';
+                        }}
                     >
-                        <LogOut size={16} /> SAIR E TROCAR USUÁRIO
+                        <LogOut size={18} /> DESCONECTAR ACESSO
                     </button>
                 </div>
             </aside>
@@ -218,31 +328,43 @@ export default function AdminDashboard() {
 
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             {activeTab === 'LEADS' && (
-                                <button
-                                    onClick={() => exportToCSV(leads, 'leads_bblaw')}
-                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.6rem 1.2rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                                >
-                                    <Download size={14} /> EXPORTAR LEADS (CSV)
-                                </button>
+                                <>
+                                    <button
+                                        onClick={() => exportListPDF('LEADS')}
+                                        style={{ background: '#fff', color: '#000', padding: '0.75rem 1.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'transform 0.2s' }}
+                                        onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                                        onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                    >
+                                        <Download size={16} /> PDF
+                                    </button>
+                                    <button
+                                        onClick={() => exportToCSV(leads, 'leads_bblaw')}
+                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.75rem 1.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'transform 0.2s' }}
+                                        onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                                        onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                    >
+                                        <Download size={16} /> CSV
+                                    </button>
+                                </>
                             )}
                             {activeTab === 'SUBMISSIONS' && (
                                 <>
                                     <button
-                                        onClick={() => exportToCSV(submissions, 'protocolos_bblaw')}
-                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.6rem 1.2rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                        onClick={() => exportListPDF('SUBMISSIONS')}
+                                        style={{ background: '#fff', color: '#000', padding: '0.75rem 1.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'transform 0.2s' }}
+                                        onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                                        onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                                     >
-                                        <Download size={14} /> EXPORTAR PROTOCOLOS
+                                        <Download size={16} /> PDF
                                     </button>
-                                    <select
-                                        style={{ background: '#111', border: '1px solid rgba(255,255,255,0.05)', padding: '0.5rem 1rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 800, outline: 'none', color: '#fff' }}
-                                        value={filterType}
-                                        onChange={(e) => setFilterType(e.target.value)}
+                                    <button
+                                        onClick={() => exportToCSV(submissions, 'protocolos_bblaw')}
+                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.75rem 1.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'transform 0.2s' }}
+                                        onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                                        onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                                     >
-                                        <option value="ALL">TODOS OS FILTROS</option>
-                                        {Object.keys(funnelConfig).map(id => (
-                                            <option key={id} value={id}>{funnelConfig[id].title.toUpperCase()}</option>
-                                        ))}
-                                    </select>
+                                        <Download size={16} /> CSV
+                                    </button>
                                 </>
                             )}
                         </div>
@@ -251,33 +373,33 @@ export default function AdminDashboard() {
                     {/* Espaço de Dados Estilo SaaS */}
                     {activeTab === 'OVERVIEW' ? (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: 'var(--foreground)', opacity: 0.5 }}>
+                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#fff' }}>
                                     <FileText size={24} />
-                                    <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>TOTAL DE LEADS</h3>
+                                    <h3 style={{ fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.9)' }}>TOTAL DE LEADS</h3>
                                 </div>
-                                <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>{leads.length}</p>
+                                <p style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, color: '#fff', textShadow: '0 4px 20px rgba(255,255,255,0.1)' }}>{leads.length}</p>
                             </div>
-                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: 'var(--foreground)', opacity: 0.5 }}>
+                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#fff' }}>
                                     <ClipboardList size={24} />
-                                    <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>PROTOCOLOS ATIVOS</h3>
+                                    <h3 style={{ fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.9)' }}>PROTOCOLOS ATIVOS</h3>
                                 </div>
-                                <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>{submissions.length}</p>
+                                <p style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, color: '#fff', textShadow: '0 4px 20px rgba(255,255,255,0.1)' }}>{submissions.length}</p>
                             </div>
-                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: 'var(--foreground)', opacity: 0.5 }}>
+                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#fff' }}>
                                     <Users size={24} />
-                                    <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>USUÁRIOS CADASTRADOS</h3>
+                                    <h3 style={{ fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.9)' }}>USUÁRIOS CADASTRADOS</h3>
                                 </div>
-                                <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>{users.length}</p>
+                                <p style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, color: '#fff', textShadow: '0 4px 20px rgba(255,255,255,0.1)' }}>{users.length}</p>
                             </div>
-                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#fff', opacity: 0.5 }}>
+                            <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#fff' }}>
                                     <ShieldCheck size={24} />
-                                    <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>LEADS VIP / ALTA PRIORIDADE</h3>
+                                    <h3 style={{ fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.9)' }}>LEADS VIP / ALTA PRIORIDADE</h3>
                                 </div>
-                                <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1, color: '#fff' }}>{submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length}</p>
+                                <p style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, color: '#fff', textShadow: '0 4px 20px rgba(255,255,255,0.1)' }}>{submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length}</p>
                             </div>
                         </div>
                     ) : (
@@ -535,6 +657,9 @@ export default function AdminDashboard() {
                             </div>
 
                             <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem' }}>
+                                <button onClick={() => exportSubmissionPDF(selectedSubmission)} style={{ flex: 1, padding: '1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 800, borderRadius: '100px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                                    <Download size={16} /> BAIXAR PDF
+                                </button>
                                 <button style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em' }}>MARCAR COMO PROCESSADO</button>
                                 <button onClick={() => setSelectedSubmission(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 800, color: '#fff', borderRadius: '100px', fontSize: '0.8rem' }}>FECHAR</button>
                             </footer>
@@ -589,6 +714,9 @@ export default function AdminDashboard() {
                             </div>
 
                             <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem' }}>
+                                <button onClick={() => exportLeadPDF(selectedLead)} style={{ flex: 1, padding: '1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 800, borderRadius: '100px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                                    <Download size={16} /> EXPORTAR DOSSIÊ PDF
+                                </button>
                                 <button onClick={() => setSelectedLead(null)} style={{ width: '100%', padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem' }}>FECHAR E RETORNAR</button>
                             </footer>
                         </motion.div>
