@@ -43,28 +43,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     const isTestUser = email === testEmailFromEnv && password === (process.env.TEST_USER_PASSWORD || "").replace(/"/g, "").trim();
 
                     if (isAdmin || isTestUser) {
-                        let user = await (prisma as any).user.findUnique({
-                            where: { email }
-                        })
-
-                        if (!user) {
-                            user = await (prisma as any).user.create({
-                                data: {
-                                    email,
-                                    name: isAdmin ? 'Administrador BBLAW' : 'Usuário de Teste',
-                                    fullName: isAdmin ? 'Administrador BBLAW' : 'Usuário de Teste',
-                                    role: isAdmin ? 'ADMIN' : 'USER',
-                                    password: await bcrypt.hash(password, 10)
-                                }
-                            })
-                        } else if (isAdmin && user.role !== 'ADMIN') {
-                            user = await (prisma as any).user.update({
-                                where: { email },
-                                data: { role: 'ADMIN' }
-                            })
-                        }
-
-                        return { ...user, role: isAdmin ? 'ADMIN' : 'USER' } as any
+                        return {
+                            id: isAdmin ? "admin-bblaw" : "test-user-bblaw",
+                            email,
+                            name: isAdmin ? 'Administrador BBLAW' : 'Usuário de Teste',
+                            role: isAdmin ? 'ADMIN' : 'USER'
+                        } as any
                     }
 
                     const user = await (prisma as any).user.findUnique({
@@ -143,6 +127,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
             if (userEmail === adminEmail || userEmail === "bezerraborges@gmail.com" || userEmail.includes("bezerraborges")) {
                 token.role = 'ADMIN';
+            } else if (!token.role) {
+                token.role = 'CLIENT';
             }
 
             return token;

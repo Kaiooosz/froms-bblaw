@@ -20,8 +20,7 @@ export default auth((req) => {
             userEmail.includes("bezerraborges")
 
         if (!isActuallyAdmin) {
-            const redirectUrl = ((req.auth?.user as any)?.role === "USER" || (req.auth?.user as any)?.role === "CLIENT") ? "/funnels" : "/dashboard"
-            return NextResponse.redirect(new URL(redirectUrl, req.nextUrl))
+            return NextResponse.redirect(new URL("/funnels", req.nextUrl))
         }
         return NextResponse.next()
     }

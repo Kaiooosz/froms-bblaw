@@ -272,11 +272,11 @@ export default function AdminDashboard() {
                                 <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>{users.length}</p>
                             </div>
                             <div style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#ff4444', opacity: 0.8 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#fff', opacity: 0.5 }}>
                                     <ShieldCheck size={24} />
                                     <h3 style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em' }}>LEADS VIP / ALTA PRIORIDADE</h3>
                                 </div>
-                                <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1, color: '#ff4444' }}>{submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length}</p>
+                                <p style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1, color: '#fff' }}>{submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length}</p>
                             </div>
                         </div>
                     ) : (
@@ -371,8 +371,8 @@ export default function AdminDashboard() {
                                                         <StatusBadge priority={sub.priority} />
                                                     </AdminTd>
                                                     <AdminTd>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#44ff44', fontSize: '0.6rem', fontWeight: 900 }}>
-                                                            <div style={{ width: '4px', height: '4px', background: '#44ff44', borderRadius: '50%' }} />
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', fontSize: '0.6rem', fontWeight: 900, opacity: 0.6 }}>
+                                                            <div style={{ width: '4px', height: '4px', background: '#fff', borderRadius: '50%' }} />
                                                             SINCRONIZADO
                                                         </div>
                                                     </AdminTd>
@@ -406,7 +406,7 @@ export default function AdminDashboard() {
                                         <div style={{ display: 'flex', gap: '2rem' }}>
                                             <div>
                                                 <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Status da Conexão</p>
-                                                <p style={{ fontSize: '0.8rem', fontWeight: 800, color: '#44ff44' }}>ESTÁVEL / ONLINE</p>
+                                                <p style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff' }}>ESTÁVEL / ONLINE</p>
                                             </div>
                                             <div>
                                                 <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Latência Média</p>
@@ -617,8 +617,8 @@ function AdminTd({ children, align = 'left' }: any) {
 function StatusBadge({ priority }: any) {
     const isHigh = priority === 'ALTA' || priority === 'URGENTE' || priority === 'VIP';
     return (
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '4px 12px', borderRadius: '100px', background: isHigh ? 'rgba(255,0,0,0.1)' : 'rgba(0,255,0,0.05)', color: isHigh ? '#ff4444' : '#44ff44', fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            <div style={{ width: '6px', height: '6px', background: 'currentColor', borderRadius: '50%' }} />
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '4px 12px', borderRadius: '100px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', border: isHigh ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ width: '6px', height: '6px', background: '#fff', borderRadius: '50%', opacity: isHigh ? 1 : 0.2 }} />
             {priority || 'NORMAL'}
         </div>
     );
