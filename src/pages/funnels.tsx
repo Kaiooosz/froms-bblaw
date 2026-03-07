@@ -62,13 +62,20 @@ import { useEffect } from 'react';
 
 export default function FunnelsPage() {
     const { data: session, status } = useSession();
-    const router = useRouter();
 
     useEffect(() => {
+        let timeout: NodeJS.Timeout;
+
         if (status === 'unauthenticated') {
-            router.replace('/auth/signin');
+            window.location.href = '/auth/signin';
+        } else if (status === 'loading') {
+            timeout = setTimeout(() => {
+                window.location.href = '/auth/signin';
+            }, 5000);
         }
-    }, [status, router]);
+
+        return () => clearTimeout(timeout);
+    }, [status]);
 
     if (status === 'loading' || status === 'unauthenticated') {
         return <div style={{ minHeight: '100vh', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Carregando...</div>;

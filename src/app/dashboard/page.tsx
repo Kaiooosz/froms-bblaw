@@ -10,17 +10,26 @@ export default function DashboardRouter() {
     const router = useRouter();
 
     useEffect(() => {
+        let timeout: NodeJS.Timeout;
+
         if (status === 'unauthenticated') {
-            router.replace('/auth/signin');
+            window.location.href = '/auth/signin';
         } else if (status === 'authenticated') {
             const role = (session?.user as any)?.role;
             if (role === 'ADMIN') {
-                router.replace('/admin/dashboard');
+                window.location.href = '/admin/dashboard';
             } else {
-                router.replace('/funnels'); // Client dashboard / Form selection
+                window.location.href = '/funnels';
             }
+        } else if (status === 'loading') {
+            // Safety fallback: if NextAuth hangs for more than 5 seconds, force login
+            timeout = setTimeout(() => {
+                window.location.href = '/auth/signin';
+            }, 5000);
         }
-    }, [status, session, router]);
+
+        return () => clearTimeout(timeout);
+    }, [status, session]);
 
     return (
         <div style={{

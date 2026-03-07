@@ -30,15 +30,7 @@ export default function SignInPage() {
                 setError('Credenciais inválidas.');
                 setLoading(false);
             } else {
-                // Fetch session to check role
-                const res = await fetch('/api/auth/session');
-                const session = await res.json();
-
-                if (session?.user?.role === 'ADMIN') {
-                    router.push('/admin/dashboard');
-                } else {
-                    router.push('/funnels');
-                }
+                window.location.href = '/dashboard';
             }
         } catch (loginErr) {
             setError('Falha na autenticação.');
@@ -47,7 +39,7 @@ export default function SignInPage() {
     };
 
     const handleGoogleLogin = () => {
-        signIn('google', { callbackUrl: '/funnels' });
+        signIn('google', { callbackUrl: '/dashboard' });
     };
 
     return (
