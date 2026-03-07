@@ -6,7 +6,7 @@ import styles from '@/styles/Funnels.module.css';
 
 export default function SignOutButton() {
     return (
-        <div className={styles.userInfo} style={{ cursor: 'pointer' }} onClick={() => signOut({ callbackUrl: '/' })}>
+        <div className={styles.userInfo} style={{ cursor: 'pointer' }} onClick={() => signOut({ callbackUrl: '/auth/signin' })}>
             <div className={styles.userIcon}><User size={16} /></div>
             <span>SAIR</span>
         </div>
