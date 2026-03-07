@@ -106,7 +106,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async redirect({ url, baseUrl }) {
             // Força redirecionamento para /funnels após o login
             if (url.startsWith("/")) return `${baseUrl}${url}`;
-            if (url === baseUrl || url.includes('/auth/signin')) return `${baseUrl}/funnels`;
+            if (url === baseUrl || url.includes('/auth/signin')) return baseUrl;
             return url;
         }
     },

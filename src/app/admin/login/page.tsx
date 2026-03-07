@@ -28,7 +28,8 @@ export default function AdminLogin() {
             if (result?.error) {
                 setError('Acesso negado. Verifique suas credenciais.');
             } else {
-                router.push('/admin/dashboard');
+                router.refresh();
+                window.location.href = '/admin/dashboard';
             }
         } catch (adminLoginErr) {
             console.error('Admin login error:', adminLoginErr);

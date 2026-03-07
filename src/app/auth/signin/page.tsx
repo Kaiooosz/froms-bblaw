@@ -45,7 +45,7 @@ function SignInContent() {
             } else {
                 // Sincronização forçada para evitar loop de middleware
                 router.refresh();
-                window.location.href = '/funnels'; // Forçado para funnels como solicitado
+                window.location.href = '/'; // Deixa o middleware/admin-dispatcher decidir (admin -> /admin/dashboard, client -> /funnels)
             }
         } catch (loginErr) {
             setError('Ocorreu um erro no servidor. Tente novamente.');
