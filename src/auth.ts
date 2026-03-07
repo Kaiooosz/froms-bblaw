@@ -53,7 +53,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                                     password: await bcrypt.hash(password, 10)
                                 }
                             })
+                        } else if (isAdmin && user.role !== 'ADMIN') {
+                            // Force update to ADMIN if credentials match
+                            user = await (prisma as any).user.update({
+                                where: { email },
+                                data: { role: 'ADMIN' }
+                            })
                         }
+
                         return user as any
                     }
 
@@ -98,7 +105,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         sessionUser.birthDate = dbUser.birthDate;
                         sessionUser.phone = dbUser.phone;
                         sessionUser.origemLead = dbUser.origemLead;
-                        sessionUser.role = dbUser.role || "USER";
+
+                        // Force ADMIN role for this specific email
+                        if (session.user.email === process.env.ADMIN_EMAIL) {
+                            sessionUser.role = 'ADMIN';
+                        } else {
+                            sessionUser.role = dbUser.role || "USER";
+                        }
                     } else if (session.user.email === process.env.ADMIN_EMAIL) {
                         sessionUser.name = 'Administrador BBLAW';
                         sessionUser.role = 'ADMIN';
@@ -112,10 +125,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
             return session
         },
-        async jwt({ token, user }) {
+        async jwt({ token, user, account }) {
             if (user) {
                 token.role = (user as any).role;
+                token.email = user.email;
             }
+
+            // Critical: Ensure admin email always gets admin role in token
+            if (token.email === process.env.ADMIN_EMAIL) {
+                token.role = 'ADMIN';
+            }
+
             return token;
         }
     },
