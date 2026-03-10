@@ -685,7 +685,8 @@ export default function AdminDashboard() {
                                     <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                         <tr>
                                             <AdminTh>CLIENTE</AdminTh>
-                                            <AdminTh>ARQUIVO</AdminTh>
+                                            <AdminTh>FLUXO</AdminTh>
+                                            <AdminTh>ARQUIVO / NOME</AdminTh>
                                             <AdminTh>TIPO</AdminTh>
                                             <AdminTh align="right">AÇÃO</AdminTh>
                                         </tr>
@@ -693,24 +694,40 @@ export default function AdminDashboard() {
                                     <tbody>
                                         {filteredDocs.length === 0 ? (
                                             <tr>
-                                                <td colSpan={4} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                <td colSpan={5} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
                                                     <FileUp size={24} style={{ margin: '0 auto 1rem' }} />
                                                     <p style={{ fontSize: '0.6rem', fontWeight: 900 }}>SEM DOCUMENTOS</p>
                                                 </td>
                                             </tr>
                                         ) : (
                                             filteredDocs.map((doc) => (
-                                                <tr key={doc.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                                                <tr key={doc.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }}
+                                                    onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.01)')}
+                                                    onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+                                                >
                                                     <AdminTd>
-                                                        <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.user?.name || doc.user?.fullName}</p>
-                                                        <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.user?.email}</p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                            <div style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: 900 }}>
+                                                                {(doc.user?.name || doc.user?.fullName || '?')[0]}
+                                                            </div>
+                                                            <div>
+                                                                <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.user?.name || doc.user?.fullName || 'NÃO IDENTIFICADO'}</p>
+                                                                <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.user?.email || '-'}</p>
+                                                            </div>
+                                                        </div>
+                                                    </AdminTd>
+                                                    <AdminTd>
+                                                        <span style={{ fontSize: '0.55rem', fontWeight: 900, background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '100px', opacity: 0.6 }}>{doc.funnelType}</span>
                                                     </AdminTd>
                                                     <AdminTd>
                                                         <p style={{ fontSize: '0.65rem', fontWeight: 700, opacity: 0.6 }}>{doc.filename}</p>
-                                                        <p style={{ fontSize: '0.5rem', opacity: 0.2 }}>{doc.funnelType}</p>
+                                                        <p style={{ fontSize: '0.5rem', opacity: 0.2 }}>{(doc.size / 1024).toFixed(0)} KB</p>
                                                     </AdminTd>
                                                     <AdminTd>
-                                                        <span style={{ fontSize: '0.55rem', fontWeight: 900, padding: '2px 6px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', textTransform: 'uppercase' }}>{doc.tipo}</span>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                            <div style={{ width: '6px', height: '6px', background: '#fff', borderRadius: '50%', opacity: 0.3 }} />
+                                                            <span style={{ fontSize: '0.55rem', fontWeight: 900, textTransform: 'uppercase', opacity: 0.6 }}>{doc.tipo}</span>
+                                                        </div>
                                                     </AdminTd>
                                                     <AdminTd align="right">
                                                         <button
@@ -719,9 +736,11 @@ export default function AdminDashboard() {
                                                                     if (d.url) window.open(d.url, '_blank');
                                                                 });
                                                             }}
-                                                            style={{ padding: '0.5rem', borderRadius: '8px', background: '#fff', color: '#000' }}
+                                                            style={{ padding: '0.55rem 1.25rem', borderRadius: '100px', background: '#fff', color: '#000', fontSize: '0.55rem', fontWeight: 900, border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                                                            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)', e.currentTarget.style.boxShadow = '0 0 15px rgba(255,255,255,0.4)')}
+                                                            onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)', e.currentTarget.style.boxShadow = 'none')}
                                                         >
-                                                            <Download size={14} />
+                                                            ABRIR
                                                         </button>
                                                     </AdminTd>
                                                 </tr>
@@ -783,8 +802,9 @@ export default function AdminDashboard() {
                                 </table>
                             )}
                         </div>
-                    )}
-                </div>
+                    )
+                    }
+                </div >
 
                 <style jsx global>{`
                     .admin-sidebar {
@@ -807,297 +827,318 @@ export default function AdminDashboard() {
                         }
                     }
                 `}</style>
-            </main>
+            </main >
             {/* Modal de Detalhes do Protocolo (Lateral Direita) */}
             <AnimatePresence>
-                {selectedSubmission && (
-                    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSelectedSubmission(null)} />
-                        <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-                            style={{ position: 'relative', width: 'min(640px, 90vw)', background: '#080808', borderLeft: '1px solid rgba(255,255,255,0.1)', height: '100%', display: 'flex', flexDirection: 'column', padding: '3rem' }}>
-                            <header style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div>
-                                    <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '0.75rem' }}>RECURSOS ESTRATÉGICOS</p>
-                                    <h3 style={{ fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1 }}>Detalhes do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Protocolo</span></h3>
-                                </div>
-                                <button onClick={() => setSelectedSubmission(null)} style={{ opacity: 0.3, padding: '0.5rem' }}><X size={32} /></button>
-                            </header>
+                {
+                    selectedSubmission && (
+                        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSelectedSubmission(null)} />
+                            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 200 }}
+                                style={{ position: 'relative', width: 'min(640px, 90vw)', background: '#080808', borderLeft: '1px solid rgba(255,255,255,0.1)', height: '100%', display: 'flex', flexDirection: 'column', padding: '3rem' }}>
+                                <header style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <div>
+                                        <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '0.75rem' }}>RECURSOS ESTRATÉGICOS</p>
+                                        <h3 style={{ fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1 }}>Detalhes do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Protocolo</span></h3>
+                                    </div>
+                                    <button onClick={() => setSelectedSubmission(null)} style={{ opacity: 0.3, padding: '0.5rem' }}><X size={32} /></button>
+                                </header>
 
-                            <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '4rem' }} className="detail-grid">
-                                    <DetailGroup label="Cliente Final" value={selectedSubmission.user?.fullName || selectedSubmission.user?.name} icon={<Users size={12} />} />
-                                    <DetailGroup label="Tipo de Fluxo" value={funnelConfig[selectedSubmission.funnelType]?.title || selectedSubmission.funnelType} icon={<ClipboardList size={12} />} />
-                                    <DetailGroup label="Canal de E-mail" value={selectedSubmission.user?.email} icon={<Mail size={12} />} />
-                                    <DetailGroup label="Contato / WhatsApp" value={selectedSubmission.user?.phone} icon={<Users size={12} />} />
-                                    <DetailGroup label="Registro / Doc" value={selectedSubmission.user?.document || 'PENDENTE'} icon={<ShieldCheck size={12} />} />
-                                    <DetailGroup label="Prioridade" value={selectedSubmission.priority || 'A DEFINIR'} icon={<ShieldCheck size={12} />} />
-                                    <DetailGroup label="Tags" value={selectedSubmission.tags?.join(', ') || 'Nenhuma'} icon={<FileText size={12} />} />
-                                    <DetailGroup label="Pontuação (Score)" value={selectedSubmission.score || '0'} icon={<CheckCircle2 size={12} />} />
-                                </div>
+                                <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '4rem' }} className="detail-grid">
+                                        <DetailGroup label="Cliente Final" value={selectedSubmission.user?.fullName || selectedSubmission.user?.name} icon={<Users size={12} />} />
+                                        <DetailGroup label="Tipo de Fluxo" value={funnelConfig[selectedSubmission.funnelType]?.title || selectedSubmission.funnelType} icon={<ClipboardList size={12} />} />
+                                        <DetailGroup label="Canal de E-mail" value={selectedSubmission.user?.email} icon={<Mail size={12} />} />
+                                        <DetailGroup label="Contato / WhatsApp" value={selectedSubmission.user?.phone} icon={<Users size={12} />} />
+                                        <DetailGroup label="Registro / Doc" value={selectedSubmission.user?.document || 'PENDENTE'} icon={<ShieldCheck size={12} />} />
+                                        <DetailGroup label="Prioridade" value={selectedSubmission.priority || 'A DEFINIR'} icon={<ShieldCheck size={12} />} />
+                                        <DetailGroup label="Tags" value={selectedSubmission.tags?.join(', ') || 'Nenhuma'} icon={<FileText size={12} />} />
+                                        <DetailGroup label="Pontuação (Score)" value={selectedSubmission.score || '0'} icon={<CheckCircle2 size={12} />} />
+                                    </div>
 
-                                {/* Seção de Documentos Vinculados */}
-                                <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Documentos Enviados</h4>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                        {allDocs.filter(d => d.userId === selectedSubmission.userId && d.funnelType === selectedSubmission.funnelType).length === 0 ? (
-                                            <p style={{ fontSize: '0.7rem', opacity: 0.3 }}>Nenhum documento vinculado a este protocolo.</p>
-                                        ) : (
-                                            allDocs.filter(d => d.userId === selectedSubmission.userId && d.funnelType === selectedSubmission.funnelType).map(doc => (
-                                                <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                                    <div>
-                                                        <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.filename}</p>
-                                                        <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.tipo.toUpperCase()}</p>
+                                    {/* Seção de Documentos Vinculados */}
+                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Documentos Enviados</h4>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                            {allDocs.filter(d => d.userId === selectedSubmission.userId && d.funnelType === selectedSubmission.funnelType).length === 0 ? (
+                                                <p style={{ fontSize: '0.7rem', opacity: 0.3 }}>Nenhum documento vinculado a este protocolo.</p>
+                                            ) : (
+                                                allDocs.filter(d => d.userId === selectedSubmission.userId && d.funnelType === selectedSubmission.funnelType).map(doc => (
+                                                    <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                                        <div>
+                                                            <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.filename}</p>
+                                                            <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.tipo.toUpperCase()}</p>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => {
+                                                                fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
+                                                                    if (d.url) window.open(d.url, '_blank');
+                                                                });
+                                                            }}
+                                                            style={{ padding: '0.5rem', borderRadius: '8px', background: '#fff', color: '#000', cursor: 'pointer' }}
+                                                        >
+                                                            <Download size={14} />
+                                                        </button>
                                                     </div>
-                                                    <button
-                                                        onClick={() => {
-                                                            fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
-                                                                if (d.url) window.open(d.url, '_blank');
-                                                            });
-                                                        }}
-                                                        style={{ padding: '0.5rem', borderRadius: '8px', background: '#fff', color: '#000', cursor: 'pointer' }}
-                                                    >
-                                                        <Download size={14} />
-                                                    </button>
-                                                </div>
-                                            ))
-                                        )}
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Configuração de Urgência</h4>
+                                        <PrioritySelector
+                                            current={selectedSubmission.priority}
+                                            onSelect={(p: string) => updatePriority(selectedSubmission.id, 'submission', p)}
+                                            loading={isUpdating}
+                                        />
+                                    </div>
+
+                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '3rem' }}>
+                                        <h4 style={{ fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginBottom: '2.5rem' }}>DADOS DA TRANSMISSÃO</h4>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                                            {Object.keys(selectedSubmission.data).map(key => {
+                                                const val = selectedSubmission.data[key];
+
+                                                // Busca o label amigável na configuração do funil
+                                                let label = key.replace(/_/g, ' ').toUpperCase();
+                                                const funnel = funnelConfig[selectedSubmission.funnelType];
+                                                if (funnel) {
+                                                    funnel.pages.forEach((p: any) => {
+                                                        const q = p.questions.find((q: any) => q.id === key);
+                                                        if (q) label = q.label.toUpperCase();
+                                                    });
+                                                }
+
+                                                if (Array.isArray(val) && val.length > 0 && val[0] && typeof val[0] === 'object' && 'base64' in val[0]) {
+                                                    return (
+                                                        <div key={key}>
+                                                            <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '1rem' }}>{label}</p>
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                                                {val.map((file: any, fIdx: number) => (
+                                                                    <a key={fIdx} href={file.base64} download={file.name} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', color: '#fff', fontSize: '0.8rem', fontWeight: 700, transition: 'background 0.2s', textDecoration: 'none' }}
+                                                                        onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                                                                        onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                                                                    >
+                                                                        <FileText size={18} opacity={0.5} />
+                                                                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                                            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{file.name}</span>
+                                                                            <span style={{ fontSize: '0.55rem', opacity: 0.2, fontWeight: 900, marginTop: '2px' }}>CONFERIR ARQUIVO</span>
+                                                                        </div>
+                                                                        <span style={{ fontSize: '0.6rem', opacity: 0.3 }}>{(file.size / 1024).toFixed(0)} KB</span>
+                                                                        <Download size={14} opacity={0.2} />
+                                                                    </a>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <div key={key}>
+                                                        <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{label}</p>
+                                                        <p style={{ fontSize: '0.85rem', fontWeight: 700, lineHeight: 1.5 }}>
+                                                            {Array.isArray(val) ? val.join(', ') : (typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val))}
+                                                        </p>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Configuração de Urgência</h4>
-                                    <PrioritySelector
-                                        current={selectedSubmission.priority}
-                                        onSelect={(p: string) => updatePriority(selectedSubmission.id, 'submission', p)}
-                                        loading={isUpdating}
-                                    />
-                                </div>
+                                <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem' }}>
+                                    <button onClick={() => exportSubmissionPDF(selectedSubmission)} style={{ flex: 1, padding: '1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 800, borderRadius: '100px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                                        <Download size={16} /> BAIXAR PDF
+                                    </button>
+                                    <button onClick={() => updateStatus(selectedSubmission.id, 'submission', 'COMPLETED')} style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em', cursor: 'pointer', opacity: isUpdating ? 0.5 : 1 }} disabled={isUpdating}>
+                                        {isUpdating ? 'ATUALIZANDO...' : (selectedSubmission.status === 'COMPLETED' ? 'PROCESSADO ✓' : 'MARCAR COMO PROCESSADO')}
+                                    </button>
+                                    <button onClick={() => setSelectedSubmission(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 800, color: '#fff', borderRadius: '100px', fontSize: '0.8rem', cursor: 'pointer' }}>FECHAR</button>
+                                </footer>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
 
-                                <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '3rem' }}>
-                                    <h4 style={{ fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginBottom: '2.5rem' }}>DADOS DA TRANSMISSÃO</h4>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-                                        {Object.keys(selectedSubmission.data).map(key => {
-                                            const val = selectedSubmission.data[key];
+            {/* Modal de Detalhes do Lead (Lateral Direita) */}
+            <AnimatePresence>
+                {
+                    selectedLead && (
+                        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSelectedLead(null)} />
+                            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 200 }}
+                                style={{ position: 'relative', width: 'min(700px, 90vw)', background: '#080808', borderLeft: '1px solid rgba(255,255,255,0.1)', height: '100%', display: 'flex', flexDirection: 'column', padding: '3.5rem' }}>
+                                <header style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <div>
+                                        <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '1rem' }}>INFORMAÇÕES DE FORMULÁRIO</p>
+                                        <h3 style={{ fontSize: '2rem', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1 }}>Dados do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Lead Estratégico</span></h3>
+                                    </div>
+                                    <button onClick={() => setSelectedLead(null)} style={{ opacity: 0.3, padding: '0.5rem' }}><X size={40} /></button>
+                                </header>
 
-                                            // Busca o label amigável na configuração do funil
-                                            let label = key.replace(/_/g, ' ').toUpperCase();
-                                            const funnel = funnelConfig[selectedSubmission.funnelType];
-                                            if (funnel) {
-                                                funnel.pages.forEach((p: any) => {
-                                                    const q = p.questions.find((q: any) => q.id === key);
-                                                    if (q) label = q.label.toUpperCase();
-                                                });
-                                            }
+                                <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '4rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }} className="detail-grid">
+                                        <DetailGroup label="Nome Completo" value={selectedLead.nome_completo_pessoal} icon={<Users size={12} />} />
+                                        <DetailGroup label="E-mail" value={selectedLead.email} icon={<Mail size={12} />} />
+                                        <DetailGroup label="WhatsApp" value={selectedLead.whatsapp} icon={<ExternalLink size={12} />} />
+                                        <DetailGroup label="CPF / Documento" value={selectedLead.cpf_nit} icon={<ShieldCheck size={12} />} />
+                                        <DetailGroup label="Ocupação / Cargo" value={selectedLead.ocupacao} icon={<LayoutDashboard size={12} />} />
+                                        <DetailGroup label="Jurisdição" value={selectedLead.jurisdicao} icon={<FileText size={12} />} />
+                                        <DetailGroup label="Relação Empresa" value={selectedLead.relacao_empresa} icon={<Settings size={12} />} />
+                                        <DetailGroup label="Prioridade" value={selectedLead.priority || 'NORMAL'} icon={<ShieldCheck size={12} />} />
+                                        <DetailGroup label="Criado em" value={new Date(selectedLead.createdAt).toLocaleString('pt-BR')} icon={<Calendar size={12} />} />
+                                    </div>
 
-                                            if (Array.isArray(val) && val.length > 0 && val[0] && typeof val[0] === 'object' && 'base64' in val[0]) {
-                                                return (
-                                                    <div key={key}>
-                                                        <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '1rem' }}>{label}</p>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                                            {val.map((file: any, fIdx: number) => (
-                                                                <a key={fIdx} href={file.base64} download={file.name} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', color: '#fff', fontSize: '0.8rem', fontWeight: 700, transition: 'background 0.2s', textDecoration: 'none' }}
-                                                                    onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                                                                    onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
-                                                                >
-                                                                    <FileText size={18} opacity={0.5} />
-                                                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                                                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{file.name}</span>
-                                                                        <span style={{ fontSize: '0.55rem', opacity: 0.2, fontWeight: 900, marginTop: '2px' }}>CONFERIR ARQUIVO</span>
-                                                                    </div>
-                                                                    <span style={{ fontSize: '0.6rem', opacity: 0.3 }}>{(file.size / 1024).toFixed(0)} KB</span>
-                                                                    <Download size={14} opacity={0.2} />
-                                                                </a>
-                                                            ))}
+                                    {/* Seção de Documentos Vinculados ao Lead */}
+                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Documentos Enviados pelo Lead</h4>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                            {allDocs.filter(d => d.userId === selectedLead.userId).length === 0 ? (
+                                                <p style={{ fontSize: '0.7rem', opacity: 0.3 }}>Nenhum documento vinculado a este lead.</p>
+                                            ) : (
+                                                allDocs.filter(d => d.userId === selectedLead.userId).map(doc => (
+                                                    <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                                        <div>
+                                                            <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.filename}</p>
+                                                            <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.tipo.toUpperCase()} - {doc.funnelType}</p>
                                                         </div>
+                                                        <button
+                                                            onClick={() => {
+                                                                fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
+                                                                    if (d.url) window.open(d.url, '_blank');
+                                                                });
+                                                            }}
+                                                            style={{ padding: '0.5rem', borderRadius: '8px', background: '#fff', color: '#000', cursor: 'pointer' }}
+                                                        >
+                                                            <Download size={14} />
+                                                        </button>
                                                     </div>
-                                                );
-                                            }
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Definir Prioridade do Lead</h4>
+                                        <PrioritySelector
+                                            current={selectedLead.priority}
+                                            onSelect={(p: string) => updatePriority(selectedLead.id, 'lead', p)}
+                                            loading={isUpdating}
+                                        />
+                                    </div>
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                                        <h4 style={{ gridColumn: '1 / -1', fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginTop: '1rem' }}>RESPOSTAS DO FORMULÁRIO</h4>
+                                        {Object.entries(selectedLead).map(([key, value]) => {
+                                            // Filtra campos internos ou já mostrados no cabeçalho
+                                            if (['id', 'userId', 'createdAt', 'updatedAt', 'user'].includes(key)) return null;
+                                            if (value === null || value === undefined || value === '') return null;
+
+                                            // Formata a label
+                                            const label = key.replace(/_/g, ' ').toUpperCase();
 
                                             return (
-                                                <div key={key}>
-                                                    <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{label}</p>
-                                                    <p style={{ fontSize: '0.85rem', fontWeight: 700, lineHeight: 1.5 }}>
-                                                        {Array.isArray(val) ? val.join(', ') : (typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val))}
+                                                <div key={key} style={{ background: 'rgba(255,255,255,0.02)', padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                                    <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, marginBottom: '0.5rem', letterSpacing: '0.05em' }}>{label}</p>
+                                                    <p style={{ fontSize: '0.9rem', fontWeight: 800, lineHeight: 1.4, color: 'rgba(255,255,255,0.9)' }}>
+                                                        {Array.isArray(value) ? value.join(', ') :
+                                                            (typeof value === 'boolean' ? (value ? 'SIM' : 'NÃO') :
+                                                                (typeof value === 'object' ? JSON.stringify(value) : String(value)))}
                                                     </p>
                                                 </div>
                                             );
                                         })}
                                     </div>
                                 </div>
-                            </div>
 
-                            <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem' }}>
-                                <button onClick={() => exportSubmissionPDF(selectedSubmission)} style={{ flex: 1, padding: '1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 800, borderRadius: '100px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                                    <Download size={16} /> BAIXAR PDF
-                                </button>
-                                <button onClick={() => updateStatus(selectedSubmission.id, 'submission', 'COMPLETED')} style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em', cursor: 'pointer', opacity: isUpdating ? 0.5 : 1 }} disabled={isUpdating}>
-                                    {isUpdating ? 'ATUALIZANDO...' : (selectedSubmission.status === 'COMPLETED' ? 'PROCESSADO ✓' : 'MARCAR COMO PROCESSADO')}
-                                </button>
-                                <button onClick={() => setSelectedSubmission(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 800, color: '#fff', borderRadius: '100px', fontSize: '0.8rem', cursor: 'pointer' }}>FECHAR</button>
-                            </footer>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* Modal de Detalhes do Lead (Lateral Direita) */}
-            <AnimatePresence>
-                {selectedLead && (
-                    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSelectedLead(null)} />
-                        <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-                            style={{ position: 'relative', width: 'min(700px, 90vw)', background: '#080808', borderLeft: '1px solid rgba(255,255,255,0.1)', height: '100%', display: 'flex', flexDirection: 'column', padding: '3.5rem' }}>
-                            <header style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div>
-                                    <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '1rem' }}>INFORMAÇÕES DE FORMULÁRIO</p>
-                                    <h3 style={{ fontSize: '2rem', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1 }}>Dados do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Lead Estratégico</span></h3>
-                                </div>
-                                <button onClick={() => setSelectedLead(null)} style={{ opacity: 0.3, padding: '0.5rem' }}><X size={40} /></button>
-                            </header>
-
-                            <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '4rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }} className="detail-grid">
-                                    <DetailGroup label="Nome Completo" value={selectedLead.nome_completo_pessoal} icon={<Users size={12} />} />
-                                    <DetailGroup label="E-mail" value={selectedLead.email} icon={<Mail size={12} />} />
-                                    <DetailGroup label="WhatsApp" value={selectedLead.whatsapp} icon={<ExternalLink size={12} />} />
-                                    <DetailGroup label="CPF / Documento" value={selectedLead.cpf_nit} icon={<ShieldCheck size={12} />} />
-                                    <DetailGroup label="Ocupação / Cargo" value={selectedLead.ocupacao} icon={<LayoutDashboard size={12} />} />
-                                    <DetailGroup label="Jurisdição" value={selectedLead.jurisdicao} icon={<FileText size={12} />} />
-                                    <DetailGroup label="Relação Empresa" value={selectedLead.relacao_empresa} icon={<Settings size={12} />} />
-                                    <DetailGroup label="Prioridade" value={selectedLead.priority || 'NORMAL'} icon={<ShieldCheck size={12} />} />
-                                    <DetailGroup label="Criado em" value={new Date(selectedLead.createdAt).toLocaleString('pt-BR')} icon={<Calendar size={12} />} />
-                                </div>
-
-                                {/* Seção de Documentos Vinculados ao Lead */}
-                                <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Documentos Enviados pelo Lead</h4>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                        {allDocs.filter(d => d.userId === selectedLead.userId).length === 0 ? (
-                                            <p style={{ fontSize: '0.7rem', opacity: 0.3 }}>Nenhum documento vinculado a este lead.</p>
-                                        ) : (
-                                            allDocs.filter(d => d.userId === selectedLead.userId).map(doc => (
-                                                <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                                    <div>
-                                                        <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.filename}</p>
-                                                        <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.tipo.toUpperCase()} - {doc.funnelType}</p>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => {
-                                                            fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
-                                                                if (d.url) window.open(d.url, '_blank');
-                                                            });
-                                                        }}
-                                                        style={{ padding: '0.5rem', borderRadius: '8px', background: '#fff', color: '#000', cursor: 'pointer' }}
-                                                    >
-                                                        <Download size={14} />
-                                                    </button>
-                                                </div>
-                                            ))
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div style={{ marginBottom: '4rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Definir Prioridade do Lead</h4>
-                                    <PrioritySelector
-                                        current={selectedLead.priority}
-                                        onSelect={(p: string) => updatePriority(selectedLead.id, 'lead', p)}
-                                        loading={isUpdating}
-                                    />
-                                </div>
-
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                                    <h4 style={{ gridColumn: '1 / -1', fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginTop: '1rem' }}>RESPOSTAS DO FORMULÁRIO</h4>
-                                    {Object.entries(selectedLead).map(([key, value]) => {
-                                        // Filtra campos internos ou já mostrados no cabeçalho
-                                        if (['id', 'userId', 'createdAt', 'updatedAt', 'user'].includes(key)) return null;
-                                        if (value === null || value === undefined || value === '') return null;
-
-                                        // Formata a label
-                                        const label = key.replace(/_/g, ' ').toUpperCase();
-
-                                        return (
-                                            <div key={key} style={{ background: 'rgba(255,255,255,0.02)', padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                                <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, marginBottom: '0.5rem', letterSpacing: '0.05em' }}>{label}</p>
-                                                <p style={{ fontSize: '0.9rem', fontWeight: 800, lineHeight: 1.4, color: 'rgba(255,255,255,0.9)' }}>
-                                                    {Array.isArray(value) ? value.join(', ') :
-                                                        (typeof value === 'boolean' ? (value ? 'SIM' : 'NÃO') :
-                                                            (typeof value === 'object' ? JSON.stringify(value) : String(value)))}
-                                                </p>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem' }}>
-                                <button onClick={() => exportLeadPDF(selectedLead)} style={{ flex: 1, padding: '1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 800, borderRadius: '100px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                                    <Download size={16} /> EXPORTAR PDF
-                                </button>
-                                <button onClick={() => updateStatus(selectedLead.id, 'lead', 'COMPLETED')} style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em', cursor: 'pointer', opacity: isUpdating ? 0.5 : 1 }} disabled={isUpdating}>
-                                    {isUpdating ? 'ATUALIZANDO...' : (selectedLead.status === 'COMPLETED' ? 'PROCESSADO ✓' : 'CONCLUIR LEAD')}
-                                </button>
-                                <button onClick={() => setSelectedLead(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 800, color: '#fff', borderRadius: '100px', fontSize: '0.8rem', cursor: 'pointer' }}>FECHAR</button>
-                            </footer>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+                                <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem' }}>
+                                    <button onClick={() => exportLeadPDF(selectedLead)} style={{ flex: 1, padding: '1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 800, borderRadius: '100px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                                        <Download size={16} /> EXPORTAR PDF
+                                    </button>
+                                    <button onClick={() => updateStatus(selectedLead.id, 'lead', 'COMPLETED')} style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em', cursor: 'pointer', opacity: isUpdating ? 0.5 : 1 }} disabled={isUpdating}>
+                                        {isUpdating ? 'ATUALIZANDO...' : (selectedLead.status === 'COMPLETED' ? 'PROCESSADO ✓' : 'CONCLUIR LEAD')}
+                                    </button>
+                                    <button onClick={() => setSelectedLead(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 800, color: '#fff', borderRadius: '100px', fontSize: '0.8rem', cursor: 'pointer' }}>FECHAR</button>
+                                </footer>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
 
             {/* Modal de Detalhes do Usuário */}
             <AnimatePresence>
-                {selectedUser && (
-                    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(10px)' }}>
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-                            style={{ width: 'min(500px, 95vw)', background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '32px', padding: '3rem', position: 'relative', boxShadow: '0 30px 60px rgba(0,0,0,0.8)' }}>
-                            <button onClick={() => setSelectedUser(null)} style={{ position: 'absolute', top: '2rem', right: '2rem', background: 'transparent', border: 'none', color: '#fff', opacity: 0.3, cursor: 'pointer' }}><X size={24} /></button>
-                            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                                <div style={{ width: '80px', height: '80px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 900, margin: '0 auto 1.5rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                    {selectedUser.name?.[0] || selectedUser.fullName?.[0]}
+                {
+                    selectedUser && (
+                        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(10px)' }}>
+                            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                                style={{ width: 'min(500px, 95vw)', background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '32px', padding: '3rem', position: 'relative', boxShadow: '0 30px 60px rgba(0,0,0,0.8)' }}>
+                                <button onClick={() => setSelectedUser(null)} style={{ position: 'absolute', top: '2rem', right: '2rem', background: 'transparent', border: 'none', color: '#fff', opacity: 0.3, cursor: 'pointer' }}><X size={24} /></button>
+                                <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                                    <div style={{ width: '80px', height: '80px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 900, margin: '0 auto 1.5rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                        {selectedUser.name?.[0] || selectedUser.fullName?.[0]}
+                                    </div>
+                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>{selectedUser.fullName || selectedUser.name}</h3>
+                                    <p style={{ fontSize: '0.8rem', opacity: 0.4, fontWeight: 700 }}>{selectedUser.email}</p>
                                 </div>
-                                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>{selectedUser.fullName || selectedUser.name}</h3>
-                                <p style={{ fontSize: '0.8rem', opacity: 0.4, fontWeight: 700 }}>{selectedUser.email}</p>
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '3rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>DOCUMENTO</span>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{selectedUser.document || 'NÃO INFORMADO'}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>DOCUMENTO</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{selectedUser.document || 'NÃO INFORMADO'}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>ORIGEM</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#3b82f6' }}>{selectedUser.origemLead || 'DIRETO'}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>MEMBRO DESDE</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{new Date(selectedUser.createdAt).toLocaleDateString('pt-BR')}</span>
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>ORIGEM</span>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#3b82f6' }}>{selectedUser.origemLead || 'DIRETO'}</span>
+
+                                <div style={{ marginBottom: '3rem' }}>
+                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Requisitos do Cliente</h4>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                        <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', textAlign: 'center' }}>
+                                            <p style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.2rem' }}>{submissions.filter(s => s.userId === selectedUser.id).length}</p>
+                                            <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.3 }}>PROTOCOLOS</p>
+                                        </div>
+                                        <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', textAlign: 'center' }}>
+                                            <p style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.2rem' }}>{allDocs.filter(d => d.userId === selectedUser.id).length}</p>
+                                            <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.3 }}>DOCUMENTOS</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>MEMBRO DESDE</span>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{new Date(selectedUser.createdAt).toLocaleDateString('pt-BR')}</span>
-                                </div>
-                            </div>
-                            <button onClick={() => setSelectedUser(null)} style={{ width: '100%', padding: '1.25rem', background: '#fff', color: '#000', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, letterSpacing: '0.05em', cursor: 'pointer' }}>CONCLUIR VISUALIZAÇÃO</button>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-        </div>
+
+                                <button onClick={() => setSelectedUser(null)} style={{ width: '100%', padding: '1.25rem', background: '#fff', color: '#000', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, letterSpacing: '0.05em', cursor: 'pointer', boxShadow: '0 0 20px rgba(255,255,255,0.2)' }}>CONCLUIR VISUALIZAÇÃO</button>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
+        </div >
     );
 }
 
 function OverviewCard({ icon, label, value, color = 'rgba(255,255,255,0.04)' }: { icon: any, label: string, value: number, color?: string }) {
     return (
         <motion.div
-            whileHover={{ y: -5, background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }}
+            whileHover={{ y: -5, background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.3)', boxShadow: '0 0 30px rgba(255,255,255,0.1)' }}
             style={{
-                padding: '2rem',
-                background: 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
+                padding: '2.5rem',
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%)',
                 border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '24px',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
-                transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                borderRadius: '32px',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 15px rgba(255,255,255,0.02)',
+                transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
                 position: 'relative',
                 overflow: 'hidden'
             }}
         >
-            <div style={{ position: 'absolute', top: '-10px', right: '-10px', width: '80px', height: '80px', background: 'radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%)', borderRadius: '50%' }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', color: 'rgba(255,255,255,0.4)' }}>
+            <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '120px', height: '120px', background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(10px)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', color: 'rgba(255,255,255,0.3)' }}>
                 <div style={{ padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', color: '#fff' }}>{icon}</div>
                 <h3 style={{ fontSize: '0.55rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase' }}>{label}</h3>
             </div>
