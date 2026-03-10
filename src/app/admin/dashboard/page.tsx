@@ -48,7 +48,9 @@ export default function AdminDashboard() {
     const [users, setUsers] = useState<any[]>([]);
     const [allDocs, setAllDocs] = useState<any[]>([]);
     const [filterType, setFilterType] = useState('ALL');
+    const [filterStatus, setFilterStatus] = useState('ALL');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<any | null>(null);
     const [isUpdating, setIsUpdating] = useState(false);
     const [docCount, setDocCount] = useState(0);
     const router = useRouter();
@@ -122,6 +124,32 @@ export default function AdminDashboard() {
                 setUsers(Array.isArray(data) ? data : []);
             } else { setUsers([]); }
         } catch (err) { setUsers([]); }
+    };
+
+    const updateStatus = async (id: string, type: 'lead' | 'submission', status: string) => {
+        setIsUpdating(true);
+        try {
+            const endpoint = type === 'lead' ? `/api/admin/leads/${id}` : `/api/admin/submissions/${id}`;
+            const res = await fetch(endpoint, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+
+            if (res.ok) {
+                if (type === 'lead') {
+                    setLeads(leads.map(l => l.id === id ? { ...l, status } : l));
+                    if (selectedLead?.id === id) setSelectedLead({ ...selectedLead, status });
+                } else {
+                    setSubmissions(submissions.map(s => s.id === id ? { ...s, status } : s));
+                    if (selectedSubmission?.id === id) setSelectedSubmission({ ...selectedSubmission, status });
+                }
+            }
+        } catch (err) {
+            console.error("Status update error:", err);
+        } finally {
+            setIsUpdating(false);
+        }
     };
 
     const updatePriority = async (id: string, type: 'lead' | 'submission', priority: string) => {
@@ -320,13 +348,28 @@ export default function AdminDashboard() {
     );
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#000', color: '#fff' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#000', color: '#fff', position: 'relative' }}>
+            {/* Linhas Decorativas (Premium Frame) */}
+            <div style={{ position: 'fixed', top: '12px', left: '12px', right: '12px', bottom: '12px', border: '1px solid rgba(255,255,255,0.05)', pointerEvents: 'none', zIndex: 1000 }} />
+            <div style={{ position: 'fixed', top: '0', left: '50%', width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', bottom: '0', left: '50%', width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', left: '0', top: '50%', height: '1px', width: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', right: '0', top: '50%', height: '1px', width: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+
             <style dangerouslySetInnerHTML={{
                 __html: `
                 body { background-color: #000 !important; }
                 .admin-main { background-color: #000 !important; }
+                @media (max-width: 1024px) {
+                    .admin-sidebar { transform: ${isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)'} !important; }
+                    .admin-main { margin-left: 0 !important; }
+                }
+                @media (min-width: 1025px) {
+                    .admin-sidebar { transform: translateX(0) !important; }
+                    .admin-main { margin-left: 280px !important; }
+                    .mobile-only { display: none !important; }
+                }
                 @media (max-width: 768px) {
-                    .admin-sidebar { width: 100% !important; max-width: 300px; }
                     .mobile-hide { display: none !important; }
                     .mobile-small { font-size: 0.65rem !important; }
                     .mobile-stack { flex-direction: column !important; align-items: flex-start !important; }
@@ -338,21 +381,23 @@ export default function AdminDashboard() {
                 }
             `}} />
             {/* Sidebar Lateral Minimalista */}
-            <aside style={{
-                width: '280px',
-                borderRight: '1px solid rgba(255,255,255,0.05)',
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '2rem 1.5rem',
-                position: 'fixed',
-                height: '100vh',
-                zIndex: 100,
-                background: '#000',
-                transition: 'transform 0.3s ease',
-                transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-                left: 0,
-                top: 0
-            }} className="admin-sidebar">
+            <aside
+                id="admin-sidebar"
+                style={{
+                    width: '280px',
+                    borderRight: '1px solid rgba(255,255,255,0.05)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '2rem 1.5rem',
+                    position: 'fixed',
+                    height: '100vh',
+                    zIndex: 100,
+                    background: '#000',
+                    transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                    left: 0,
+                    top: 0
+                }} className="admin-sidebar"
+            >
                 <div style={{ marginBottom: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <img src="/LogoBranco.svg" alt="BBLAW" style={{ maxWidth: '80px' }} />
@@ -363,13 +408,15 @@ export default function AdminDashboard() {
                     </button>
                 </div>
 
-                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
-                    <SidebarLink icon={<LayoutDashboard size={16} />} label="Overview" active={activeTab === 'OVERVIEW'} onClick={() => { setActiveTab('OVERVIEW'); setIsSidebarOpen(false); }} />
-                    <SidebarLink icon={<FileText size={16} />} label="Leads Detalhados" active={activeTab === 'LEADS'} onClick={() => { setActiveTab('LEADS'); setIsSidebarOpen(false); }} />
-                    <SidebarLink icon={<ClipboardList size={16} />} label="Gestão de Respostas" active={activeTab === 'SUBMISSIONS'} onClick={() => { setActiveTab('SUBMISSIONS'); setIsSidebarOpen(false); }} />
-                    <SidebarLink icon={<FileUp size={16} />} label="Repositório Docs" active={activeTab === 'DOCS'} onClick={() => { setActiveTab('DOCS'); setIsSidebarOpen(false); }} />
-                    <SidebarLink icon={<Users size={16} />} label="Usuários Registrados" active={activeTab === 'USERS'} onClick={() => { setActiveTab('USERS'); setIsSidebarOpen(false); }} />
-                    <SidebarLink icon={<Settings size={16} />} label="Configurações" active={false} onClick={() => { }} />
+                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+                    <SidebarLink icon={<LayoutDashboard size={18} />} label="Overview" active={activeTab === 'OVERVIEW'} onClick={() => { setActiveTab('OVERVIEW'); setIsSidebarOpen(false); }} />
+                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '0.5rem 0' }} />
+                    <SidebarLink icon={<FileText size={18} />} label="Leads Detalhados" active={activeTab === 'LEADS'} onClick={() => { setActiveTab('LEADS'); setIsSidebarOpen(false); }} />
+                    <SidebarLink icon={<ClipboardList size={18} />} label="Gestão de Respostas" active={activeTab === 'SUBMISSIONS'} onClick={() => { setActiveTab('SUBMISSIONS'); setIsSidebarOpen(false); }} />
+                    <SidebarLink icon={<FileUp size={18} />} label="Repositório Docs" active={activeTab === 'DOCS'} onClick={() => { setActiveTab('DOCS'); setIsSidebarOpen(false); }} />
+                    <SidebarLink icon={<Users size={18} />} label="Usuários Registrados" active={activeTab === 'USERS'} onClick={() => { setActiveTab('USERS'); setIsSidebarOpen(false); }} />
+                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '0.5rem 0' }} />
+                    <SidebarLink icon={<Settings size={18} />} label="Configurações" active={false} onClick={() => { }} />
                 </nav>
 
                 <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
@@ -431,8 +478,28 @@ export default function AdminDashboard() {
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                             {(activeTab === 'LEADS' || activeTab === 'SUBMISSIONS') && (
                                 <>
-                                    <button onClick={() => activeTab === 'LEADS' ? exportListPDF('LEADS') : exportListPDF('SUBMISSIONS')} style={{ background: '#fff', color: '#000', padding: '0.5rem 1rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                        <Download size={14} /> PDF
+                                    <select
+                                        value={filterStatus}
+                                        onChange={(e) => setFilterStatus(e.target.value)}
+                                        style={{
+                                            background: 'rgba(255,255,255,0.05)',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            borderRadius: '100px',
+                                            padding: '0.5rem 1rem',
+                                            fontSize: '0.65rem',
+                                            color: '#fff',
+                                            fontWeight: 900,
+                                            outline: 'none',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <option value="ALL">TODOS OS STATUS</option>
+                                        <option value="PENDING">PENDENTE</option>
+                                        <option value="REVIEWING">EM ANÁLISE</option>
+                                        <option value="COMPLETED">CONCLUÍDO</option>
+                                    </select>
+                                    <button onClick={() => activeTab === 'LEADS' ? exportListPDF('LEADS') : exportListPDF('SUBMISSIONS')} style={{ background: '#fff', color: '#000', padding: '0.5rem 1.5rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s' }}>
+                                        <Download size={14} /> EXPORTAR
                                     </button>
                                 </>
                             )}
@@ -448,25 +515,42 @@ export default function AdminDashboard() {
                             <OverviewCard icon={<ShieldCheck size={16} />} label="VIP/ALTA/URGENTE" value={submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length} />
 
                             <div style={{ gridColumn: '1 / -1', marginTop: '2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: '2rem' }}>
-                                <h4 style={{ fontSize: '0.65rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '2rem', textAlign: 'center' }}>DISTRIBUIÇÃO DE PROTOCOLOS POR STATUS</h4>
+                                <h4 style={{ fontSize: '0.65rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '2rem', textAlign: 'center' }}>DISTRIBUIÇÃO POR ESTÁGIO</h4>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '2rem' }}>
                                     {[
-                                        { id: 'PENDING', label: 'PENDENTE', color: '#f97316' },
-                                        { id: 'REVIEWING', label: 'ANÁLISE', color: '#3b82f6' },
-                                        { id: 'COMPLETED', label: 'CONCLUÍDO', color: '#22c55e' }
+                                        { id: 'PENDING', label: 'AGUARDANDO', color: '#f97316' },
+                                        { id: 'REVIEWING', label: 'TRIAGEM', color: '#3b82f6' },
+                                        { id: 'COMPLETED', label: 'FINALIZADO', color: '#22c55e' }
                                     ].map(st => {
-                                        const count = submissions.filter(s => s.status === st.id).length;
-                                        const percent = submissions.length ? (count / submissions.length) * 100 : 0;
+                                        const count = submissions.filter(s => s.status === st.id).length + leads.filter(l => l.status === st.id).length;
+                                        const total = submissions.length + leads.length;
+                                        const percent = total ? (count / total) * 100 : 0;
                                         return (
                                             <div key={st.id} style={{ textAlign: 'center' }}>
-                                                <div style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.25rem', color: st.color }}>{count}</div>
-                                                <div style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.4, marginBottom: '1rem' }}>{st.label}</div>
-                                                <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
-                                                    <div style={{ height: '100%', width: `${percent}%`, background: st.color }} />
+                                                <div style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.25rem', color: st.color, letterSpacing: '-0.05em' }}>{count}</div>
+                                                <div style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.4, marginBottom: '1.25rem', letterSpacing: '0.1em' }}>{st.label}</div>
+                                                <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
+                                                    <motion.div initial={{ width: 0 }} animate={{ width: `${percent}%` }} transition={{ duration: 1, ease: 'easeOut' }} style={{ height: '100%', background: st.color, boxShadow: `0 0 15px ${st.color}44` }} />
                                                 </div>
                                             </div>
                                         )
                                     })}
+                                </div>
+                            </div>
+
+                            <div style={{ gridColumn: '1 / -1', marginTop: '1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: '2rem' }}>
+                                <h4 style={{ fontSize: '0.65rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem' }}>ATIVIDADE RECENTE</h4>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    {[...submissions, ...leads].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5).map((act, i) => (
+                                        <div key={act.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.01)', borderRadius: '12px', borderLeft: `3px solid ${act.priority === 'VIP' ? '#7e22ce' : (act.priority === 'URGENTE' ? '#ff4b4b' : 'rgba(255,255,255,0.1)')}` }}>
+                                            <div style={{ width: '8px', height: '8px', background: act.status === 'COMPLETED' ? '#22c55e' : (act.status === 'REVIEWING' ? '#3b82f6' : '#f97316'), borderRadius: '50%' }} />
+                                            <div style={{ flex: 1 }}>
+                                                <p style={{ fontSize: '0.75rem', fontWeight: 800 }}>{act.nome_completo_pessoal || act.user?.fullName || act.user?.name}</p>
+                                                <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{act.email} • {new Date(act.createdAt).toLocaleDateString('pt-BR')}</p>
+                                            </div>
+                                            <span style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2 }}>{('funnelType' in act) ? 'PROTOCOLO' : 'LEAD'}</span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -683,7 +767,14 @@ export default function AdminDashboard() {
                                                         <span style={{ fontSize: '0.55rem', fontWeight: 900, background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '100px' }}>{user.origemLead}</span>
                                                     </AdminTd>
                                                     <AdminTd align="right">
-                                                        <button style={{ fontSize: '0.6rem', fontWeight: 800 }}>DETALHAR</button>
+                                                        <button
+                                                            onClick={() => setSelectedUser(user)}
+                                                            style={{ fontSize: '0.6rem', fontWeight: 800, padding: '0.5rem 1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', cursor: 'pointer', transition: 'all 0.3s' }}
+                                                            onMouseOver={(e) => (e.currentTarget.style.background = '#fff', e.currentTarget.style.color = '#000')}
+                                                            onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)', e.currentTarget.style.color = '#fff')}
+                                                        >
+                                                            DETALHAR
+                                                        </button>
                                                     </AdminTd>
                                                 </tr>
                                             ))
@@ -788,10 +879,20 @@ export default function AdminDashboard() {
                                         {Object.keys(selectedSubmission.data).map(key => {
                                             const val = selectedSubmission.data[key];
 
+                                            // Busca o label amigável na configuração do funil
+                                            let label = key.replace(/_/g, ' ').toUpperCase();
+                                            const funnel = funnelConfig[selectedSubmission.funnelType];
+                                            if (funnel) {
+                                                funnel.pages.forEach((p: any) => {
+                                                    const q = p.questions.find((q: any) => q.id === key);
+                                                    if (q) label = q.label.toUpperCase();
+                                                });
+                                            }
+
                                             if (Array.isArray(val) && val.length > 0 && val[0] && typeof val[0] === 'object' && 'base64' in val[0]) {
                                                 return (
                                                     <div key={key}>
-                                                        <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '1rem' }}>{key.replace(/_/g, ' ')}</p>
+                                                        <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '1rem' }}>{label}</p>
                                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                                             {val.map((file: any, fIdx: number) => (
                                                                 <a key={fIdx} href={file.base64} download={file.name} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', color: '#fff', fontSize: '0.8rem', fontWeight: 700, transition: 'background 0.2s', textDecoration: 'none' }}
@@ -799,9 +900,12 @@ export default function AdminDashboard() {
                                                                     onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
                                                                 >
                                                                     <FileText size={18} opacity={0.5} />
-                                                                    <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{file.name}</span>
+                                                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{file.name}</span>
+                                                                        <span style={{ fontSize: '0.55rem', opacity: 0.2, fontWeight: 900, marginTop: '2px' }}>CONFERIR ARQUIVO</span>
+                                                                    </div>
                                                                     <span style={{ fontSize: '0.6rem', opacity: 0.3 }}>{(file.size / 1024).toFixed(0)} KB</span>
-                                                                    <ArrowUpRight size={14} opacity={0.2} />
+                                                                    <Download size={14} opacity={0.2} />
                                                                 </a>
                                                             ))}
                                                         </div>
@@ -811,7 +915,7 @@ export default function AdminDashboard() {
 
                                             return (
                                                 <div key={key}>
-                                                    <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{key.replace(/_/g, ' ')}</p>
+                                                    <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{label}</p>
                                                     <p style={{ fontSize: '0.85rem', fontWeight: 700, lineHeight: 1.5 }}>
                                                         {Array.isArray(val) ? val.join(', ') : (typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val))}
                                                     </p>
@@ -826,8 +930,10 @@ export default function AdminDashboard() {
                                 <button onClick={() => exportSubmissionPDF(selectedSubmission)} style={{ flex: 1, padding: '1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 800, borderRadius: '100px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                                     <Download size={16} /> BAIXAR PDF
                                 </button>
-                                <button style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em' }}>MARCAR COMO PROCESSADO</button>
-                                <button onClick={() => setSelectedSubmission(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 800, color: '#fff', borderRadius: '100px', fontSize: '0.8rem' }}>FECHAR</button>
+                                <button onClick={() => updateStatus(selectedSubmission.id, 'submission', 'COMPLETED')} style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em', cursor: 'pointer', opacity: isUpdating ? 0.5 : 1 }} disabled={isUpdating}>
+                                    {isUpdating ? 'ATUALIZANDO...' : (selectedSubmission.status === 'COMPLETED' ? 'PROCESSADO ✓' : 'MARCAR COMO PROCESSADO')}
+                                </button>
+                                <button onClick={() => setSelectedSubmission(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 800, color: '#fff', borderRadius: '100px', fontSize: '0.8rem', cursor: 'pointer' }}>FECHAR</button>
                             </footer>
                         </motion.div>
                     </div>
@@ -926,10 +1032,47 @@ export default function AdminDashboard() {
 
                             <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem' }}>
                                 <button onClick={() => exportLeadPDF(selectedLead)} style={{ flex: 1, padding: '1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 800, borderRadius: '100px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                                    <Download size={16} /> EXPORTAR DOSSIÊ PDF
+                                    <Download size={16} /> EXPORTAR PDF
                                 </button>
-                                <button onClick={() => setSelectedLead(null)} style={{ width: '100%', padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem' }}>FECHAR E RETORNAR</button>
+                                <button onClick={() => updateStatus(selectedLead.id, 'lead', 'COMPLETED')} style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em', cursor: 'pointer', opacity: isUpdating ? 0.5 : 1 }} disabled={isUpdating}>
+                                    {isUpdating ? 'ATUALIZANDO...' : (selectedLead.status === 'COMPLETED' ? 'PROCESSADO ✓' : 'CONCLUIR LEAD')}
+                                </button>
+                                <button onClick={() => setSelectedLead(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 800, color: '#fff', borderRadius: '100px', fontSize: '0.8rem', cursor: 'pointer' }}>FECHAR</button>
                             </footer>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Modal de Detalhes do Usuário */}
+            <AnimatePresence>
+                {selectedUser && (
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(10px)' }}>
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                            style={{ width: 'min(500px, 95vw)', background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '32px', padding: '3rem', position: 'relative', boxShadow: '0 30px 60px rgba(0,0,0,0.8)' }}>
+                            <button onClick={() => setSelectedUser(null)} style={{ position: 'absolute', top: '2rem', right: '2rem', background: 'transparent', border: 'none', color: '#fff', opacity: 0.3, cursor: 'pointer' }}><X size={24} /></button>
+                            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                                <div style={{ width: '80px', height: '80px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 900, margin: '0 auto 1.5rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    {selectedUser.name?.[0] || selectedUser.fullName?.[0]}
+                                </div>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>{selectedUser.fullName || selectedUser.name}</h3>
+                                <p style={{ fontSize: '0.8rem', opacity: 0.4, fontWeight: 700 }}>{selectedUser.email}</p>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '3rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>DOCUMENTO</span>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{selectedUser.document || 'NÃO INFORMADO'}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>ORIGEM</span>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#3b82f6' }}>{selectedUser.origemLead || 'DIRETO'}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>MEMBRO DESDE</span>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{new Date(selectedUser.createdAt).toLocaleDateString('pt-BR')}</span>
+                                </div>
+                            </div>
+                            <button onClick={() => setSelectedUser(null)} style={{ width: '100%', padding: '1.25rem', background: '#fff', color: '#000', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, letterSpacing: '0.05em', cursor: 'pointer' }}>CONCLUIR VISUALIZAÇÃO</button>
                         </motion.div>
                     </div>
                 )}
@@ -938,24 +1081,27 @@ export default function AdminDashboard() {
     );
 }
 
-function OverviewCard({ icon, label, value }: { icon: any, label: string, value: number }) {
+function OverviewCard({ icon, label, value, color = 'rgba(255,255,255,0.04)' }: { icon: any, label: string, value: number, color?: string }) {
     return (
         <motion.div
-            whileHover={{ y: -3, background: 'rgba(255,255,255,0.06)' }}
+            whileHover={{ y: -5, background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }}
             style={{
-                padding: '1.5rem',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '16px',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-                transition: 'background 0.3s ease'
+                padding: '2rem',
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '24px',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
+                transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                position: 'relative',
+                overflow: 'hidden'
             }}
         >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'rgba(255,255,255,0.5)' }}>
-                {icon}
-                <h3 style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.15em' }}>{label}</h3>
+            <div style={{ position: 'absolute', top: '-10px', right: '-10px', width: '80px', height: '80px', background: 'radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%)', borderRadius: '50%' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', color: 'rgba(255,255,255,0.4)' }}>
+                <div style={{ padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', color: '#fff' }}>{icon}</div>
+                <h3 style={{ fontSize: '0.55rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase' }}>{label}</h3>
             </div>
-            <p style={{ fontSize: '2.5rem', fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '-0.02em' }}>{value}</p>
+            <p style={{ fontSize: '3rem', fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '-0.03em' }}>{value}</p>
         </motion.div>
     );
 }

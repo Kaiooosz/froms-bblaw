@@ -207,7 +207,15 @@ export default function DynamicForm() {
 
     return (
         <div className="form-page-wrapper">
+            {/* Linhas Decorativas (Premium Frame) */}
+            <div style={{ position: 'fixed', top: '12px', left: '12px', right: '12px', bottom: '12px', border: '1px solid var(--border)', pointerEvents: 'none', zIndex: 1000, opacity: 0.5 }} />
+            <div style={{ position: 'fixed', top: '0', left: '50%', width: '1px', height: '12px', background: 'var(--border)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', bottom: '0', left: '50%', width: '1px', height: '12px', background: 'var(--border)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', left: '0', top: '50%', height: '1px', width: '12px', background: 'var(--border)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', right: '0', top: '50%', height: '1px', width: '12px', background: 'var(--border)', zIndex: 1001 }} />
+
             <header className="form-header responsive-padding" style={{ maxWidth: 'none', background: 'transparent', border: 'none' }}>
+
                 <img src={theme === 'dark' ? "/logo-branco.svg" : "/logo-preto.svg"} alt="BBLAW" style={{ maxWidth: '100px' }} />
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginLeft: 'auto' }}>
@@ -218,7 +226,7 @@ export default function DynamicForm() {
                         {config.title}
                     </span>
                 </div>
-            </header>
+            </header >
 
             <main className="form-main-container responsive-padding" style={{ maxWidth: '800px' }}>
                 <div style={{ marginBottom: '3rem' }}>
@@ -302,10 +310,36 @@ export default function DynamicForm() {
 
                                             {q.type === 'file' && (
                                                 <div className="file-upload-wrapper">
-                                                    <label className="file-card" style={{ padding: '2.5rem 1.5rem', textAlign: 'center', width: '100%', cursor: 'pointer', border: '1px dashed var(--border)', borderRadius: '0.5rem', display: 'block' }}>
-                                                        <input type="file" multiple={q.multiple} className="hidden-file-input" {...register(q.id)} />
-                                                        <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>Anexar Documentação</span>
-                                                        <p style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.5rem' }}>Toque para selecionar arquivos</p>
+                                                    <label className="file-card" style={{
+                                                        padding: '2rem 1.5rem',
+                                                        textAlign: 'center',
+                                                        width: '100%',
+                                                        cursor: isSubmitting ? 'default' : 'pointer',
+                                                        border: '1px dashed var(--border)',
+                                                        borderRadius: '0.5rem',
+                                                        display: 'block',
+                                                        background: 'var(--accent)',
+                                                        transition: 'all 0.3s ease'
+                                                    }}>
+                                                        <input type="file" multiple={q.multiple} className="hidden-file-input" {...register(q.id)} disabled={isSubmitting} />
+
+                                                        <div style={{ position: 'relative' }}>
+                                                            {isSubmitting ? (
+                                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                                                                    <Loader2 className="animate-spin" size={24} style={{ opacity: 0.5 }} />
+                                                                    <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.1em' }}>TRANSMITINDO ARQUIVOS...</span>
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{watch(q.id)?.length > 0 ? 'Documento Selecionado' : 'Anexar Documentação'}</span>
+                                                                    <p style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.5rem' }}>
+                                                                        {watch(q.id)?.length > 0
+                                                                            ? `${watch(q.id).length} arquivo(s): ${Array.from(watch(q.id) as FileList).map(f => f.name).join(', ')}`
+                                                                            : 'Toque para selecionar arquivos'}
+                                                                    </p>
+                                                                </>
+                                                            )}
+                                                        </div>
                                                     </label>
                                                 </div>
                                             )}
@@ -381,6 +415,6 @@ export default function DynamicForm() {
             <footer style={{ padding: '3rem 1.5rem', textAlign: 'center', opacity: 0.2 }}>
                 <p style={{ fontSize: '0.65rem', fontWeight: 700 }}>BBLAW — PROTOCOLO SEGURO</p>
             </footer>
-        </div>
+        </div >
     );
 }

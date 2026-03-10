@@ -105,31 +105,70 @@ export default function AdminSubmissionsPage() {
     if (loading) return <div className="min-h-screen bg-[#050505] flex items-center justify-center"><Loader2 className="w-8 h-8 opacity-20 animate-spin text-white" /></div>;
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white p-6 md:p-12">
-            <div className="max-w-7xl mx-auto">
-                <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 bg-white/5 rounded-lg border border-white/10 text-orange-400">
-                                <ClipboardList className="w-5 h-5" />
+        <div style={{
+            minHeight: '100vh',
+            background: '#050505',
+            color: '#fff',
+            padding: '40px 24px',
+            position: 'relative',
+            fontFamily: 'Inter, sans-serif'
+        }}>
+            {/* Linhas Decorativas (Premium Frame) */}
+            <div style={{ position: 'fixed', top: '12px', left: '12px', right: '12px', bottom: '12px', border: '1px solid rgba(255,255,255,0.05)', pointerEvents: 'none', zIndex: 1000 }} />
+            <div style={{ position: 'fixed', top: '0', left: '50%', width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', bottom: '0', left: '50%', width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', left: '0', top: '50%', height: '1px', width: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', right: '0', top: '50%', height: '1px', width: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+
+            <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+                <header style={{ marginBottom: '60px', display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <div style={{ width: '100%', textAlign: 'left' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                            <div style={{ padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', color: '#f97316' }}>
+                                <ClipboardList size={20} />
                             </div>
-                            <span className="text-[10px] font-black tracking-[0.3em] opacity-30 uppercase">Triagem de Protocolos (ADMIN)</span>
+                            <span style={{ fontSize: '10px', fontWeight: 900, letterSpacing: '0.3em', opacity: 0.3, textTransform: 'uppercase' }}>Triagem de Protocolos (ADMIN)</span>
                         </div>
-                        <h1 className="text-4xl font-black tracking-tight">Gestão de <span className="opacity-40 italic">Respostas</span></h1>
+                        <h1 style={{ fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-0.04em' }}>
+                            Gestão de <span style={{ opacity: 0.4, fontStyle: 'italic', fontWeight: 400 }}>Respostas</span>
+                        </h1>
                     </div>
 
-                    <div className="flex flex-wrap gap-3">
-                        <input
-                            type="text"
-                            placeholder="Buscar cliente..."
-                            className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-xs font-bold w-64 outline-none focus:border-white/30"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                        <div style={{ position: 'relative' }}>
+                            <Search size={14} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
+                            <input
+                                type="text"
+                                placeholder="Buscar cliente..."
+                                style={{
+                                    background: 'rgba(255,255,255,0.05)',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '16px',
+                                    padding: '12px 16px 12px 42px',
+                                    fontSize: '12px',
+                                    color: '#fff',
+                                    outline: 'none',
+                                    width: '240px'
+                                }}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                         <select
                             value={filterFunnel}
                             onChange={(e) => setFilterFunnel(e.target.value)}
-                            className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-[10px] font-black tracking-widest uppercase outline-none focus:border-white/30"
+                            style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '16px',
+                                padding: '12px 20px',
+                                fontSize: '10px',
+                                fontWeight: 900,
+                                color: '#fff',
+                                textTransform: 'uppercase',
+                                outline: 'none',
+                                cursor: 'pointer'
+                            }}
                         >
                             <option value="ALL">TODOS OS FUNIS</option>
                             {Object.keys(FUNNEL_LABELS).map(f => <option key={f} value={f}>{FUNNEL_LABELS[f]}</option>)}
@@ -137,103 +176,156 @@ export default function AdminSubmissionsPage() {
                     </div>
                 </header>
 
-                <div className="bg-white/[0.02] border border-white/5 rounded-3xl overflow-hidden backdrop-blur-3xl">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-white/5">
-                                <th className="px-8 py-6 text-[10px] font-black tracking-widest opacity-30 uppercase">Cliente</th>
-                                <th className="px-8 py-6 text-[10px] font-black tracking-widest opacity-30 uppercase">Funil</th>
-                                <th className="px-8 py-6 text-[10px] font-black tracking-widest opacity-30 uppercase text-center">Data</th>
-                                <th className="px-8 py-6 text-[10px] font-black tracking-widest opacity-30 uppercase text-center">Status</th>
-                                <th className="px-8 py-6 text-[10px] font-black tracking-widest opacity-30 uppercase text-right">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filtered.map((sub) => {
-                                const Status = STATUS_LABELS[sub.status] || STATUS_LABELS['PENDING'];
-                                return (
-                                    <tr key={sub.id} className="border-b border-white/[0.03] hover:bg-white/[0.04] transition-colors group">
-                                        <td className="px-8 py-6">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center opacity-40"><User className="w-4 h-4" /></div>
-                                                <div>
-                                                    <p className="text-xs font-black">{sub.user?.name || 'Sem Nome'}</p>
-                                                    <p className="text-[10px] opacity-30">{sub.user?.email}</p>
+                <div style={{
+                    background: 'rgba(255,255,255,0.02)',
+                    borderRadius: '24px',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    overflow: 'hidden'
+                }}>
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                            <thead>
+                                <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                                    <th style={{ padding: '24px 32px', fontSize: '10px', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Cliente</th>
+                                    <th style={{ padding: '24px 32px', fontSize: '10px', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Funil</th>
+                                    <th style={{ padding: '24px 32px', fontSize: '10px', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center' }}>Data</th>
+                                    <th style={{ padding: '24px 32px', fontSize: '10px', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center' }}>Status</th>
+                                    <th style={{ padding: '24px 32px', fontSize: '10px', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'right' }}>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filtered.map((sub) => {
+                                    const Status = STATUS_LABELS[sub.status] || STATUS_LABELS['PENDING'];
+                                    const colorMap: Record<string, string> = { orange: '#f97316', blue: '#3b82f6', green: '#22c55e' };
+                                    const currentColor = colorMap[Status.color] || '#fff';
+
+                                    return (
+                                        <tr key={sub.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.2s' }}>
+                                            <td style={{ padding: '20px 32px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5 }}>
+                                                        <User size={16} />
+                                                    </div>
+                                                    <div>
+                                                        <p style={{ fontSize: '12px', fontWeight: 900 }}>{sub.user?.name || 'Sem Nome'}</p>
+                                                        <p style={{ fontSize: '10px', opacity: 0.3 }}>{sub.user?.email}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            <span className="text-[10px] font-black uppercase opacity-60 tracking-tighter">{FUNNEL_LABELS[sub.funnelType] || sub.funnelType}</span>
-                                        </td>
-                                        <td className="px-8 py-6 text-center">
-                                            <span className="text-[10px] font-bold opacity-30">{new Date(sub.createdAt).toLocaleDateString('pt-BR')}</span>
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            <div className="flex justify-center">
-                                                <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border border-${Status.color}-500/20 bg-${Status.color}-500/5`}>
-                                                    <Status.icon className={`w-3 h-3 text-${Status.color}-500`} />
-                                                    <span className={`text-[9px] font-black text-${Status.color}-500 tracking-tighter`}>{Status.label}</span>
+                                            </td>
+                                            <td style={{ padding: '20px 32px' }}>
+                                                <span style={{ fontSize: '10px', fontWeight: 900, opacity: 0.6, textTransform: 'uppercase' }}>{FUNNEL_LABELS[sub.funnelType] || sub.funnelType}</span>
+                                            </td>
+                                            <td style={{ padding: '20px 32px', textAlign: 'center' }}>
+                                                <span style={{ fontSize: '10px', fontWeight: 700, opacity: 0.3 }}>{new Date(sub.createdAt).toLocaleDateString('pt-BR')}</span>
+                                            </td>
+                                            <td style={{ padding: '20px 32px' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '6px',
+                                                        padding: '4px 12px',
+                                                        borderRadius: '100px',
+                                                        background: `${currentColor}10`,
+                                                        border: `1px solid ${currentColor}20`
+                                                    }}>
+                                                        <Status.icon size={10} style={{ color: currentColor }} />
+                                                        <span style={{ fontSize: '9px', fontWeight: 900, color: currentColor, textTransform: 'uppercase' }}>{Status.label}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-6 text-right">
-                                            <button
-                                                onClick={() => setSelectedSub(sub)}
-                                                className="p-3 bg-white/5 rounded-xl hover:bg-white hover:text-black transition-all"
-                                            >
-                                                <Eye className="w-4 h-4" />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                            </td>
+                                            <td style={{ padding: '20px 32px', textAlign: 'right' }}>
+                                                <button
+                                                    onClick={() => setSelectedSub(sub)}
+                                                    style={{
+                                                        padding: '10px',
+                                                        background: 'rgba(255,255,255,0.05)',
+                                                        borderRadius: '12px',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    onMouseOver={(e) => (e.currentTarget.style.background = '#fff', e.currentTarget.style.color = '#000')}
+                                                    onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)', e.currentTarget.style.color = '#fff')}
+                                                >
+                                                    <Eye size={16} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             {/* Modal de Detalhes */}
             <AnimatePresence>
                 {selectedSub && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-end p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+                    <div style={{
+                        position: 'fixed',
+                        inset: 0,
+                        zIndex: 2000,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        background: 'rgba(0,0,0,0.8)',
+                        backdropFilter: 'blur(8px)',
+                        padding: '16px'
+                    }}>
                         <motion.div
                             initial={{ x: 500, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             exit={{ x: 500, opacity: 0 }}
-                            className="bg-[#0a0a0a] w-full max-w-2xl min-h-full md:min-h-[auto] rounded-3xl border border-white/10 p-12 relative shadow-2xl overflow-y-auto"
+                            style={{
+                                background: '#0a0a0a',
+                                width: '100%',
+                                maxWidth: '640px',
+                                height: '100%',
+                                borderRadius: '32px 0 0 32px',
+                                borderLeft: '1px solid rgba(255,255,255,0.1)',
+                                padding: '60px',
+                                overflowY: 'auto',
+                                position: 'relative'
+                            }}
                         >
                             <button
                                 onClick={() => setSelectedSub(null)}
-                                className="absolute right-8 top-8 p-3 bg-white/5 rounded-2xl hover:bg-white/10 transition-all"
+                                style={{
+                                    position: 'absolute',
+                                    right: '40px',
+                                    top: '40px',
+                                    padding: '12px',
+                                    background: 'rgba(255,255,255,0.05)',
+                                    borderRadius: '16px',
+                                    opacity: 0.4
+                                }}
                             >
-                                <X className="w-5 h-5 opacity-40" />
+                                <X size={20} />
                             </button>
 
-                            <header className="mb-12">
-                                <span className="text-[10px] font-black tracking-[0.3em] opacity-30 uppercase mb-4 block">Ficha do Protocolo</span>
-                                <h2 className="text-3xl font-black mb-4">Detalhamento das <span className="opacity-40 italic">Respostas</span></h2>
+                            <header style={{ marginBottom: '48px' }}>
+                                <span style={{ fontSize: '10px', fontWeight: 900, letterSpacing: '0.3em', opacity: 0.3, textTransform: 'uppercase', display: 'block', marginBottom: '16px' }}>Ficha do Protocolo</span>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '32px' }}>Detalhamento das <span style={{ opacity: 0.4, fontStyle: 'italic', fontWeight: 400 }}>Respostas</span></h2>
 
-                                <div className="flex flex-wrap gap-4 mt-8">
-                                    <div className="px-4 py-2 bg-white/5 rounded-2xl border border-white/10">
-                                        <p className="text-[9px] font-black opacity-20 uppercase tracking-widest mb-1">Status Atual</p>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs font-bold">{selectedSub.status}</span>
-                                        </div>
+                                <div style={{ display: 'flex', gap: '12px' }}>
+                                    <div style={{ padding: '12px 20px', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                        <p style={{ fontSize: '8px', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '4px' }}>Status Atual</p>
+                                        <span style={{ fontSize: '11px', fontWeight: 700 }}>{selectedSub.status}</span>
                                     </div>
-                                    <div className="px-4 py-2 bg-white/5 rounded-2xl border border-white/10">
-                                        <p className="text-[9px] font-black opacity-20 uppercase tracking-widest mb-1">Prioridade</p>
-                                        <span className="text-xs font-bold text-orange-400">{selectedSub.priority || 'NORMAL'}</span>
+                                    <div style={{ padding: '12px 20px', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                        <p style={{ fontSize: '8px', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '4px' }}>Prioridade</p>
+                                        <span style={{ fontSize: '11px', fontWeight: 700, color: '#f97316' }}>{selectedSub.priority || 'NORMAL'}</span>
                                     </div>
                                 </div>
                             </header>
 
-                            <div className="grid grid-cols-1 gap-6 mb-12">
-                                <h4 className="text-[10px] font-black opacity-20 tracking-widest uppercase mb-2">Dados do Formulário</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div style={{ marginBottom: '48px' }}>
+                                <h4 style={{ fontSize: '10px', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '24px' }}>Dados do Formulário</h4>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
                                     {Object.entries(selectedSub.data || {}).map(([key, value]: [string, any]) => (
-                                        <div key={key} className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
-                                            <p className="text-[10px] font-black opacity-20 uppercase tracking-tight mb-2">{key.replace(/_/g, ' ')}</p>
-                                            <p className="text-xs font-bold opacity-80 leading-relaxed">
+                                        <div key={key} style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px' }}>
+                                            <p style={{ fontSize: '9px', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '8px' }}>{key.replace(/_/g, ' ')}</p>
+                                            <p style={{ fontSize: '12px', fontWeight: 700, opacity: 0.8, lineHeight: 1.5 }}>
                                                 {Array.isArray(value) ? value.join(', ') : (typeof value === 'object' ? JSON.stringify(value) : String(value))}
                                             </p>
                                         </div>
@@ -241,19 +333,25 @@ export default function AdminSubmissionsPage() {
                                 </div>
                             </div>
 
-                            <footer className="pt-8 border-t border-white/5 flex flex-wrap gap-3">
-                                <p className="w-full text-[10px] font-black opacity-20 tracking-widest uppercase mb-4">Ações do Administrador</p>
+                            <footer style={{ paddingTop: '32px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                                <p style={{ width: '100%', fontSize: '10px', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>Ações do Administrador</p>
                                 <button
                                     onClick={() => updateStatus(selectedSub.id, 'REVIEWING')}
-                                    className="px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black tracking-widest uppercase hover:bg-blue-500 hover:text-white transition-all"
+                                    style={{ padding: '16px 24px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', transition: 'all 0.3s' }}
+                                    onMouseOver={(e) => (e.currentTarget.style.background = '#3b82f6')}
+                                    onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
                                 >Em Análise</button>
                                 <button
                                     onClick={() => updateStatus(selectedSub.id, 'COMPLETED')}
-                                    className="px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black tracking-widest uppercase hover:bg-green-500 hover:text-white transition-all"
+                                    style={{ padding: '16px 24px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', transition: 'all 0.3s' }}
+                                    onMouseOver={(e) => (e.currentTarget.style.background = '#22c55e')}
+                                    onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
                                 >Concluir</button>
                                 <button
                                     onClick={() => updateStatus(selectedSub.id, 'PENDING')}
-                                    className="px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black tracking-widest uppercase hover:bg-orange-500 hover:text-white transition-all ml-auto"
+                                    style={{ padding: '16px 24px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', transition: 'all 0.3s', marginLeft: 'auto' }}
+                                    onMouseOver={(e) => (e.currentTarget.style.background = '#f97316')}
+                                    onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
                                 >Voltar Pendente</button>
                             </footer>
                         </motion.div>
@@ -262,16 +360,10 @@ export default function AdminSubmissionsPage() {
             </AnimatePresence>
 
             <style jsx global>{`
-        .text-orange-500 { color: #f97316; }
-        .text-blue-500 { color: #3b82f6; }
-        .text-green-500 { color: #22c55e; }
-        .bg-orange-500\/5 { background-color: rgba(249, 115, 22, 0.05); }
-        .bg-blue-500\/5 { background-color: rgba(59, 130, 246, 0.05); }
-        .bg-green-500\/5 { background-color: rgba(34, 197, 94, 0.05); }
-        .border-orange-500\/20 { border-color: rgba(249, 115, 22, 0.2); }
-        .border-blue-500\/20 { border-color: rgba(59, 130, 246, 0.2); }
-        .border-green-500\/20 { border-color: rgba(34, 197, 94, 0.2); }
-      `}</style>
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                .animate-spin { animation: spin 1s linear infinite; }
+            `}</style>
         </div>
     );
+
 }

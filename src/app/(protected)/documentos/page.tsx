@@ -136,51 +136,86 @@ export default function DocumentosPage() {
     const userFunnels = Array.from(new Set(submissions.map(s => s.funnelType)));
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white p-6 md:p-12">
-            <div className="max-w-6xl mx-auto">
-                <header className="mb-12">
+        <div style={{
+            minHeight: '100vh',
+            background: '#000',
+            color: '#fff',
+            padding: '40px 24px',
+            position: 'relative',
+            overflowX: 'hidden',
+            fontFamily: 'Inter, sans-serif'
+        }}>
+            {/* Linhas Decorativas (Premium Frame) */}
+            <div style={{ position: 'fixed', top: '12px', left: '12px', right: '12px', bottom: '12px', border: '1px solid rgba(255,255,255,0.05)', pointerEvents: 'none', zIndex: 1000 }} />
+            <div style={{ position: 'fixed', top: '0', left: '50%', width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', bottom: '0', left: '50%', width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', left: '0', top: '50%', height: '1px', width: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+            <div style={{ position: 'fixed', right: '0', top: '50%', height: '1px', width: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+
+            <div style={{ maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+                <header style={{ marginBottom: '60px' }}>
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-3 mb-4"
+                        style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}
                     >
-                        <div className="p-2 bg-white/5 rounded-lg border border-white/10">
-                            <ShieldCheck className="w-5 h-5 opacity-50" />
+                        <div style={{ padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <ShieldCheck size={20} style={{ opacity: 0.5 }} />
                         </div>
-                        <span className="text-[10px] font-black tracking-[0.3em] opacity-30 uppercase">Portal de Documentação</span>
+                        <span style={{ fontSize: '10px', fontWeight: 900, letterSpacing: '0.3em', opacity: 0.3, textTransform: 'uppercase' }}>Portal de Documentação</span>
                     </motion.div>
 
-                    <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-                        Envie seus <span className="text-white/40 italic">documentos</span>
+                    <h1 style={{ fontSize: 'calc(2rem + 1vw)', fontWeight: 800, letterSpacing: '-0.04em', marginBottom: '16px' }}>
+                        Envie seus <span style={{ opacity: 0.4, fontStyle: 'italic', fontWeight: 400 }}>documentos</span>
                     </h1>
-                    <p className="text-sm text-white/40 max-w-xl leading-relaxed">
+                    <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)', maxWidth: '500px', lineHeight: 1.6 }}>
                         Para prosseguirmos com sua estruturação, precisamos que você anexe os documentos solicitados abaixo para cada funil preenchido.
                     </p>
                 </header>
 
                 {userFunnels.length === 0 ? (
-                    <div className="p-12 text-center bg-white/5 rounded-3xl border border-dashed border-white/10">
-                        <AlertCircle className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                        <p className="text-sm opacity-40">Você ainda não preencheu nenhum formulário estratégico.</p>
+                    <div style={{
+                        padding: '60px',
+                        textAlign: 'center',
+                        background: 'rgba(255,255,255,0.02)',
+                        borderRadius: '32px',
+                        border: '1px dashed rgba(255,255,255,0.1)'
+                    }}>
+                        <AlertCircle size={48} style={{ margin: '0 auto 20px', opacity: 0.2 }} />
+                        <p style={{ fontSize: '0.85rem', opacity: 0.4, fontWeight: 600 }}>Você ainda não preencheu nenhum formulário estratégico.</p>
                     </div>
                 ) : (
-                    <div className="grid md:grid-rows-[auto_1fr] gap-8">
-                        <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+                        <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none' }}>
                             {userFunnels.map((funnel) => (
                                 <button
                                     key={funnel}
                                     onClick={() => setActiveFunnel(funnel)}
-                                    className={`px-6 py-3 rounded-full text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap border ${activeFunnel === funnel
-                                            ? 'bg-white text-black border-white'
-                                            : 'bg-white/5 text-white/40 border-white/10 hover:bg-white/10'
-                                        }`}
+                                    style={{
+                                        padding: '12px 24px',
+                                        borderRadius: '100px',
+                                        fontSize: '10px',
+                                        fontWeight: 900,
+                                        letterSpacing: '0.1em',
+                                        textTransform: 'uppercase',
+                                        transition: 'all 0.3s ease',
+                                        whiteSpace: 'nowrap',
+                                        border: '1px solid',
+                                        background: activeFunnel === funnel ? '#fff' : 'rgba(255,255,255,0.05)',
+                                        color: activeFunnel === funnel ? '#000' : 'rgba(255,255,255,0.4)',
+                                        borderColor: activeFunnel === funnel ? '#fff' : 'rgba(255,255,255,0.1)',
+                                    }}
                                 >
                                     {FUNNEL_LABELS[funnel] || funnel}
                                 </button>
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+                            gap: '24px'
+                        }}>
                             {DOC_TYPES.map((docType) => {
                                 const existingDoc = documents.find(d => d.funnelType === activeFunnel && d.tipo === docType.id);
                                 const isUploading = uploading === docType.id;
@@ -189,58 +224,145 @@ export default function DocumentosPage() {
                                     <motion.div
                                         key={docType.id}
                                         layout
-                                        className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all flex flex-col justify-between"
+                                        style={{
+                                            padding: '32px',
+                                            borderRadius: '32px',
+                                            background: 'rgba(255,255,255,0.02)',
+                                            border: '1px solid rgba(255,255,255,0.05)',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'space-between',
+                                            minHeight: '260px',
+                                            transition: 'background 0.3s ease'
+                                        }}
                                     >
                                         <div>
-                                            <div className="flex justify-between items-start mb-6">
-                                                <div className="p-3 bg-white/5 rounded-2xl group-hover:scale-110 transition-transform">
-                                                    <FileText className={`w-6 h-6 ${existingDoc ? 'text-green-500' : 'opacity-20'}`} />
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '24px' }}>
+                                                <div style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+                                                    <FileText size={24} style={{ color: existingDoc ? '#22c55e' : '#fff', opacity: existingDoc ? 1 : 0.2 }} />
                                                 </div>
                                                 {existingDoc ? (
-                                                    <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 rounded-full border border-green-500/20">
-                                                        <CheckCircle2 className="w-3 h-3 text-green-500" />
-                                                        <span className="text-[10px] font-black text-green-500 uppercase tracking-tighter">Enviado</span>
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '6px',
+                                                        padding: '4px 12px',
+                                                        background: 'rgba(34,197,94,0.1)',
+                                                        borderRadius: '100px',
+                                                        border: '1px solid rgba(34,197,94,0.2)'
+                                                    }}>
+                                                        <CheckCircle2 size={12} style={{ color: '#22c55e' }} />
+                                                        <span style={{ fontSize: '9px', fontWeight: 900, color: '#22c55e', textTransform: 'uppercase' }}>Enviado</span>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10">
-                                                        <span className="text-[10px] font-black opacity-30 uppercase tracking-tighter">Pendente</span>
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px',
+                                                        padding: '4px 12px',
+                                                        background: 'rgba(255,255,255,0.05)',
+                                                        borderRadius: '100px',
+                                                        border: '1px solid rgba(255,255,255,0.1)'
+                                                    }}>
+                                                        <span style={{ fontSize: '9px', fontWeight: 900, opacity: 0.3, textTransform: 'uppercase' }}>Pendente</span>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <h3 className="text-lg font-bold mb-2 tracking-tight">{docType.label}</h3>
-                                            <p className="text-xs opacity-30 mb-8 leading-relaxed">{docType.desc}</p>
+                                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '8px' }}>{docType.label}</h3>
+                                            <p style={{ fontSize: '0.75rem', opacity: 0.3, marginBottom: '32px', lineHeight: 1.5 }}>{docType.desc}</p>
                                         </div>
 
-                                        <div className="relative">
+                                        <div style={{ position: 'relative' }}>
                                             {isUploading ? (
-                                                <div className="w-full bg-white/5 h-12 rounded-2xl overflow-hidden relative border border-white/10 flex items-center justify-center">
+                                                <div style={{
+                                                    width: '100%',
+                                                    background: 'rgba(255,255,255,0.05)',
+                                                    height: '48px',
+                                                    borderRadius: '16px',
+                                                    overflow: 'hidden',
+                                                    position: 'relative',
+                                                    border: '1px solid rgba(255,255,255,0.1)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
+                                                }}>
                                                     <motion.div
                                                         initial={{ width: 0 }}
                                                         animate={{ width: `${progress}%` }}
-                                                        className="absolute inset-0 bg-white/10"
+                                                        style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.1)' }}
                                                     />
-                                                    <span className="relative text-[10px] font-black tracking-widest uppercase flex items-center gap-2">
-                                                        Carregando {progress}%
+                                                    <span style={{ position: 'relative', fontSize: '9px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <Loader2 size={12} className="animate-spin" /> Carregando {progress}%
                                                     </span>
                                                 </div>
                                             ) : existingDoc ? (
-                                                <div className="flex gap-2">
+                                                <div style={{ display: 'flex', gap: '8px' }}>
                                                     <button
                                                         onClick={() => handleDownload(existingDoc.id)}
-                                                        className="flex-1 h-12 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-[10px] font-black tracking-widest uppercase"
+                                                        style={{
+                                                            flex: 1,
+                                                            height: '48px',
+                                                            borderRadius: '16px',
+                                                            background: 'rgba(255,255,255,0.05)',
+                                                            border: '1px solid rgba(255,255,255,0.1)',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '8px',
+                                                            fontSize: '9px',
+                                                            fontWeight: 900,
+                                                            letterSpacing: '0.1em',
+                                                            textTransform: 'uppercase',
+                                                            transition: 'all 0.3s ease'
+                                                        }}
+                                                        onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+                                                        onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
                                                     >
-                                                        <Download className="w-4 h-4" /> Baixar
+                                                        <Download size={16} /> Baixar
                                                     </button>
-                                                    <label className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center cursor-pointer group/label">
-                                                        <FileUp className="w-4 h-4 opacity-30 group-hover/label:opacity-100" />
-                                                        <input type="file" className="hidden" onChange={(e) => handleUpload(e, docType.id)} accept=".pdf,.jpg,.jpeg,.png,.webp" />
+                                                    <label style={{
+                                                        width: '48px',
+                                                        height: '48px',
+                                                        borderRadius: '16px',
+                                                        background: 'rgba(255,255,255,0.05)',
+                                                        border: '1px solid rgba(255,255,255,0.1)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.3s ease'
+                                                    }}
+                                                        onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+                                                        onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                                                    >
+                                                        <FileUp size={16} style={{ opacity: 0.3 }} />
+                                                        <input type="file" style={{ display: 'none' }} onChange={(e) => handleUpload(e, docType.id)} accept=".pdf,.jpg,.jpeg,.png,.webp" />
                                                     </label>
                                                 </div>
                                             ) : (
-                                                <label className="w-full h-12 rounded-2xl bg-white text-black hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer text-[10px] font-black tracking-widest uppercase">
-                                                    <CloudUpload className="w-4 h-4" /> Enviar Arquivo
-                                                    <input type="file" className="hidden" onChange={(e) => handleUpload(e, docType.id)} accept=".pdf,.jpg,.jpeg,.png,.webp" />
+                                                <label style={{
+                                                    width: '100%',
+                                                    height: '48px',
+                                                    borderRadius: '16px',
+                                                    background: '#fff',
+                                                    color: '#000',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    gap: '8px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '9px',
+                                                    fontWeight: 900,
+                                                    letterSpacing: '0.1em',
+                                                    textTransform: 'uppercase',
+                                                    transition: 'all 0.3s ease'
+                                                }}
+                                                    onMouseOver={(e) => (e.currentTarget.style.transform = 'translateY(-2px)')}
+                                                    onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+                                                >
+                                                    <CloudUpload size={16} /> Enviar Arquivo
+                                                    <input type="file" style={{ display: 'none' }} onChange={(e) => handleUpload(e, docType.id)} accept=".pdf,.jpg,.jpeg,.png,.webp" />
                                                 </label>
                                             )}
                                         </div>
@@ -253,9 +375,10 @@ export default function DocumentosPage() {
             </div>
 
             <style jsx global>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                .animate-spin { animation: spin 1s linear infinite; }
+            `}</style>
         </div>
     );
+
 }

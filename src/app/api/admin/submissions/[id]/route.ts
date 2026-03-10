@@ -13,16 +13,20 @@ export async function PATCH(
             return NextResponse.json({ message: "Acesso negado" }, { status: 403 })
         }
 
-        const { priority } = await req.json()
+        const body = await req.json()
+        const { priority, status } = body
 
         const updated = await (prisma as any).submission.update({
             where: { id },
-            data: { priority }
+            data: {
+                ...(priority && { priority }),
+                ...(status && { status })
+            }
         })
 
         return NextResponse.json(updated)
     } catch (error) {
-        console.error("Update priority error:", error)
-        return NextResponse.json({ message: "Erro ao atualizar prioridade" }, { status: 500 })
+        console.error("Update submission error:", error)
+        return NextResponse.json({ message: "Erro ao atualizar registro" }, { status: 500 })
     }
 }

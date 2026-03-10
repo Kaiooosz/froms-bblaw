@@ -39,13 +39,18 @@ function SignInContent() {
             });
 
             if (result?.error) {
-                console.error("SIGN_IN_ERROR:", result.error);
-                setError('Credenciais inválidas ou conta não encontrada.');
+                console.error("SIGN_IN_ERROR_DETAIL:", result.error);
+                if (result.error === "MissingCSRF") {
+                    setError('Erro de segurança (CSRF). Por favor, limpe os cookies ou tente em aba anônima.');
+                } else {
+                    setError('Credenciais inválidas ou erro na autenticação.');
+                }
                 setLoading(false);
             } else {
-                // Sincronização forçada para evitar loop de middleware
-                router.refresh();
-                window.location.href = '/'; // Deixa o middleware/admin-dispatcher decidir (admin -> /admin/dashboard, client -> /funnels)
+                router.refresh(); // Crucial para o middleware ler a nova sessão
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 100);
             }
         } catch (loginErr) {
             setError('Ocorreu um erro no servidor. Tente novamente.');
