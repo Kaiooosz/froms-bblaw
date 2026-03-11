@@ -32,7 +32,6 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
-        <div className="premium-bg" />
         <ThemeProvider>
           <AuthProvider>
             {children}

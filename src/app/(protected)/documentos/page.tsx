@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import {
     FileUp,
     FileText,
@@ -10,26 +11,67 @@ import {
     AlertCircle,
     Loader2,
     ChevronRight,
+    ChevronLeft,
     ShieldCheck,
     CloudUpload
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FUNNEL_LABELS: Record<string, string> = {
-    'PARAGUAI': 'Residência Fiscal Paraguai',
-    'OFFSHORE': 'Offshore Internacional',
-    'HOLDING': 'Holding Nacional',
-    'CRIPTO': 'Estruturação Cripto',
-    'SUCESSORIO': 'Planejamento Sucessório',
-    'CONTENCIOSO': 'Contencioso Estratégico',
-    'OFFSHORE_CUSTOM': 'Formulário Estratégico'
+    'residencia_py': 'Residência Fiscal Paraguai',
+    'offshore': 'Offshore Internacional',
+    'holding': 'Holding Nacional',
+    'cripto': 'Estruturação Cripto',
+    'sucessorio': 'Planejamento Sucessório',
+    'contencioso': 'Contencioso Estratégico',
+    'compliance': 'Retainer / Compliance',
+    'contabil': 'Contabilidade Empresarial'
 };
 
-const DOC_TYPES = [
+const FUNNEL_DOCS: Record<string, { id: string, label: string, desc: string }[]> = {
+    'residencia_py': [
+        { id: 'rg_cnh_passaporte', label: 'Documento Pessoal Físico', desc: 'Foto nítida do RG, CNH ou Passaporte' },
+        { id: 'cert_nascimento', label: 'Certidão de Nascimento', desc: 'Original + Apostilamento (apenas frente e verso)' },
+        { id: 'cert_casamento', label: 'Certidão de Casamento', desc: 'Original + Apostilamento (Se for casado(a))' },
+        { id: 'antecedentes', label: 'Antecedentes Criminais', desc: 'PF com Apostilamento de Haia' },
+        { id: 'vacina_febre', label: 'Vacina Febre Amarela', desc: 'Certificado Internacional (gov.br)' },
+        { id: 'foto_interpol', label: 'Foto Estilo Interpol', desc: 'Selfie de rosto em fundo branco' }
+    ],
+    'offshore': [
+        { id: 'passaporte', label: 'Passaporte', desc: 'Cópia Apostilada/Notarizada' },
+        { id: 'residencia', label: 'Comprovante de Residência', desc: 'Emitido há menos de 90 dias' },
+        { id: 'ref_bancaria', label: 'Carta Ref. Bancária', desc: 'Relacionamento acima de 1-2 anos (Se possível)' },
+        { id: 'comprovante_fundos', label: 'Comprovativo de Fundos', desc: 'IR, Extrato ou Prova de Liquidez' },
+        { id: 'outro', label: 'Documentos Societários', desc: 'CNPJ, Contrato (Caso já exista empresa)' }
+    ],
+    'holding': [
+        { id: 'irpf', label: 'IRPF Atualizado', desc: 'Declaração com Relação de Bens' },
+        { id: 'relacao_imoveis', label: 'Matrículas de Imóveis', desc: 'Relação ou PDFs recentes (Caso aplicável)' },
+        { id: 'contrato_social', label: 'Contrato Social', desc: 'Das empresas atuantes (se possuir)' },
+        { id: 'doc_identidade', label: 'Documento de Identidade', desc: 'RG ou CNH' }
+    ],
+    'cripto': [
+        { id: 'relatorio_fiscal', label: 'Relatório Fiscal Cripto', desc: 'Extratos ou controle de custódia' },
+        { id: 'notificacao_rfb', label: 'Notificação RFB', desc: 'Caso já tenha sido notificado' },
+        { id: 'doc_identidade', label: 'Documento de Identidade', desc: 'RG ou CNH' }
+    ],
+    'sucessorio': [
+        { id: 'doc_identidade', label: 'Documentos Pessoais', desc: 'RG ou CNH Próprios' },
+        { id: 'cert_casamento', label: 'Certidão de Casamento', desc: 'Se aplicável' },
+        { id: 'relacao_bens', label: 'IRPF / Relação de Bens', desc: 'Ultima declaração transmitida' }
+    ],
+    'contencioso': [
+        { id: 'processo', label: 'Petição Inicial / Mandado', desc: 'Cópia integral clara' },
+        { id: 'notificacao', label: 'Notificações Recebidas', desc: 'Fotos dos despachos' },
+        { id: 'provas', label: 'Upload de Provas', desc: 'Contratos, e-mails e conversas' },
+        { id: 'doc_identidade', label: 'Procuração Pré-assinada', desc: 'A requerer' }
+    ]
+};
+
+// Fallback / Padrão
+const DEFAULT_DOCS = [
     { id: 'identidade', label: 'Documento de Identidade', desc: 'RG, CNH ou Passaporte' },
     { id: 'residencia', label: 'Comprovante de Residência', desc: 'Conta de luz, água ou telefone' },
-    { id: 'contrato', label: 'Contrato Assinado', desc: 'Contrato de prestação de serviços' },
-    { id: 'foto', label: 'Foto Selfie', desc: 'Foto segurando o documento' },
     { id: 'outro', label: 'Outros Documentos', desc: 'Documentos complementares' }
 ];
 
@@ -61,8 +103,11 @@ export default function DocumentosPage() {
             const docs = await docsRes.json();
             setDocuments(Array.isArray(docs) ? docs : []);
 
-            if (subs.length > 0 && !activeFunnel) {
-                setActiveFunnel(subs[0].funnelType);
+            if (!activeFunnel) {
+                // If the user has explicitly submitted a funnel, default to the most recent one
+                // Otherwise, default to the first funnel (residencia_py)
+                const firstFunnel = subs.length > 0 ? subs[0].funnelType : Object.keys(FUNNEL_LABELS)[0];
+                setActiveFunnel(firstFunnel);
             }
         } catch (err) {
             console.error("Fetch data error:", err);
@@ -133,7 +178,7 @@ export default function DocumentosPage() {
         );
     }
 
-    const userFunnels = Array.from(new Set(submissions.map(s => s.funnelType)));
+    const allFunnels = Object.keys(FUNNEL_LABELS);
 
     return (
         <div style={{
@@ -145,20 +190,39 @@ export default function DocumentosPage() {
             overflowX: 'hidden',
             fontFamily: 'Inter, sans-serif'
         }}>
-            {/* Linhas Decorativas (Premium Frame) */}
-            <div style={{ position: 'fixed', top: '12px', left: '12px', right: '12px', bottom: '12px', border: '1px solid rgba(255,255,255,0.05)', pointerEvents: 'none', zIndex: 1000 }} />
-            <div style={{ position: 'fixed', top: '0', left: '50%', width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
-            <div style={{ position: 'fixed', bottom: '0', left: '50%', width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
-            <div style={{ position: 'fixed', left: '0', top: '50%', height: '1px', width: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
-            <div style={{ position: 'fixed', right: '0', top: '50%', height: '1px', width: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
+            {/* Conteúdo Principal */}
 
             <div style={{ maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
                 <header style={{ marginBottom: '60px' }}>
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}
                     >
+                        <Link href="/funnels" style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            width: '40px', 
+                            height: '40px', 
+                            borderRadius: '12px', 
+                            border: '1px solid rgba(255,255,255,0.1)', 
+                            color: 'rgba(255,255,255,0.6)',
+                            textDecoration: 'none',
+                            transition: 'all 0.3s ease'
+                        }}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                            e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                        }}
+                        >
+                            <ChevronLeft size={18} />
+                        </Link>
+                        
                         <div style={{ padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
                             <ShieldCheck size={20} style={{ opacity: 0.5 }} />
                         </div>
@@ -169,25 +233,13 @@ export default function DocumentosPage() {
                         Envie seus <span style={{ opacity: 0.4, fontStyle: 'italic', fontWeight: 400 }}>documentos</span>
                     </h1>
                     <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)', maxWidth: '500px', lineHeight: 1.6 }}>
-                        Para prosseguirmos com sua estruturação, precisamos que você anexe os documentos solicitados abaixo para cada funil preenchido.
+                        Abaixo você pode iniciar os envios seguros da sua documentação. Selecione a operação correspondente ao seu caso estratégico.
                     </p>
                 </header>
 
-                {userFunnels.length === 0 ? (
-                    <div style={{
-                        padding: '60px',
-                        textAlign: 'center',
-                        background: 'rgba(255,255,255,0.02)',
-                        borderRadius: '32px',
-                        border: '1px dashed rgba(255,255,255,0.1)'
-                    }}>
-                        <AlertCircle size={48} style={{ margin: '0 auto 20px', opacity: 0.2 }} />
-                        <p style={{ fontSize: '0.85rem', opacity: 0.4, fontWeight: 600 }}>Você ainda não preencheu nenhum formulário estratégico.</p>
-                    </div>
-                ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-                        <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none' }}>
-                            {userFunnels.map((funnel) => (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+                    <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none' }}>
+                        {allFunnels.map((funnel) => (
                                 <button
                                     key={funnel}
                                     onClick={() => setActiveFunnel(funnel)}
@@ -216,7 +268,7 @@ export default function DocumentosPage() {
                             gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
                             gap: '24px'
                         }}>
-                            {DOC_TYPES.map((docType) => {
+                            {(activeFunnel && FUNNEL_DOCS[activeFunnel] ? FUNNEL_DOCS[activeFunnel] : DEFAULT_DOCS).map((docType) => {
                                 const existingDoc = documents.find(d => d.funnelType === activeFunnel && d.tipo === docType.id);
                                 const isUploading = uploading === docType.id;
 
@@ -371,7 +423,6 @@ export default function DocumentosPage() {
                             })}
                         </div>
                     </div>
-                )}
             </div>
 
             <style jsx global>{`

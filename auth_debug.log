@@ -1,0 +1,64 @@
+[2026-03-11T03:16:59.391Z] Tentativa de login -> Email: [amborgesvinicius@gmail.com]
+[2026-03-11T03:16:59.391Z] Comparando com Admin ENV -> Email: [amborgesvinicius@gmail.com], PassLen: 12
+[2026-03-11T03:16:59.391Z] AUTH_SUCCESS: Admin bypass acionado.
+[2026-03-11T03:19:01.280Z] Tentativa de login -> Email: [teste@teste.com]
+[2026-03-11T03:19:01.280Z] Comparando com Admin ENV -> Email: [amborgesvinicius@gmail.com], PassLen: 12
+[2026-03-11T03:19:01.281Z] AUTH_SUCCESS: Bypass acionado para [teste@teste.com].
+[2026-03-11T03:19:01.281Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:01.282Z] JWT_CALLBACK: New session for user teste@teste.com with role CLIENT
+[2026-03-11T03:19:01.337Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:01.337Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:01.737Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:01.737Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:01.771Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:01.771Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:01.788Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:01.788Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:20.417Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:20.417Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:20.447Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:20.448Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:20.496Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:19:20.496Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:21:29.327Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:21:29.328Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:34:51.250Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:34:51.259Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:36:48.725Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:36:48.725Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:36:48.861Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:36:48.861Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:36:48.869Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:36:48.869Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:40:30.759Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:40:30.761Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:40:30.850Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:40:30.850Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:40:30.859Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:40:30.859Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:48:14.267Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:48:14.269Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:48:14.467Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:48:14.467Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:48:14.521Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:48:14.521Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:52:17.422Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:52:17.424Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:52:17.449Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:52:17.449Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:52:17.464Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:52:17.464Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:36.969Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:36.970Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:37.042Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:37.043Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:37.057Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:37.057Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:59.106Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:59.106Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:59.169Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:59.169Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:59.185Z] JWT_CALLBACK: processing for teste@teste.com
+[2026-03-11T03:55:59.185Z] SESSION_CALLBACK: processing for teste@teste.com
+[2026-03-11T05:26:20.857Z] [AUTH] Tentativa de login -> Email: [teste@teste.com]
+[2026-03-11T05:26:20.857Z] AUTH_SUCCESS: Bypass logado -> teste@teste.com

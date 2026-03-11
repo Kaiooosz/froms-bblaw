@@ -86,7 +86,7 @@ export default function SignUpPage() {
                 transform: 'translateX(-50%)',
                 width: '100vw',
                 height: '40vh',
-                background: 'radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 75%)',
+                background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 75%)',
                 zIndex: 0
             }} />
 
@@ -230,9 +230,9 @@ export default function SignUpPage() {
                         whileHover={{ scale: 1.01, background: '#fff', color: '#000' }}
                         whileTap={{ scale: 0.98 }}
                         style={{
-                            background: 'transparent',
-                            color: '#fff',
-                            border: '1px solid rgba(255,255,255,0.8)',
+                            background: '#fff',
+                            color: '#000',
+                            border: 'none',
                             borderRadius: '100px',
                             padding: '16px',
                             fontSize: '0.9rem',

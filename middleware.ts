@@ -8,21 +8,19 @@ export default auth((req) => {
     const userEmail = (req.auth?.user?.email || "").toLowerCase().trim()
     const isActuallyAdmin = userRole === "ADMIN" || userEmail === "bezerraborges@gmail.com"
 
-    // 1. SILENT ROOT REDIRECT
+    // 1. ALLOW ROOT PAGE
     if (pathname === "/") {
-        if (isLoggedIn && isActuallyAdmin) {
-            return NextResponse.redirect(new URL("/admin", req.nextUrl))
-        }
-        return NextResponse.redirect(new URL("/funnels", req.nextUrl))
+        return NextResponse.next()
     }
 
     const isAdminPage = pathname.startsWith("/admin")
     const isFormPage = pathname.startsWith("/form")
     const isFunnelsPage = pathname.startsWith("/funnels")
+    const isChatPage = pathname.startsWith("/chat")
 
     // 2. ADMIN-ONLY PROTECTION
     // Se o usuário é ADMIN e está em áreas de CLIENTE, manda pra ADMIN
-    if (isLoggedIn && isActuallyAdmin && (isFunnelsPage || isFormPage)) {
+    if (isLoggedIn && isActuallyAdmin && (isFunnelsPage || isFormPage || isChatPage)) {
         return NextResponse.redirect(new URL("/admin", req.nextUrl))
     }
 
@@ -35,7 +33,7 @@ export default auth((req) => {
     }
 
     // 4. AUTH PROTECTION (CLIENT AREAS)
-    if ((isFormPage || isFunnelsPage) && !isLoggedIn) {
+    if ((isFormPage || isFunnelsPage || isChatPage) && !isLoggedIn) {
         return NextResponse.redirect(new URL("/auth/signin", req.nextUrl))
     }
 
@@ -43,6 +41,6 @@ export default auth((req) => {
 })
 
 export const config = {
-    matcher: ["/", "/admin/:path*", "/auth/:path*", "/form/:path*", "/funnels/:path*"],
+    matcher: ["/admin/:path*", "/auth/:path*", "/form/:path*", "/funnels/:path*", "/chat/:path*"],
 }
 

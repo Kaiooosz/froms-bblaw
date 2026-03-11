@@ -5,6 +5,7 @@ import {
     Gem,
     CaseLower,
     Gavel,
+    MessageSquare,
     Coins,
     FileUp
 } from 'lucide-react';
@@ -116,9 +117,9 @@ export default async function FunnelsPage() {
                 })}
 
                 {/* Card de Documentação */}
-                <Link href="/documentos" className={styles.card} style={{ borderColor: 'rgba(255,255,255,0.15)', background: 'linear-gradient(45deg, rgba(255,255,255,0.03), transparent)' }}>
+                <Link href="/documentos" className={styles.card} style={{ borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)' }}>
                     <div className={styles.cardHeader}>
-                        <div className={styles.cardIcon} style={{ background: '#fff', color: '#000' }}><FileUp size={20} /></div>
+                        <div className={styles.cardIcon} style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FileUp size={20} /></div>
                     </div>
                     <div className={styles.cardBody}>
                         <span className={styles.category} style={{ color: '#fff' }}>CHECKLIST</span>
@@ -127,6 +128,22 @@ export default async function FunnelsPage() {
                     </div>
                     <div className={styles.cardAction}>
                         <span>ENVIAR DOCS</span>
+                        <span className={styles.arrow}>→</span>
+                    </div>
+                </Link>
+
+                {/* Card de IA Chat */}
+                <Link href="/chat" className={styles.card} style={{ borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)' }}>
+                    <div className={styles.cardHeader}>
+                        <div className={styles.cardIcon} style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MessageSquare size={20} /></div>
+                    </div>
+                    <div className={styles.cardBody}>
+                        <span className={styles.category} style={{ color: 'rgba(255,255,255,0.5)' }}>ESTRATÉGICO AI</span>
+                        <h3 className={styles.cardTitle}>Converse com nossa Inteligência</h3>
+                        <p style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.5rem' }}>Tire dúvidas e tome a melhor decisão para o seu planejamento.</p>
+                    </div>
+                    <div className={styles.cardAction}>
+                        <span>INICIAR CHAT</span>
                         <span className={styles.arrow}>→</span>
                     </div>
                 </Link>

@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         }
 
         // 3. HASH DA SENHA (BCRYPT 10)
-        const hashedPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = await bcrypt.hash(password.trim(), 10)
 
         // 4. CRIAÇÃO DO USUÁRIO (Sincronizado com schema.prisma)
         const user = await (prisma as any).user.create({

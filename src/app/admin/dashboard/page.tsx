@@ -346,181 +346,146 @@ export default function AdminDashboard() {
             <p style={{ marginTop: '2rem', fontSize: '0.6rem', color: 'white', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em' }}>SISTEMA DE GESTÃO BBLAW</p>
         </div>
     );
-
-    return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#000', color: '#fff', position: 'relative' }}>
-            {/* Linhas Decorativas (Premium Frame) */}
-            <div style={{ position: 'fixed', top: '12px', left: '12px', right: '12px', bottom: '12px', border: '1px solid rgba(255,255,255,0.05)', pointerEvents: 'none', zIndex: 1000 }} />
-            <div style={{ position: 'fixed', top: '0', left: '50%', width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
-            <div style={{ position: 'fixed', bottom: '0', left: '50%', width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
-            <div style={{ position: 'fixed', left: '0', top: '50%', height: '1px', width: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
-            <div style={{ position: 'fixed', right: '0', top: '50%', height: '1px', width: '12px', background: 'rgba(255,255,255,0.1)', zIndex: 1001 }} />
-
+   return (
+        <div style={{ background: '#000', color: '#fff', minHeight: '100vh', display: 'flex', fontFamily: 'Inter' }}>
             <style dangerouslySetInnerHTML={{
                 __html: `
                 body { background-color: #000 !important; }
-                .admin-main { background-color: #000 !important; }
-                @media (max-width: 1024px) {
-                    .admin-sidebar { transform: ${isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)'} !important; }
-                    .admin-main { margin-left: 0 !important; }
+                .dash-grid {
+                    background-image: linear-gradient(rgba(255, 255, 255, 0.015) 0.5px, transparent 0.5px),
+                                    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 0.5px, transparent 0.5px);
+                    background-size: 60px 60px;
                 }
-                @media (min-width: 1025px) {
-                    .admin-sidebar { transform: translateX(0) !important; }
-                    .admin-main { margin-left: 280px !important; }
-                    .mobile-only { display: none !important; }
-                }
-                @media (max-width: 768px) {
-                    .mobile-hide { display: none !important; }
-                    .mobile-small { font-size: 0.65rem !important; }
-                    .mobile-stack { flex-direction: column !important; align-items: flex-start !important; }
-                    table { min-width: 500px !important; }
-                    h2 { font-size: 1rem !important; }
-                    .overview-grid { grid-template-columns: 1fr !important; }
-                    .modal-content { padding: 1.5rem !important; width: 100% !important; margin: 0 !important; border-radius: 0 !important; }
-                    .detail-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
-                }
+                ::-webkit-scrollbar { width: 4px; }
+                ::-webkit-scrollbar-track { background: transparent; }
+                ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+                ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
             `}} />
-            {/* Sidebar Lateral Minimalista */}
-            <aside
-                id="admin-sidebar"
-                style={{
-                    width: '280px',
-                    borderRight: '1px solid rgba(255,255,255,0.05)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: '2rem 1.5rem',
-                    position: 'fixed',
-                    height: '100vh',
-                    zIndex: 100,
-                    background: '#000',
-                    transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                    left: 0,
-                    top: 0
-                }} className="admin-sidebar"
-            >
-                <div style={{ marginBottom: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <img src="/LogoBranco.svg" alt="BBLAW" style={{ maxWidth: '80px' }} />
-                        <span style={{ fontSize: '0.4rem', fontWeight: 900, background: '#fff', color: '#000', padding: '2px 5px', borderRadius: '3px', letterSpacing: '0.05em' }}>ADM</span>
+
+            <div className="dash-grid" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }} />
+            <div style={{ position: 'fixed', top: '0', right: '0', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+
+            {/* Sidebar Lateral */}
+            <aside style={{
+                width: '280px',
+                background: '#050505',
+                borderRight: '0.5px solid rgba(255,255,255,0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+                position: 'fixed',
+                zIndex: 100
+            }}>
+                <div style={{ padding: '3rem 2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ width: '40px', height: '40px', background: '#fff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <ShieldCheck color="#000" size={24} />
                     </div>
-                    <button onClick={() => setIsSidebarOpen(false)} style={{ background: 'transparent', border: 'none', color: '#fff', padding: '0.5rem' }} className="mobile-only">
-                        <X size={20} />
-                    </button>
+                    <div>
+                        <h2 style={{ fontSize: '1.2rem', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1 }}>BBLAW</h2>
+                        <p style={{ fontSize: '0.55rem', opacity: 0.3, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '4px' }}>INTEL UNIT</p>
+                    </div>
                 </div>
 
-                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                    <SidebarLink icon={<LayoutDashboard size={18} />} label="Overview" active={activeTab === 'OVERVIEW'} onClick={() => { setActiveTab('OVERVIEW'); setIsSidebarOpen(false); }} />
-                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '0.5rem 0' }} />
-                    <SidebarLink icon={<FileText size={18} />} label="Leads Detalhados" active={activeTab === 'LEADS'} onClick={() => { setActiveTab('LEADS'); setIsSidebarOpen(false); }} />
-                    <SidebarLink icon={<ClipboardList size={18} />} label="Gestão de Respostas" active={activeTab === 'SUBMISSIONS'} onClick={() => { setActiveTab('SUBMISSIONS'); setIsSidebarOpen(false); }} />
-                    <SidebarLink icon={<FileUp size={18} />} label="Repositório Docs" active={activeTab === 'DOCS'} onClick={() => { setActiveTab('DOCS'); setIsSidebarOpen(false); }} />
-                    <SidebarLink icon={<Users size={18} />} label="Usuários Registrados" active={activeTab === 'USERS'} onClick={() => { setActiveTab('USERS'); setIsSidebarOpen(false); }} />
-                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '0.5rem 0' }} />
-                    <SidebarLink icon={<Settings size={18} />} label="Configurações" active={false} onClick={() => { }} />
+                <nav style={{ flex: 1, padding: '0 1.25rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <SidebarLink icon={<LayoutDashboard size={16} />} label="VISÃO GERAL" active={activeTab === 'OVERVIEW'} onClick={() => setActiveTab('OVERVIEW')} />
+                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.03)', margin: '1rem 0.75rem' }} />
+                    <SidebarLink icon={<Users size={16} />} label="LEADS ESTRATÉGICOS" active={activeTab === 'LEADS'} onClick={() => setActiveTab('LEADS')} />
+                    <SidebarLink icon={<ClipboardList size={16} />} label="PROTOCOLOS ATIVOS" active={activeTab === 'SUBMISSIONS'} onClick={() => setActiveTab('SUBMISSIONS')} />
+                    <SidebarLink icon={<FileUp size={16} />} label="REPOSITÓRIO DOCS" active={activeTab === 'DOCS'} onClick={() => setActiveTab('DOCS')} />
+                    <SidebarLink icon={<Users size={16} />} label="DIRETÓRIO USUÁRIOS" active={activeTab === 'USERS'} onClick={() => setActiveTab('USERS')} />
                 </nav>
 
-                <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', padding: '0 0.5rem' }}>
-                        <div style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 900 }}>
-                            {session?.user?.name?.[0]}
+                <div style={{ padding: '2rem', borderTop: '0.5px solid rgba(255,255,255,0.03)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '12px', border: '0.5px solid rgba(255,255,255,0.05)' }}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 900 }}>
+                            {session?.user?.name?.[0] || 'A'}
                         </div>
                         <div style={{ overflow: 'hidden' }}>
-                            <p style={{ fontSize: '0.7rem', fontWeight: 800, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{session?.user?.name}</p>
-                            <p style={{ fontSize: '0.55rem', opacity: 0.4, fontWeight: 700 }}>Master Admin</p>
+                            <p style={{ fontSize: '0.65rem', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session?.user?.name || 'Admin'}</p>
+                            <p style={{ fontSize: '0.5rem', opacity: 0.3, fontWeight: 700 }}>PAINEL DE CONTROLE</p>
                         </div>
                     </div>
-                    <button
-                        onClick={() => {
-                            signOut({ callbackUrl: '/auth/signin', redirect: true });
-                        }}
-                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.7rem', fontWeight: 900, color: '#ff4b4b', transition: 'all 0.2s', padding: '0.75rem', background: 'rgba(255,75,75,0.05)', borderRadius: '10px', border: '1px solid rgba(255,75,75,0.1)' }}
-                    >
-                        <LogOut size={16} /> DESCONECTAR
+                    <button onClick={() => signOut()} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'rgba(255,255,255,0.4)', fontSize: '0.6rem', fontWeight: 900, padding: '8px 12px', borderRadius: '8px', transition: 'all 0.3s' }} onMouseOver={(e) => e.currentTarget.style.color = '#fff'} onMouseOut={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
+                        <LogOut size={14} /> ENCERRAR SESSÃO
                     </button>
                 </div>
             </aside>
 
             {/* Viewport Principal */}
-            <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }} className="admin-main">
-                {/* Header Superior */}
-                <header style={{ height: '70px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.5rem', position: 'sticky', top: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 10 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <button onClick={() => setIsSidebarOpen(true)} style={{ background: 'transparent', border: 'none', color: '#fff' }} className="mobile-only">
-                            <MenuIcon size={20} />
-                        </button>
-                        <div style={{ position: 'relative', width: 'min(300px, 50vw)' }}>
-                            <Search size={12} style={{ position: 'absolute', left: '0', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
-                            <input
-                                type="text"
-                                placeholder="Pesquisar..."
-                                style={{ background: 'transparent', border: 'none', padding: '0.5rem 0 0.5rem 1.25rem', width: '100%', fontSize: '0.75rem', color: '#fff', outline: 'none' }}
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
+            <main style={{ marginLeft: '280px', flex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                <header className="dash-header" style={{ padding: '3.5rem 4rem' }}>
+                    <div>
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1, fontFamily: 'Outfit' }}>
+                            {activeTab === 'OVERVIEW' ? 'SISTEMA DE INTELIGÊNCIA' : (activeTab === 'LEADS' ? 'LEADS ESTRATÉGICOS' : (activeTab === 'SUBMISSIONS' ? 'PROTOCOLOS ATIVOS' : activeTab))}
+                        </h1>
+                        <p style={{ fontSize: '0.65rem', opacity: 0.3, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '6px' }}>GERENCIAMENTO DE ATIVOS E DADOS BBLAW</p>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <button style={{ opacity: 0.3 }}><Bell size={16} /></button>
-                        <button onClick={toggleTheme} style={{ opacity: 0.3 }}>{theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <div style={{ position: 'relative', width: '300px' }}>
+                            <Search size={14} style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.2 }} />
+                            <input
+                                type="text"
+                                placeholder="LOCALIZAR REGISTRO..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="dash-search-input"
+                            />
+                        </div>
+
+                        <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.05)' }} />
+
+                        <button onClick={toggleTheme} style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.08)', padding: '0.75rem', borderRadius: '10px', color: '#fff', transition: 'all 0.3s' }}>
+                            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+                        </button>
                     </div>
                 </header>
 
-                <div style={{ padding: '1.5rem' }}>
-                    <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-                        <div>
-                            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>
-                                {activeTab === 'OVERVIEW' ? 'Overview' : activeTab === 'LEADS' ? 'Leads Estratégicos' : activeTab === 'SUBMISSIONS' ? 'Formulários Recebidos' : activeTab === 'DOCS' ? 'Repositório de Documentos' : activeTab === 'WEBHOOKS' ? 'MindTech Webhook' : 'Usuários'}
-                            </h2>
-                            <p style={{ fontSize: '0.75rem', opacity: 0.4 }}>{activeTab === 'OVERVIEW' ? 'Resumo da rede.' : activeTab === 'LEADS' ? 'Gestão de leads.' : activeTab === 'SUBMISSIONS' ? 'Dados dos formulários preenchidos.' : activeTab === 'DOCS' ? 'Arquivos enviados pelos clientes.' : activeTab === 'WEBHOOKS' ? 'Integração em tempo real.' : 'Diretório de clientes.'}</p>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            {(activeTab === 'LEADS' || activeTab === 'SUBMISSIONS') && (
-                                <>
+                <div style={{ flex: 1, padding: '0 4rem 4rem' }}>
+                    {/* Filtros e Ações */}
+                    <div style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
+                        {(activeTab === 'LEADS' || activeTab === 'SUBMISSIONS') && (
+                            <>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.02)', padding: '4px 12px', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.05)' }}>
+                                    <Filter size={12} style={{ opacity: 0.3 }} />
                                     <select
                                         value={filterStatus}
                                         onChange={(e) => setFilterStatus(e.target.value)}
-                                        style={{
-                                            background: 'rgba(255,255,255,0.05)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            borderRadius: '100px',
-                                            padding: '0.5rem 1rem',
-                                            fontSize: '0.65rem',
-                                            color: '#fff',
-                                            fontWeight: 900,
-                                            outline: 'none',
-                                            cursor: 'pointer'
-                                        }}
+                                        style={{ background: 'transparent', border: 'none', fontSize: '0.55rem', color: '#fff', fontWeight: 900, outline: 'none', letterSpacing: '0.05em', cursor: 'pointer' }}
                                     >
-                                        <option value="ALL">TODOS OS STATUS</option>
-                                        <option value="PENDING">PENDENTE</option>
-                                        <option value="REVIEWING">EM ANÁLISE</option>
-                                        <option value="COMPLETED">CONCLUÍDO</option>
+                                        <option value="ALL">TODOS OS ESTÁGIOS</option>
+                                        <option value="PENDING">AGUARDANDO</option>
+                                        <option value="REVIEWING">TRIAGEM</option>
+                                        <option value="COMPLETED">FINALIZADO</option>
                                     </select>
-                                    <button onClick={() => activeTab === 'LEADS' ? exportListPDF('LEADS') : exportListPDF('SUBMISSIONS')} style={{ background: '#fff', color: '#000', padding: '0.5rem 1.5rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s' }}>
-                                        <Download size={14} /> EXPORTAR
-                                    </button>
-                                </>
-                            )}
-                        </div>
-                    </header>
+                                </div>
+                                <button
+                                    onClick={() => exportListPDF(activeTab === 'LEADS' ? 'LEADS' : 'SUBMISSIONS')}
+                                    className="btn-premium"
+                                    style={{ padding: '0.65rem 1.25rem', fontSize: '0.55rem', background: '#fff', color: '#000', borderRadius: '8px', fontWeight: 900, transition: 'var(--transition-smooth)' }}
+                                >
+                                    <Download size={14} /> EXPORTAR BATCH
+                                </button>
+                            </>
+                        )}
+                    </div>
 
-                    {/* Espaço de Dados Estilo SaaS */}
                     {activeTab === 'OVERVIEW' ? (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }} className="overview-grid">
-                            <OverviewCard icon={<FileText size={16} />} label="LEADS" value={leads.length} />
-                            <OverviewCard icon={<ClipboardList size={16} />} label="PROTOCOLOS" value={submissions.length} />
-                            <OverviewCard icon={<FileUp size={16} />} label="DOCUMENTOS" value={docCount} />
-                            <OverviewCard icon={<ShieldCheck size={16} />} label="VIP/ALTA/URGENTE" value={submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length} />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '2rem' }}>
+                                <OverviewCard icon={<Users size={20} />} label="LEADS ESTRATÉGICOS" value={leads.length} />
+                                <OverviewCard icon={<ClipboardList size={20} />} label="PROTOCOLOS ATIVOS" value={submissions.length} />
+                                <OverviewCard icon={<FileUp size={20} />} label="DOCUMENTOS EM CUSTÓDIA" value={docCount} />
+                                <OverviewCard icon={<ShieldCheck size={20} />} label="VIP / ALTA PRIORIDADE" value={submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length} />
+                            </div>
 
-                            <div style={{ gridColumn: '1 / -1', marginTop: '2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: '2rem' }}>
+                            <div style={{ background: 'rgba(255,255,255,0.02)', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '2.5rem' }}>
                                 <h4 style={{ fontSize: '0.65rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '2rem', textAlign: 'center' }}>DISTRIBUIÇÃO POR ESTÁGIO</h4>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '2rem' }}>
                                     {[
-                                        { id: 'PENDING', label: 'AGUARDANDO', color: '#f97316' },
-                                        { id: 'REVIEWING', label: 'TRIAGEM', color: '#3b82f6' },
-                                        { id: 'COMPLETED', label: 'FINALIZADO', color: '#22c55e' }
+                                        { id: 'PENDING', label: 'AGUARDANDO', color: 'rgba(255,255,255,0.2)' },
+                                        { id: 'REVIEWING', label: 'TRIAGEM', color: 'rgba(255,255,255,0.5)' },
+                                        { id: 'COMPLETED', label: 'FINALIZADO', color: '#ffffff' }
                                     ].map(st => {
                                         const count = submissions.filter(s => s.status === st.id).length + leads.filter(l => l.status === st.id).length;
                                         const total = submissions.length + leads.length;
@@ -529,8 +494,8 @@ export default function AdminDashboard() {
                                             <div key={st.id} style={{ textAlign: 'center' }}>
                                                 <div style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.25rem', color: st.color, letterSpacing: '-0.05em' }}>{count}</div>
                                                 <div style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.4, marginBottom: '1.25rem', letterSpacing: '0.1em' }}>{st.label}</div>
-                                                <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
-                                                    <motion.div initial={{ width: 0 }} animate={{ width: `${percent}%` }} transition={{ duration: 1, ease: 'easeOut' }} style={{ height: '100%', background: st.color, boxShadow: `0 0 15px ${st.color}44` }} />
+                                                <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
+                                                    <motion.div initial={{ width: 0 }} animate={{ width: `${percent}%` }} transition={{ duration: 1, ease: 'easeOut' }} style={{ height: '100%', background: st.color }} />
                                                 </div>
                                             </div>
                                         )
@@ -538,12 +503,12 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
 
-                            <div style={{ gridColumn: '1 / -1', marginTop: '1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: '2rem' }}>
+                            <div style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.02)', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '2.5rem' }}>
                                 <h4 style={{ fontSize: '0.65rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem' }}>ATIVIDADE RECENTE</h4>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     {[...submissions, ...leads].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5).map((act, i) => (
-                                        <div key={act.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.01)', borderRadius: '12px', borderLeft: `3px solid ${act.priority === 'VIP' ? '#7e22ce' : (act.priority === 'URGENTE' ? '#ff4b4b' : 'rgba(255,255,255,0.1)')}` }}>
-                                            <div style={{ width: '8px', height: '8px', background: act.status === 'COMPLETED' ? '#22c55e' : (act.status === 'REVIEWING' ? '#3b82f6' : '#f97316'), borderRadius: '50%' }} />
+                                        <div key={act.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.01)', borderRadius: '12px', borderLeft: `2px solid ${act.priority === 'VIP' ? '#fff' : (act.priority === 'URGENTE' ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)')}` }}>
+                                            <div style={{ width: '6px', height: '6px', background: act.status === 'COMPLETED' ? '#fff' : (act.status === 'REVIEWING' ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)'), borderRadius: '50%' }} />
                                             <div style={{ flex: 1 }}>
                                                 <p style={{ fontSize: '0.75rem', fontWeight: 800 }}>{act.nome_completo_pessoal || act.user?.fullName || act.user?.name}</p>
                                                 <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{act.email} • {new Date(act.createdAt).toLocaleDateString('pt-BR')}</p>
@@ -555,10 +520,10 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                     ) : (
-                        <div style={{ background: '#000', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '10px', overflowX: 'auto' }}>
+                        <div style={{ background: '#050505', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '12px', overflow: 'hidden' }}>
                             {activeTab === 'LEADS' ? (
                                 <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
-                                    <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
                                         <tr>
                                             <AdminTh>LEAD</AdminTh>
                                             <AdminTh>IDENTIFICAÇÃO</AdminTh>
@@ -802,9 +767,8 @@ export default function AdminDashboard() {
                                 </table>
                             )}
                         </div>
-                    )
-                    }
-                </div >
+                    )}
+                </div>
 
                 <style jsx global>{`
                     .admin-sidebar {
@@ -1122,35 +1086,54 @@ export default function AdminDashboard() {
     );
 }
 
-function OverviewCard({ icon, label, value, color = 'rgba(255,255,255,0.04)' }: { icon: any, label: string, value: number, color?: string }) {
+function OverviewCard({ icon, label, value }: { icon: any, label: string, value: number }) {
     return (
         <motion.div
-            whileHover={{ y: -5, background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.3)', boxShadow: '0 0 30px rgba(255,255,255,0.1)' }}
+            whileHover={{ y: -2, background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }}
+            className="card-premium"
             style={{
-                padding: '2.5rem',
-                background: 'linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '32px',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 15px rgba(255,255,255,0.02)',
-                transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-                position: 'relative',
-                overflow: 'hidden'
+                padding: '2rem 1.5rem',
+                flexDirection: 'column',
+                gap: '1.25rem'
             }}
         >
-            <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '120px', height: '120px', background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(10px)' }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', color: 'rgba(255,255,255,0.3)' }}>
-                <div style={{ padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', color: '#fff' }}>{icon}</div>
-                <h3 style={{ fontSize: '0.55rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase' }}>{label}</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ padding: '10px', background: 'rgba(255,255,255,0.02)', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '12px', color: 'rgba(255,255,255,0.6)' }}>{icon}</div>
+                <h3 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', textTransform: 'uppercase' }}>{label}</h3>
             </div>
-            <p style={{ fontSize: '3rem', fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '-0.03em' }}>{value}</p>
+            <div>
+                <p style={{ fontSize: '2.5rem', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.04em', fontFamily: 'Outfit' }}>{value}</p>
+                <div style={{ height: '1px', width: '2rem', background: 'rgba(255,255,255,0.1)', marginTop: '0.75rem' }} />
+            </div>
         </motion.div>
     );
 }
 
 function SidebarLink({ icon, label, active, onClick }: { icon: any, label: string, active: boolean, onClick: () => void }) {
     return (
-        <button onClick={onClick} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 1rem', borderRadius: '10px', background: active ? 'rgba(255,255,255,0.08)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.3)', transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)', fontWeight: 800, fontSize: '0.75rem', border: 'none', cursor: 'pointer' }}>
-            {icon} {label}
+        <button 
+            onClick={onClick} 
+            style={{ 
+                width: '100%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '1rem', 
+                padding: '0.85rem 1.25rem', 
+                borderRadius: '12px', 
+                background: active ? 'rgba(255,255,255,0.04)' : 'transparent', 
+                color: active ? '#fff' : 'rgba(255,255,255,0.3)', 
+                border: active ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid transparent',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                fontWeight: active ? 700 : 500,
+                fontSize: '0.65rem',
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase'
+            }}
+            onMouseOver={(e) => !active && (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+            onMouseOut={(e) => !active && (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+        >
+            <span style={{ opacity: active ? 1 : 0.4 }}>{icon}</span>
+            {label}
         </button>
     );
 }
@@ -1159,17 +1142,17 @@ function AdminTh({ children, align = 'left', style = {} }: any) {
     return <th style={{ padding: '1rem 1.5rem', fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, letterSpacing: '0.2em', textAlign: align, textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', ...style }}>{children}</th>;
 }
 
-function AdminTd({ children, align = 'left' }: any) {
-    return <td style={{ padding: '1rem 1.5rem', textAlign: align, verticalAlign: 'middle' }}>{children}</td>;
+function AdminTd({ children, align = 'left', onClick }: any) {
+    return <td style={{ padding: '1rem 1.5rem', textAlign: align, verticalAlign: 'middle' }} onClick={onClick}>{children}</td>;
 }
 
 function PrioritySelector({ current, onSelect, loading }: any) {
     const priorities = [
-        { id: 'A DEFINIR', color: '#666' },
-        { id: 'NORMAL', color: '#fff' },
-        { id: 'ALTA', color: '#ffb300' },
-        { id: 'URGENTE', color: '#ff4b4b' },
-        { id: 'VIP', color: '#7e22ce' }
+        { id: 'A DEFINIR', color: 'rgba(255,255,255,0.2)' },
+        { id: 'NORMAL', color: 'rgba(255,255,255,0.4)' },
+        { id: 'ALTA', color: 'rgba(255,255,255,0.6)' },
+        { id: 'URGENTE', color: 'rgba(255,255,255,0.8)' },
+        { id: 'VIP', color: '#ffffff' }
     ];
 
     return (
@@ -1203,6 +1186,13 @@ function PrioritySelector({ current, onSelect, loading }: any) {
 }
 
 function StatusBadge({ priority }: any) {
+    const priorities_list = [
+        { id: 'A DEFINIR', color: 'rgba(255,255,255,0.2)' },
+        { id: 'NORMAL', color: 'rgba(255,255,255,0.4)' },
+        { id: 'ALTA', color: 'rgba(255,255,255,0.6)' },
+        { id: 'URGENTE', color: 'rgba(255,255,255,0.8)' },
+        { id: 'VIP', color: '#ffffff' }
+    ];
     const p = priorities_list.find(pl => pl.id === priority?.toUpperCase()) || priorities_list[0];
     const isSpecial = ['ALTA', 'URGENTE', 'VIP', 'NORMAL'].includes(priority?.toUpperCase());
 
@@ -1214,19 +1204,11 @@ function StatusBadge({ priority }: any) {
     );
 }
 
-const priorities_list = [
-    { id: 'A DEFINIR', color: '#666' },
-    { id: 'NORMAL', color: '#fff' },
-    { id: 'ALTA', color: '#ffb300' },
-    { id: 'URGENTE', color: '#ff4b4b' },
-    { id: 'VIP', color: '#7e22ce' }
-];
-
 function DetailGroup({ label, value, icon }: any) {
     return (
         <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <p style={{ fontSize: 'min(0.55rem, 3vw)', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.4rem', letterSpacing: '0.12em' }}>{icon} {label}</p>
-            <p style={{ fontSize: 'min(0.85rem, 4vw)', fontWeight: 700, color: 'rgba(255,255,255,0.9)', overflowWrap: 'break-word', wordBreak: 'break-word' }}>{value || '—'}</p>
+            <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.4rem', letterSpacing: '0.12em' }}>{icon} {label}</p>
+            <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)', overflowWrap: 'break-word', wordBreak: 'break-word' }}>{value || '—'}</p>
         </div>
     );
 }
