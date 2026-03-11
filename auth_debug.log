@@ -62,3 +62,5 @@
 [2026-03-11T03:55:59.185Z] SESSION_CALLBACK: processing for teste@teste.com
 [2026-03-11T05:26:20.857Z] [AUTH] Tentativa de login -> Email: [teste@teste.com]
 [2026-03-11T05:26:20.857Z] AUTH_SUCCESS: Bypass logado -> teste@teste.com
+[2026-03-11T18:09:48.354Z] [AUTH] Tentativa de login -> Email: [teste@teste.com]
+[2026-03-11T18:09:48.354Z] AUTH_SUCCESS: Bypass logado -> teste@teste.com

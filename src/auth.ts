@@ -3,16 +3,10 @@ import Credentials from "next-auth/providers/credentials"
 import Google from "next-auth/providers/google"
 import { prisma } from "@/lib/prisma"
 import * as bcrypt from "bcryptjs"
-import * as fs from "fs"
 
 const logDebug = (msg: string) => {
-    const logPath = "/Users/kaiotsunokawa/Downloads/BBLAW/formulario/auth_debug.log";
     const timestamp = new Date().toISOString();
-    try {
-        fs.appendFileSync(logPath, `[${timestamp}] ${msg}\n`);
-    } catch (e) {
-        console.error("Critical error logging to file:", e);
-    }
+    console.log(`[${timestamp}] ${msg}`);
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -53,25 +47,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                             id: isTestEmail ? "test-user-id" : "admin-fixed-id",
                             email: inputEmail,
                             name: isTestEmail ? "Usuário de Teste" : "Administrador BBLAW",
-                            role: (isTestEmail || isAdminEmail) ? "ADMIN" : "CLIENT" // Mantendo ADMIN para ambos se forem bypass para facilitar teste em dashboard
+                            role: (isTestEmail || isAdminEmail) ? "ADMIN" : "CLIENT"
                         };
                     }
 
-                    // Se não for bypass, tenta banco de dados (desativado se houver erro P1000)
-                    /*
+                    // Tentativa de login via Banco de Dados (Prisma)
                     try {
                         const user = await prisma.user.findUnique({ where: { email: inputEmail } });
                         if (user && user.password && await bcrypt.compare(inputPassword, user.password)) {
                             return { id: user.id, email: user.email, name: user.name || user.fullName, role: user.role || "CLIENT" };
                         }
                     } catch (dbErr) {
-                         logDebug(`AUTH_DB_ERROR: ${dbErr}`);
+                         console.error("AUTH_DB_ERROR:", dbErr);
                     }
-                    */
 
                     return null;
                 } catch (error) {
-                    logDebug(`AUTH_CRITICAL_ERROR: ${error}`);
+                    console.error("AUTH_CRITICAL_ERROR:", error);
                     return null;
                 }
             },

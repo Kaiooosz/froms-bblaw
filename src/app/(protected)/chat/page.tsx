@@ -157,12 +157,12 @@ export default function ChatPage() {
                                 {msg.role === 'user' ? <User size={18} /> : <Bot size={18} />}
                             </div>
                             <div style={{ 
-                                padding: '1.5rem 2rem', borderRadius: '24px', border: '0.5px solid', fontSize: '0.95rem', lineHeight: 1.6, letterSpacing: '-0.01em',
+                                padding: '1rem 1.5rem', borderRadius: '16px', border: '1px solid', fontSize: '0.95rem', lineHeight: 1.6, letterSpacing: '-0.01em',
                                 background: msg.role === 'user' ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
-                                borderColor: msg.role === 'user' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)',
-                                color: msg.role === 'user' ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.6)',
-                                borderTopRightRadius: msg.role === 'user' ? '0' : '24px',
-                                borderTopLeftRadius: msg.role === 'assistant' ? '0' : '24px',
+                                borderColor: msg.role === 'user' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
+                                color: msg.role === 'user' ? '#fff' : 'rgba(255,255,255,0.85)',
+                                borderTopRightRadius: msg.role === 'user' ? '0' : '16px',
+                                borderTopLeftRadius: msg.role === 'assistant' ? '0' : '16px',
                                 backdropFilter: 'blur(10px)'
                             }}>
                                 {msg.content}
@@ -205,9 +205,9 @@ export default function ChatPage() {
                                     type="button"
                                     style={{
                                         display: 'flex', alignItems: 'center', gap: '1rem',
-                                        padding: '1.25rem 1.5rem',
+                                        padding: '1rem 1.5rem',
                                         background: 'rgba(255,255,255,0.03)',
-                                        border: '0.5px solid rgba(255,255,255,0.08)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
                                         borderRadius: '16px',
                                         color: 'rgba(255,255,255,0.8)',
                                         fontSize: '0.85rem', fontWeight: 500,
@@ -222,7 +222,7 @@ export default function ChatPage() {
                                     }}
                                     onMouseOut={(e) => {
                                         e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
                                         e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
                                     }}
                                 >
@@ -241,9 +241,9 @@ export default function ChatPage() {
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Pergunte qualquer coisa sobre entidades comerciais..."
                         style={{ 
-                            width: '100%', backgroundColor: 'rgba(5,5,5,0.9)', backdropFilter: 'blur(32px)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '24px', 
-                            padding: '1.75rem 6rem 1.75rem 2.25rem', fontSize: '1rem', color: '#fff', outline: 'none', transition: 'all 0.5s',
-                            boxShadow: '0 20px 40px -20px rgba(0,0,0,0.5)'
+                            width: '100%', backgroundColor: 'rgba(5,5,5,0.9)', backdropFilter: 'blur(32px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '24px', 
+                            padding: '1.5rem 5rem 1.5rem 2rem', fontSize: '1rem', color: '#fff', outline: 'none', transition: 'all 0.5s',
+                            boxShadow: '0 10px 30px -15px rgba(0,0,0,0.5)'
                         }}
                         onFocus={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.3)'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}

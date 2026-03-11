@@ -117,14 +117,14 @@ export default async function FunnelsPage() {
                 })}
 
                 {/* Card de Documentação */}
-                <Link href="/documentos" className={styles.card} style={{ borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)' }}>
+                <Link href="/documentos" className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <div className={styles.cardIcon} style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FileUp size={20} /></div>
+                        <div className={styles.cardIcon}><FileUp size={20} /></div>
                     </div>
                     <div className={styles.cardBody}>
-                        <span className={styles.category} style={{ color: '#fff' }}>CHECKLIST</span>
+                        <span className={styles.category} style={{ color: 'rgba(255,255,255,0.4)' }}>CHECKLIST</span>
                         <h3 className={styles.cardTitle}>Documentação de Suporte</h3>
-                        <p style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.5rem' }}>Envie seus documentos de identificação e residência.</p>
+                        <p style={{ fontSize: '0.7rem', opacity: 0.7, marginTop: '0.5rem', color: '#fff' }}>Envie seus documentos de identificação e residência.</p>
                     </div>
                     <div className={styles.cardAction}>
                         <span>ENVIAR DOCS</span>
@@ -133,12 +133,12 @@ export default async function FunnelsPage() {
                 </Link>
 
                 {/* Card de IA Chat */}
-                <Link href="/chat" className={styles.card} style={{ borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)' }}>
+                <Link href="/chat" className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <div className={styles.cardIcon} style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MessageSquare size={20} /></div>
+                        <div className={styles.cardIcon}><MessageSquare size={20} /></div>
                     </div>
                     <div className={styles.cardBody}>
-                        <span className={styles.category} style={{ color: 'rgba(255,255,255,0.5)' }}>ESTRATÉGICO AI</span>
+                        <span className={styles.category} style={{ color: 'rgba(255,255,255,0.4)' }}>ESTRATÉGICO AI</span>
                         <h3 className={styles.cardTitle}>Converse com nossa Inteligência</h3>
                         <p style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.5rem' }}>Tire dúvidas e tome a melhor decisão para o seu planejamento.</p>
                     </div>

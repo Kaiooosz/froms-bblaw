@@ -45,17 +45,17 @@ export default function Home() {
         <section style={{ marginBottom: '4rem' }}>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
-              <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.15)' }} />
-              <p style={{ fontSize: '0.65rem', fontWeight: 900, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.4em' }}>Protocolos de Alta Fidelidade</p>
+              <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.3)' }} />
+              <p style={{ fontSize: '0.65rem', fontWeight: 900, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.4em' }}>Protocolos de Alta Fidelidade</p>
             </div>
             
             <h1 style={{ fontSize: 'min(5rem, 10vw)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 0.95, fontFamily: 'Outfit, sans-serif', marginBottom: '2.5rem' }}>
               PLANEJAMENTO <br/>
-              <span style={{ color: 'rgba(255,255,255,0.15)' }}>ESTRATÉGICO &</span><br/>
+              <span style={{ color: 'rgba(255,255,255,0.5)' }}>ESTRATÉGICO &</span><br/>
               INTELIGÊNCIA <span style={{ fontStyle: 'italic', fontWeight: 400 }}>JURÍDICA.</span>
             </h1>
             
-            <p style={{ fontSize: '1.15rem', color: 'rgba(255,255,255,0.4)', maxWidth: '600px', lineHeight: 1.6, fontWeight: 500, letterSpacing: '-0.01em' }}>
+            <p style={{ fontSize: '1.15rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', lineHeight: 1.6, fontWeight: 500, letterSpacing: '-0.01em' }}>
               Assessoria de precisão para estruturação patrimonial global e proteção de ativos estratégicos.
             </p>
           </motion.div>
@@ -98,13 +98,13 @@ export default function Home() {
                     <h3 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'Outfit, sans-serif', color: '#fff', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                       PORTAL DO CLIENTE
                     </h3>
-                    <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', lineHeight: 1.6, maxWidth: '600px' }}>
+                    <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', lineHeight: 1.6, maxWidth: '600px' }}>
                       Inicie acesso aos formulários e envie seu documento e entenda a melhor solução com nossa inteligência.
                     </p>
                   </div>
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.75rem', fontWeight: 900, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.3em', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.75rem', fontWeight: 900, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3em', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   ACESSO RESTRITO <ChevronRight size={16} />
                 </div>
 
@@ -132,8 +132,8 @@ export default function Home() {
 
       </main>
 
-      {/* Extreme Vignette */}
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%)', zIndex: 5 }} />
+      {/* Minimal Vignette */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 100%)', zIndex: 5 }} />
 
     </div>
   );
