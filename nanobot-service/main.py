@@ -44,12 +44,25 @@ except Exception as e:
 
 def clean_document_title(filename: str) -> str:
     """Extract a clean, human-readable title from a raw filename."""
-    title = re.sub(r'\.(docx|pdf|doc)$', '', filename, flags=re.IGNORECASE)
+    # Remove extension
+    title = re.sub(r'\.(docx?|pdf|epub|azw3)$', '', filename, flags=re.IGNORECASE)
+    # Remove "Cópia de" prefix
     title = re.sub(r'^C[oó]pia\s+de\s+', '', title, flags=re.IGNORECASE)
-    title = re.sub(r'^\d+\s+SEO\s+REVISADO\s+', '', title, flags=re.IGNORECASE)
-    title = re.sub(r'^\d+\s+SEO\s+Revisado\s+', '', title, flags=re.IGNORECASE)
-    title = re.sub(r'^\d+\s*[-–]\s*', '', title)
-    title = re.sub(r'^\d+\s+', '', title)
+    # Remove leading number + optional underscore/dash separators (e.g. "045_ ", "257 ", "371 - ")
+    title = re.sub(r'^\d+[_\s]*[-–]?\s*', '', title)
+    # Remove SEO and/or REVISADO prefix in any combination/case (e.g. "SEO REVISADO ", "REVISADO ", "revisado ")
+    title = re.sub(r'^(SEO\s+)?(REVISADO|revisado)\s*', '', title, flags=re.IGNORECASE)
+    title = re.sub(r'^SEO\s+', '', title, flags=re.IGNORECASE)
+    # Remove trailing " rev" or " revisado" artifact
+    title = re.sub(r'\s+rev(isado)?$', '', title, flags=re.IGNORECASE)
+    # Handle slug-style names (e.g. "planejamento-patrimonial-e-sucessorio-64e669241a79e")
+    if re.match(r'^[a-z0-9_-]+$', title):
+        title = re.sub(r'[-_][0-9a-f]{6,}$', '', title)   # remove trailing hash ID
+        title = re.sub(r'[-_]', ' ', title)                # hyphens/underscores → spaces
+        title = title.title()
+    # Handle hyphen-capitalized names (e.g. "O-Novo-Paradigma-da-Protecao-...")
+    elif re.search(r'[A-ZÀ-Ú][a-zà-ú]+-[A-ZÀ-Ú]', title):
+        title = title.replace('-', ' ')
     return title.strip()
 
 
