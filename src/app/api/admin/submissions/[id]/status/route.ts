@@ -27,6 +27,6 @@ export async function PATCH(
         return NextResponse.json(updated)
     } catch (error: any) {
         console.error("Update submission status error:", error)
-        return NextResponse.json({ message: "Erro ao atualizar status", error: error.message }, { status: 500 })
+        return NextResponse.json({ message: "Erro ao atualizar status" }, { status: 500 })
     }
 }

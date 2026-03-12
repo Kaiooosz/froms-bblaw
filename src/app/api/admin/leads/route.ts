@@ -36,8 +36,7 @@ export async function GET() {
     } catch (error: any) {
         console.error("ADMIN_LEADS_FAIL:", error)
         return NextResponse.json({
-            message: "Erro ao buscar leads",
-            error: error.message
+            message: "Erro ao buscar leads"
         }, { status: 500 })
     }
 }

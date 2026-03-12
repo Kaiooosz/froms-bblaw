@@ -56,6 +56,6 @@ export async function GET(req: Request) {
         return NextResponse.json({ found: true, folderId, folderUrl })
     } catch (error: any) {
         console.error('Drive folder lookup error:', error)
-        return NextResponse.json({ message: 'Erro ao buscar pasta', error: error.message }, { status: 500 })
+        return NextResponse.json({ message: 'Erro ao buscar pasta' }, { status: 500 })
     }
 }

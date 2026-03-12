@@ -106,6 +106,6 @@ export async function GET() {
         return NextResponse.json(result)
     } catch (error: any) {
         console.error('Pending documents error:', error)
-        return NextResponse.json({ message: 'Erro interno', error: error.message }, { status: 500 })
+        return NextResponse.json({ message: 'Erro interno' }, { status: 500 })
     }
 }

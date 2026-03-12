@@ -34,6 +34,6 @@ export async function GET(
         return NextResponse.json({ url })
     } catch (error: any) {
         console.error("Download route error:", error)
-        return NextResponse.json({ message: "Erro interno no download", error: error.message }, { status: 500 })
+        return NextResponse.json({ message: "Erro interno no download" }, { status: 500 })
     }
 }

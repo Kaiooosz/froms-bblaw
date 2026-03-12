@@ -4,11 +4,6 @@ import Google from "next-auth/providers/google"
 import { prisma } from "@/lib/prisma"
 import * as bcrypt from "bcryptjs"
 
-const logDebug = (msg: string) => {
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ${msg}`);
-};
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
     providers: [
         Google({
@@ -23,8 +18,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 password: { label: "Password", type: "password" }
             },
             authorize: async (credentials) => {
-                logDebug(`[AUTH] Tentativa de login -> Email: [${credentials?.email}]`);
-                
                 try {
                     if (!credentials?.email || !credentials?.password) {
                         return null;
@@ -33,21 +26,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     const inputEmail = (credentials.email as string).toLowerCase().trim();
                     const inputPassword = (credentials.password as string).trim();
 
-                    const adminEmailEnv = (process.env.ADMIN_EMAIL || "amborgesvinicius@gmail.com").toLowerCase().trim();
-                    const adminPasswordEnv = process.env.ADMIN_PASSWORD || "Bitcoin2026*";
-                    const testEmailEnv = (process.env.TEST_USER_EMAIL || "teste@teste.com").toLowerCase().trim();
-                    const testPasswordEnv = process.env.TEST_USER_PASSWORD || "teste1";
+                    const adminEmailEnv = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
+                    const adminPasswordEnv = process.env.ADMIN_PASSWORD || "";
 
-                    const isAdminEmail = inputEmail === adminEmailEnv;
-                    const isTestEmail = inputEmail === testEmailEnv;
-
-                    if ((isAdminEmail && inputPassword === adminPasswordEnv) || (isTestEmail && inputPassword === testPasswordEnv)) {
-                        logDebug(`AUTH_SUCCESS: Bypass logado -> ${inputEmail}`);
+                    // Login de admin via variáveis de ambiente (sem fallback hardcoded)
+                    if (adminEmailEnv && adminPasswordEnv && inputEmail === adminEmailEnv && inputPassword === adminPasswordEnv) {
                         return {
-                            id: isTestEmail ? "test-user-id" : "admin-fixed-id",
+                            id: "admin-fixed-id",
                             email: inputEmail,
-                            name: isTestEmail ? "Usuário de Teste" : "Administrador BBLAW",
-                            role: (isTestEmail || isAdminEmail) ? "ADMIN" : "CLIENT"
+                            name: "Administrador BBLAW",
+                            role: "ADMIN"
                         };
                     }
 
@@ -58,12 +46,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                             return { id: user.id, email: user.email, name: user.name || user.fullName, role: user.role || "CLIENT" };
                         }
                     } catch (dbErr) {
-                         console.error("AUTH_DB_ERROR:", dbErr);
+                        console.error("AUTH_DB_ERROR");
                     }
 
                     return null;
-                } catch (error) {
-                    console.error("AUTH_CRITICAL_ERROR:", error);
+                } catch {
+                    console.error("AUTH_CRITICAL_ERROR");
                     return null;
                 }
             },
@@ -76,8 +64,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 token.role = (user as any).role || "CLIENT";
                 token.email = user.email;
             }
-            // Força ADMIN para o email principal
-            if (token.email === "bezerraborges@gmail.com" || token.email === "amborgesvinicius@gmail.com") {
+            // Força ADMIN para emails de admin configurados via env
+            const adminEmail = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
+            if (adminEmail && token.email === adminEmail) {
                 token.role = "ADMIN";
             }
             return token;
