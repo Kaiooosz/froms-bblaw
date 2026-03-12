@@ -83,6 +83,7 @@ export default function DocumentosPage() {
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState<string | null>(null); // docTypeId
     const [progress, setProgress] = useState(0);
+    const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
     useEffect(() => {
         fetchData();
@@ -144,6 +145,12 @@ export default function DocumentosPage() {
             if (res.ok) {
                 await fetchData();
                 setProgress(100);
+                const docLabel = (activeFunnel && FUNNEL_DOCS[activeFunnel]
+                    ? FUNNEL_DOCS[activeFunnel]
+                    : DEFAULT_DOCS
+                ).find(d => d.id === tipo)?.label || tipo;
+                setSuccessMsg(`"${docLabel}" enviado com sucesso para o Google Drive!`);
+                setTimeout(() => setSuccessMsg(null), 4500);
             } else {
                 const error = await res.json();
                 alert(error.message || "Erro no upload");
@@ -190,6 +197,38 @@ export default function DocumentosPage() {
             overflowX: 'hidden',
             fontFamily: 'Inter, sans-serif'
         }}>
+            {/* Toast de sucesso */}
+            <AnimatePresence>
+                {successMsg && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        style={{
+                            position: 'fixed',
+                            top: '24px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            zIndex: 9999,
+                            background: 'rgba(34,197,94,0.12)',
+                            border: '1px solid rgba(34,197,94,0.3)',
+                            borderRadius: '100px',
+                            padding: '12px 24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            backdropFilter: 'blur(16px)',
+                            whiteSpace: 'nowrap',
+                        }}
+                    >
+                        <CheckCircle2 size={16} style={{ color: '#22c55e', flexShrink: 0 }} />
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#22c55e', letterSpacing: '0.02em' }}>
+                            {successMsg}
+                        </span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Conteúdo Principal */}
 
             <div style={{ maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 }}>

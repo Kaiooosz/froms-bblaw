@@ -30,8 +30,8 @@ export default function ChatPage() {
         }
     ]);
     const [suggestions, setSuggestions] = useState<string[]>([
+        "Quais documentos preciso enviar?",
         "Ajude-me a escolher a estrutura empresarial correta.",
-        "Criar um organograma",
         "Qual a diferença entre uma LLC e uma corporação?",
         "Como posso proteger meu patrimônio pessoal?"
     ]);

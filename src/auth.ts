@@ -91,8 +91,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return session;
         },
         async redirect({ url, baseUrl }) {
-            if (url.startsWith("/")) return `${baseUrl}${url}`;
-            else if (new URL(url).origin === baseUrl) return url;
+            try {
+                if (url.startsWith("/")) return `${baseUrl}${url}`;
+                const parsed = new URL(url);
+                if (parsed.origin === baseUrl) return url;
+            } catch {
+                // URL inválida, retorna base
+            }
             return baseUrl;
         },
     },
