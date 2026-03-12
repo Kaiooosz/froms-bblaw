@@ -26,11 +26,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     const inputEmail = (credentials.email as string).toLowerCase().trim();
                     const inputPassword = (credentials.password as string).trim();
 
-                    const adminEmailEnv = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
+                    const adminEmails = (process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || "")
+                        .split(",").map(e => e.toLowerCase().trim()).filter(Boolean);
                     const adminPasswordEnv = process.env.ADMIN_PASSWORD || "";
 
                     // Login de admin via variáveis de ambiente (sem fallback hardcoded)
-                    if (adminEmailEnv && adminPasswordEnv && inputEmail === adminEmailEnv && inputPassword === adminPasswordEnv) {
+                    if (adminEmails.length > 0 && adminPasswordEnv && adminEmails.includes(inputEmail) && inputPassword === adminPasswordEnv) {
                         return {
                             id: "admin-fixed-id",
                             email: inputEmail,
@@ -64,9 +65,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 token.role = (user as any).role || "CLIENT";
                 token.email = user.email;
             }
-            // Força ADMIN para emails de admin configurados via env
-            const adminEmail = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
-            if (adminEmail && token.email === adminEmail) {
+            // Força ADMIN para todos os emails admin configurados via env
+            const adminEmails = (process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || "")
+                .split(",").map(e => e.toLowerCase().trim()).filter(Boolean);
+            if (adminEmails.length > 0 && adminEmails.includes((token.email as string || "").toLowerCase())) {
                 token.role = "ADMIN";
             }
             return token;
