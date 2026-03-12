@@ -347,7 +347,7 @@ export default function AdminDashboard() {
         </div>
     );
    return (
-        <div style={{ background: '#000', color: '#fff', minHeight: '100vh', display: 'flex', fontFamily: 'Inter' }}>
+        <div style={{ background: '#000', color: '#fff', minHeight: '100vh', display: 'flex' }}>
             <style dangerouslySetInnerHTML={{
                 __html: `
                 body { background-color: #000 !important; }
@@ -415,7 +415,7 @@ export default function AdminDashboard() {
             <main style={{ marginLeft: '280px', flex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
                 <header className="dash-header" style={{ padding: '3.5rem 4rem' }}>
                     <div>
-                        <h1 style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1, fontFamily: 'Outfit' }}>
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1 }}>
                             {activeTab === 'OVERVIEW' ? 'SISTEMA DE INTELIGÊNCIA' : (activeTab === 'LEADS' ? 'LEADS ESTRATÉGICOS' : (activeTab === 'SUBMISSIONS' ? 'PROTOCOLOS ATIVOS' : activeTab))}
                         </h1>
                         <p style={{ fontSize: '0.65rem', opacity: 0.3, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '6px' }}>GERENCIAMENTO DE ATIVOS E DADOS BBLAW</p>
