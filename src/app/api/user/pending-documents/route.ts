@@ -81,9 +81,9 @@ export async function GET() {
         )
 
         // Funnels únicos do usuário
-        const userFunnels = [...new Set(submissions.map((s: any) => s.funnelType as string))]
+        const userFunnels: string[] = [...new Set<string>(submissions.map((s: any) => s.funnelType as string))]
 
-        const result = userFunnels.map((funnel) => {
+        const result = userFunnels.map((funnel: string) => {
             const requiredDocs = FUNNEL_DOCS[funnel] || []
             const pending = requiredDocs.filter(
                 (doc) => !uploadedSet.has(`${funnel}::${doc.id}`)
