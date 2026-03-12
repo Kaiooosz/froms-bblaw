@@ -100,6 +100,15 @@ export default function ChatPage() {
                                 return updated;
                             });
                             scrollToBottom();
+                        } else if (event.type === 'error') {
+                            setMessages(prev => {
+                                const updated = [...prev];
+                                updated[updated.length - 1] = {
+                                    role: 'assistant',
+                                    content: "Desculpe, ocorreu um erro ao processar sua pergunta. Tente novamente em alguns instantes."
+                                };
+                                return updated;
+                            });
                         }
                     } catch {
                         // ignora linhas mal formatadas
