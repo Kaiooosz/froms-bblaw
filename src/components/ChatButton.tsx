@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Bot, Loader2, X, MessageSquareHeart } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
 interface Message {
   id: string;
@@ -14,6 +15,9 @@ interface Message {
 
 export function ChatButton() {
   const [isOpen, setIsOpen] = useState(false);
+  const { status } = useSession();
+
+  if (status !== 'authenticated') return null;
 
   return (
     <>

@@ -97,6 +97,22 @@ export default async function FunnelsPage() {
             </header>
 
             <div className={styles.grid}>
+                {/* Card de IA Chat — primeiro */}
+                <Link href="/chat" className={styles.card}>
+                    <div className={styles.cardHeader}>
+                        <div className={styles.cardIcon}><MessageSquare size={20} /></div>
+                    </div>
+                    <div className={styles.cardBody}>
+                        <span className={styles.category} style={{ color: 'rgba(255,255,255,0.4)' }}>ESTRATÉGICO AI</span>
+                        <h3 className={styles.cardTitle}>Converse com nossa Inteligência</h3>
+                        <p style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.5rem' }}>Tire dúvidas e tome a melhor decisão para o seu planejamento.</p>
+                    </div>
+                    <div className={styles.cardAction}>
+                        <span>INICIAR CHAT</span>
+                        <span className={styles.arrow}>→</span>
+                    </div>
+                </Link>
+
                 {funnels.map((funnel) => {
                     const Icon = funnel.icon;
                     return (
@@ -128,22 +144,6 @@ export default async function FunnelsPage() {
                     </div>
                     <div className={styles.cardAction}>
                         <span>ENVIAR DOCS</span>
-                        <span className={styles.arrow}>→</span>
-                    </div>
-                </Link>
-
-                {/* Card de IA Chat */}
-                <Link href="/chat" className={styles.card}>
-                    <div className={styles.cardHeader}>
-                        <div className={styles.cardIcon}><MessageSquare size={20} /></div>
-                    </div>
-                    <div className={styles.cardBody}>
-                        <span className={styles.category} style={{ color: 'rgba(255,255,255,0.4)' }}>ESTRATÉGICO AI</span>
-                        <h3 className={styles.cardTitle}>Converse com nossa Inteligência</h3>
-                        <p style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.5rem' }}>Tire dúvidas e tome a melhor decisão para o seu planejamento.</p>
-                    </div>
-                    <div className={styles.cardAction}>
-                        <span>INICIAR CHAT</span>
                         <span className={styles.arrow}>→</span>
                     </div>
                 </Link>
