@@ -1,6 +1,6 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { getSupabaseClient } from "@/lib/supabase"
+import { uploadToDrive } from "@/lib/google-drive"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
@@ -20,6 +20,7 @@ export async function POST(req: Request) {
         }
 
         const userId = session.user?.id
+        const userEmail = session.user?.email || userId || "unknown"
         if (!userId) return NextResponse.json({ message: "Usuário não identificado" }, { status: 401 })
 
         // Validar extensões (PDF, JPG, PNG, WEBP) e tamanho (max 10MB)
@@ -33,34 +34,27 @@ export async function POST(req: Request) {
         }
 
         const filename = `${Date.now()}-${file.name}`
-        const path = `${userId}/${funnelType}/${tipo}/${filename}`
-
         const arrayBuffer = await file.arrayBuffer()
         const buffer = Buffer.from(arrayBuffer)
 
-        const supabase = getSupabaseClient()
+        // Upload para o Google Drive
+        const driveFileId = await uploadToDrive(
+            buffer,
+            filename,
+            file.type || "application/octet-stream",
+            userEmail,
+            funnelType,
+            tipo
+        )
 
-        // Upload para Supabase Storage (Bucket: documentos)
-        const { data: uploadData, error: uploadError } = await supabase.storage
-            .from("documentos")
-            .upload(path, buffer, {
-                contentType: file.type,
-                upsert: true
-            })
-
-        if (uploadError) {
-            console.error("Upload error:", uploadError)
-            return NextResponse.json({ message: "Erro no upload para o Storage" }, { status: 500 })
-        }
-
-        // Salva no Prisma
+        // Salva no Prisma (path = Drive file ID)
         const document = await (prisma as any).document.create({
             data: {
                 userId,
                 funnelType,
                 tipo,
                 filename: file.name,
-                path,
+                path: driveFileId,
                 size: file.size
             }
         })

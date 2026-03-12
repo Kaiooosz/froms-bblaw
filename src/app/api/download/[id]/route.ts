@@ -1,6 +1,6 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { getSupabaseClient } from "@/lib/supabase"
+import { getDownloadUrl } from "@/lib/google-drive"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
@@ -28,19 +28,10 @@ export async function GET(
             return NextResponse.json({ message: "Sem permissão para baixar este arquivo" }, { status: 403 })
         }
 
-        const supabase = getSupabaseClient()
+        // Gera URL de download via Google Drive
+        const url = await getDownloadUrl(document.path)
 
-        // Gera signed URL do Supabase (expira em 60s)
-        const { data: signedData, error: signedError } = await supabase.storage
-            .from("documentos")
-            .createSignedUrl(document.path, 60)
-
-        if (signedError) {
-            console.error("Signed URL error:", signedError)
-            return NextResponse.json({ message: "Erro ao gerar URL de download" }, { status: 500 })
-        }
-
-        return NextResponse.json({ url: signedData.signedUrl })
+        return NextResponse.json({ url })
     } catch (error: any) {
         console.error("Download route error:", error)
         return NextResponse.json({ message: "Erro interno no download", error: error.message }, { status: 500 })
