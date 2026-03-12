@@ -119,9 +119,9 @@ function SignInContent() {
                                     placeholder="E-MAIL INSTITUCIONAL"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    style={{ 
-                                        width: '100%', backgroundColor: 'rgba(255,255,255,0.02)', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '16px', 
-                                        padding: '1.25rem 1rem 1.25rem 3.5rem', fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#fff', outline: 'none', transition: 'all 0.3s'
+                                    style={{
+                                        width: '100%', backgroundColor: 'rgba(255,255,255,0.02)', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '16px',
+                                        padding: '1.25rem 1rem 1.25rem 3.5rem', fontSize: '0.875rem', fontWeight: 400, letterSpacing: 'normal', textTransform: 'none', color: '#fff', outline: 'none', transition: 'all 0.3s', fontFamily: 'inherit'
                                     }}
                                     onFocus={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.2)'}
                                     onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.05)'}
@@ -136,9 +136,9 @@ function SignInContent() {
                                     placeholder="CHAVE DE ACESSO"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    style={{ 
-                                        width: '100%', backgroundColor: 'rgba(255,255,255,0.02)', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '16px', 
-                                        padding: '1.25rem 3.5rem 1.25rem 3.5rem', fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#fff', outline: 'none', transition: 'all 0.3s'
+                                    style={{
+                                        width: '100%', backgroundColor: 'rgba(255,255,255,0.02)', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '16px',
+                                        padding: '1.25rem 3.5rem 1.25rem 3.5rem', fontSize: '0.875rem', fontWeight: 400, letterSpacing: 'normal', textTransform: 'none', color: '#fff', outline: 'none', transition: 'all 0.3s', fontFamily: 'inherit'
                                     }}
                                     onFocus={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.2)'}
                                     onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.05)'}
