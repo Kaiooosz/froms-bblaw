@@ -695,18 +695,46 @@ export default function AdminDashboard() {
                                                         </div>
                                                     </AdminTd>
                                                     <AdminTd align="right">
-                                                        <button
-                                                            onClick={() => {
-                                                                fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
-                                                                    if (d.url) window.open(d.url, '_blank');
-                                                                });
-                                                            }}
-                                                            style={{ padding: '0.55rem 1.25rem', borderRadius: '100px', background: '#fff', color: '#000', fontSize: '0.55rem', fontWeight: 900, border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
-                                                            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)', e.currentTarget.style.boxShadow = '0 0 15px rgba(255,255,255,0.4)')}
-                                                            onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)', e.currentTarget.style.boxShadow = 'none')}
-                                                        >
-                                                            ABRIR
-                                                        </button>
+                                                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                                            <button
+                                                                onClick={() => {
+                                                                    fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
+                                                                        if (d.url) window.open(d.url, '_blank');
+                                                                    });
+                                                                }}
+                                                                style={{ padding: '0.55rem 1.25rem', borderRadius: '100px', background: '#fff', color: '#000', fontSize: '0.55rem', fontWeight: 900, border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                                                                onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)', e.currentTarget.style.boxShadow = '0 0 15px rgba(255,255,255,0.4)')}
+                                                                onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)', e.currentTarget.style.boxShadow = 'none')}
+                                                            >
+                                                                ABRIR
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const email = doc.user?.email;
+                                                                    if (!email) { alert('E-mail do cliente não encontrado.'); return; }
+                                                                    fetch(`/api/admin/drive-folder?email=${encodeURIComponent(email)}`)
+                                                                        .then(r => r.json())
+                                                                        .then(d => {
+                                                                            if (d.found && d.folderUrl) window.open(d.folderUrl, '_blank');
+                                                                            else alert(d.message || 'Pasta não encontrada no Drive.');
+                                                                        });
+                                                                }}
+                                                                title="Abrir pasta do cliente no Google Drive"
+                                                                style={{ padding: '0.55rem 1rem', borderRadius: '100px', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: '0.55rem', fontWeight: 900, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                                                                onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.14)')}
+                                                                onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.07)')}
+                                                            >
+                                                                <svg width="11" height="11" viewBox="0 0 87.3 78" fill="currentColor">
+                                                                    <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066DA"/>
+                                                                    <path d="M43.65 25L29.9 1.2C28.55.4 27 0 25.45 0c-1.55 0-3.1.4-4.5 1.2L6.6 11.15 22.35 39z" fill="#00AC47"/>
+                                                                    <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.45 10.55z" fill="#EA4335"/>
+                                                                    <path d="M43.65 25L57.4 1.2C56.05.4 54.5 0 52.95 0H34.35c-1.55 0-3.1.4-4.45 1.2z" fill="#00832D"/>
+                                                                    <path d="M59.8 53H27.5L13.75 76.8c1.35.8 2.9 1.2 4.45 1.2h50.9c1.55 0 3.1-.4 4.45-1.2z" fill="#2684FC"/>
+                                                                    <path d="M73.4 26.5l-7.4-12.85c-.8-1.4-1.95-2.5-3.3-3.3L48.9 34l10.9 19h26.45c0-1.55-.4-3.1-1.2-4.5z" fill="#FFBA00"/>
+                                                                </svg>
+                                                                DRIVE
+                                                            </button>
+                                                        </div>
                                                     </AdminTd>
                                                 </tr>
                                             ))
