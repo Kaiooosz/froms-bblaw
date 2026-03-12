@@ -55,14 +55,14 @@ export async function POST(request: Request) {
 
     } catch (error: any) {
         console.error("SIGNUP_API_CRITICAL_ERROR:", {
-            message: error.message,
+            message: "Erro interno ao processar solicitação",
             stack: error.stack,
             code: error.code
         });
 
         return NextResponse.json({
             message: "Erro interno ao processar seu cadastro no servidor",
-            details: error.message
+            
         }, { status: 500 })
     }
 }

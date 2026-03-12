@@ -40,8 +40,7 @@ export async function GET() {
     } catch (error: any) {
         console.error("ADMIN_SUBMISSIONS_FAIL:", error)
         return NextResponse.json({
-            message: "Erro ao buscar protocolos",
-            error: error.message
+            message: "Erro ao buscar protocolos"
         }, { status: 500 })
     }
 }

@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-const secretKey = "bezerra-borges-ultra-secret-key-2025";
+const secretKey = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "";
 const key = new TextEncoder().encode(secretKey);
 
 export async function encrypt(payload: any) {

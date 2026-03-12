@@ -62,6 +62,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: true, document })
     } catch (error: any) {
         console.error("Upload route error:", error)
-        return NextResponse.json({ message: "Erro interno no upload", error: error.message }, { status: 500 })
+        return NextResponse.json({ message: "Erro interno no upload" }, { status: 500 })
     }
 }

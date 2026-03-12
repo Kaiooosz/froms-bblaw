@@ -37,8 +37,7 @@ export async function GET() {
     } catch (error: any) {
         console.error("ADMIN_USERS_FAIL:", error)
         return NextResponse.json({
-            message: "Erro ao buscar usuários",
-            error: error.message
+            message: "Erro ao buscar usuários"
         }, { status: 500 })
     }
 }

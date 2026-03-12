@@ -29,12 +29,8 @@ export async function POST(request: Request) {
                 }
             });
 
-            // SIMULATION: In a real app, you would send an email here.
-            console.log(`[PASS_RESET_SIM] Token para ${email}: ${resetToken}`);
-            console.log(`[PASS_RESET_SIM] Link: ${process.env.NEXTAUTH_URL}/auth/reset-password?token=${resetToken}`);
-
-            // If you had Resend or similar:
-            // await resend.emails.send({ ... });
+            // TODO: Enviar email com o link de reset usando Resend ou similar
+            // await resend.emails.send({ to: email, subject: "Recuperação de senha", ... });
         }
 
         return NextResponse.json({ success: true, message: "Se o e-mail estiver em nossa base, você receberá um link de recuperação." });

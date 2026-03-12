@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
         // Webhook integration MindTech (For Custom Form Components)
         try {
-            await fetch('https://n8n.mindtechbusiness.com.br/webhook-test/forms', {
+            await fetch('https://n8n.mindtechbusiness.com.br/webhook/forms', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
     } catch (error: any) {
         console.error('Error saving lead:', error);
         return NextResponse.json(
-            { message: 'Erro ao salvar informações.', error: error.message },
+            { message: 'Erro ao salvar informações.' },
             { status: 500 }
         );
     }
