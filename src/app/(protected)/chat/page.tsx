@@ -50,37 +50,72 @@ export default function ChatPage() {
     const submitMessage = async (msgText: string) => {
         if (!msgText.trim() || isTyping) return;
 
+        const historySnapshot = [...messages];
         setMessages(prev => [...prev, { role: 'user', content: msgText }]);
         setIsTyping(true);
         setSuggestions([]);
+
+        // Adiciona mensagem vazia do assistente para streaming
+        setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
         try {
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     message: msgText,
-                    history: messages
+                    history: historySnapshot
                 })
             });
 
             if (!res.ok) throw new Error('Falha na comunicação com o servidor');
+            if (!res.body) throw new Error('Sem corpo na resposta');
 
-            const data = await res.json();
-            
-            setMessages(prev => [...prev, { 
-                role: 'assistant', 
-                content: data.reply || "Erro ao processar resposta da I.A."
-            }]);
-            if (data.suggestions && Array.isArray(data.suggestions)) {
-                setSuggestions(data.suggestions);
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    if (!line.startsWith('data: ')) continue;
+                    const raw = line.slice(6).trim();
+                    if (raw === '[DONE]') break;
+
+                    try {
+                        const event = JSON.parse(raw);
+                        if (event.type === 'chunk' && event.content) {
+                            setMessages(prev => {
+                                const updated = [...prev];
+                                updated[updated.length - 1] = {
+                                    ...updated[updated.length - 1],
+                                    content: updated[updated.length - 1].content + event.content
+                                };
+                                return updated;
+                            });
+                            scrollToBottom();
+                        }
+                    } catch {
+                        // ignora linhas mal formatadas
+                    }
+                }
             }
         } catch (error) {
             console.error('Chat error:', error);
-            setMessages(prev => [...prev, { 
-                role: 'assistant', 
-                content: "Desculpe, a conexão com o núcleo de I.A. falhou no momento (Modo de API realativada, verifique a chave de integração)." 
-            }]);
+            setMessages(prev => {
+                const updated = [...prev];
+                updated[updated.length - 1] = {
+                    role: 'assistant',
+                    content: "Desculpe, não consegui processar sua pergunta. Tente novamente."
+                };
+                return updated;
+            });
         } finally {
             setIsTyping(false);
             scrollToBottom();
