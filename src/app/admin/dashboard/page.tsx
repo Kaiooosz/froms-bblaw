@@ -611,9 +611,7 @@ export default function AdminDashboard() {
                                                         <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{sub.user?.email}</p>
                                                     </AdminTd>
                                                     <AdminTd onClick={() => setSelectedSubmission(sub)}>
-                                                        <span style={{ fontSize: '0.6rem', fontWeight: 700, padding: '2px 6px', background: 'var(--admin-muted-low)', borderRadius: '4px' }}>
-                                                            {funnelConfig[sub.funnelType]?.title || sub.funnelType}
-                                                        </span>
+                                                        <FunnelBadge funnelType={sub.funnelType} title={funnelConfig[sub.funnelType]?.title || sub.funnelType} />
                                                     </AdminTd>
                                                     <AdminTd onClick={() => setSelectedSubmission(sub)}>
                                                         <StatusBadge priority={sub.priority} />
@@ -682,7 +680,7 @@ export default function AdminDashboard() {
                                                         </div>
                                                     </AdminTd>
                                                     <AdminTd>
-                                                        <span style={{ fontSize: '0.55rem', fontWeight: 900, background: 'var(--admin-muted-low)', padding: '4px 8px', borderRadius: '100px', opacity: 0.6 }}>{doc.funnelType}</span>
+                                                        <FunnelBadge funnelType={doc.funnelType} title={funnelConfig[doc.funnelType]?.title || doc.funnelType} />
                                                     </AdminTd>
                                                     <AdminTd>
                                                         <p style={{ fontSize: '0.65rem', fontWeight: 700, opacity: 0.6 }}>{doc.filename}</p>
@@ -1214,21 +1212,40 @@ function PrioritySelector({ current, onSelect, loading }: any) {
 }
 
 function StatusBadge({ priority }: any) {
-    const priorities_list = [
-        { id: 'A DEFINIR', color: 'rgba(255,255,255,0.2)' },
-        { id: 'NORMAL', color: 'rgba(255,255,255,0.4)' },
-        { id: 'ALTA', color: 'rgba(255,255,255,0.6)' },
-        { id: 'URGENTE', color: 'rgba(255,255,255,0.8)' },
-        { id: 'VIP', color: '#ffffff' }
+    const priorities_list: { id: string; color: string; bg: string }[] = [
+        { id: 'A DEFINIR', color: '#888888',  bg: 'rgba(136,136,136,0.10)' },
+        { id: 'NORMAL',    color: '#60a5fa',  bg: 'rgba(96,165,250,0.12)'  },
+        { id: 'ALTA',      color: '#f59e0b',  bg: 'rgba(245,158,11,0.12)'  },
+        { id: 'URGENTE',   color: '#ef4444',  bg: 'rgba(239,68,68,0.12)'   },
+        { id: 'VIP',       color: '#c8a96e',  bg: 'rgba(200,169,110,0.15)' },
     ];
-    const p = priorities_list.find(pl => pl.id === priority?.toUpperCase()) || priorities_list[0];
-    const isSpecial = ['ALTA', 'URGENTE', 'VIP', 'NORMAL'].includes(priority?.toUpperCase());
-
+    const p = priorities_list.find(pl => pl.id === (priority?.toUpperCase() || '')) || priorities_list[0];
     return (
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 14px', borderRadius: '100px', background: 'var(--admin-card-bg)', color: isSpecial ? p.color : 'rgba(255,255,255,0.3)', fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', border: isSpecial ? `1px solid ${p.color}33` : '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ width: '5px', height: '5px', background: isSpecial ? p.color : 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '100px', background: p.bg, color: p.color, fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', border: `1px solid ${p.color}44` }}>
+            <div style={{ width: '5px', height: '5px', background: p.color, borderRadius: '50%', flexShrink: 0 }} />
             {priority || 'A DEFINIR'}
         </div>
+    );
+}
+
+const FUNNEL_COLORS: Record<string, { color: string; bg: string }> = {
+    PARAGUAI:    { color: '#4ade80', bg: 'rgba(74,222,128,0.12)'  },
+    OFFSHORE:    { color: '#60a5fa', bg: 'rgba(96,165,250,0.12)'  },
+    HOLDING:     { color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
+    CRIPTO:      { color: '#fb923c', bg: 'rgba(251,146,60,0.12)'  },
+    SUCESSORIO:  { color: '#facc15', bg: 'rgba(250,204,21,0.12)'  },
+    CONTENCIOSO: { color: '#f87171', bg: 'rgba(248,113,113,0.12)' },
+    COMPLIANCE:  { color: '#22d3ee', bg: 'rgba(34,211,238,0.12)'  },
+    CONTABIL:    { color: '#818cf8', bg: 'rgba(129,140,248,0.12)' },
+};
+
+function FunnelBadge({ funnelType, title }: { funnelType: string; title: string }) {
+    const c = FUNNEL_COLORS[funnelType?.toUpperCase()] || { color: '#aaaaaa', bg: 'rgba(170,170,170,0.10)' };
+    return (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.6rem', fontWeight: 700, padding: '4px 10px', background: c.bg, color: c.color, borderRadius: '6px', border: `1px solid ${c.color}33`, whiteSpace: 'nowrap' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: c.color, flexShrink: 0 }} />
+            {title}
+        </span>
     );
 }
 
