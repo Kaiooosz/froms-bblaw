@@ -295,13 +295,13 @@ export default function ChatPage() {
                     <button
                         type="submit"
                         disabled={!input.trim() || isTyping}
-                        style={{ 
-                            position: 'absolute', right: '12px', top: '12px', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                        style={{
+                            position: 'absolute', right: '12px', top: '50%', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.5s', border: 'none', cursor: 'pointer',
                             background: input.trim() ? '#fff' : 'rgba(255,255,255,0.05)',
                             color: input.trim() ? '#000' : 'rgba(255,255,255,0.1)',
                             opacity: input.trim() ? 1 : 0.5,
-                            transform: input.trim() ? 'scale(1)' : 'scale(0.95)'
+                            transform: input.trim() ? 'translateY(-50%) scale(1)' : 'translateY(-50%) scale(0.95)'
                         }}
                     >
                         <Send size={20} />
