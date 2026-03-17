@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { 
     Send, 
     Bot, 
@@ -209,7 +211,29 @@ export default function ChatPage() {
                                 borderTopLeftRadius: msg.role === 'assistant' ? '0' : '16px',
                                 backdropFilter: 'blur(10px)'
                             }}>
-                                {msg.content}
+                                {msg.role === 'assistant' ? (
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            p: ({ children }) => <p style={{ margin: '0 0 0.6em 0', lineHeight: 1.7 }}>{children}</p>,
+                                            strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#fff' }}>{children}</strong>,
+                                            em: ({ children }) => <em style={{ fontStyle: 'italic', opacity: 0.85 }}>{children}</em>,
+                                            ul: ({ children }) => <ul style={{ margin: '0.4em 0 0.6em 0', paddingLeft: '1.2em', display: 'flex', flexDirection: 'column', gap: '0.3em' }}>{children}</ul>,
+                                            ol: ({ children }) => <ol style={{ margin: '0.4em 0 0.6em 0', paddingLeft: '1.4em', display: 'flex', flexDirection: 'column', gap: '0.3em' }}>{children}</ol>,
+                                            li: ({ children }) => <li style={{ lineHeight: 1.6 }}>{children}</li>,
+                                            h1: ({ children }) => <h1 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0.8em 0 0.4em', letterSpacing: '-0.02em' }}>{children}</h1>,
+                                            h2: ({ children }) => <h2 style={{ fontSize: '1rem', fontWeight: 700, margin: '0.7em 0 0.3em', opacity: 0.95 }}>{children}</h2>,
+                                            h3: ({ children }) => <h3 style={{ fontSize: '0.95rem', fontWeight: 700, margin: '0.6em 0 0.3em', opacity: 0.9 }}>{children}</h3>,
+                                            hr: () => <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '0.8em 0' }} />,
+                                            blockquote: ({ children }) => <blockquote style={{ borderLeft: '3px solid rgba(255,255,255,0.2)', paddingLeft: '1em', margin: '0.6em 0', opacity: 0.8 }}>{children}</blockquote>,
+                                            code: ({ children }) => <code style={{ background: 'rgba(255,255,255,0.08)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.85em', fontFamily: 'monospace' }}>{children}</code>,
+                                        }}
+                                    >
+                                        {msg.content}
+                                    </ReactMarkdown>
+                                ) : (
+                                    msg.content
+                                )}
                             </div>
                         </motion.div>
                     ))}
