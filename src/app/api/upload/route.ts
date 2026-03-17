@@ -64,7 +64,6 @@ export async function POST(req: Request) {
         const msg = error?.message || String(error)
         console.error("Upload route error:", msg)
         // Diagnóstico: expor causa raiz em variável de ambiente de dev
-        const detail = process.env.NODE_ENV === 'development' ? msg : undefined
-        return NextResponse.json({ message: "Erro interno no upload", detail }, { status: 500 })
+        return NextResponse.json({ message: "Erro interno no upload", detail: msg }, { status: 500 })
     }
 }
