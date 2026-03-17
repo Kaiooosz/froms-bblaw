@@ -214,7 +214,13 @@ export default function DynamicForm() {
                         >
                             {config.completionAdvice?.buttonText || "NOTIFICAR EQUIPE NO WHATSAPP"}
                         </a>
-                        <div style={{ display: 'flex', gap: '1rem', width: '100%', marginTop: '0.5rem' }}>
+                        <button
+                            onClick={() => router.push('/documentos')}
+                            style={{ width: '100%', padding: '1.15rem', borderRadius: '100px', border: '2px solid var(--accent)', background: 'transparent', color: 'var(--foreground)', fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.08em', cursor: 'pointer', transition: 'all 0.2s' }}
+                        >
+                            📎 ENVIAR DOCUMENTOS OBRIGATÓRIOS
+                        </button>
+                        <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
                             <button onClick={() => router.push('/funnels')} style={{ flex: 1, padding: '1rem', borderRadius: '100px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--foreground)', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.05em', cursor: 'pointer' }}>
                                 ABRIR NOVO FORMULÁRIO
                             </button>

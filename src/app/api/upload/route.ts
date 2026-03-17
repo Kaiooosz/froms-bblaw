@@ -61,7 +61,10 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true, document })
     } catch (error: any) {
-        console.error("Upload route error:", error)
-        return NextResponse.json({ message: "Erro interno no upload" }, { status: 500 })
+        const msg = error?.message || String(error)
+        console.error("Upload route error:", msg)
+        // Diagnóstico: expor causa raiz em variável de ambiente de dev
+        const detail = process.env.NODE_ENV === 'development' ? msg : undefined
+        return NextResponse.json({ message: "Erro interno no upload", detail }, { status: 500 })
     }
 }
