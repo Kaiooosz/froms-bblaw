@@ -34,8 +34,11 @@ export default function Home() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
-          <a href="/auth/signin" style={{ fontSize: '0.65rem', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.2em', textDecoration: 'none', transition: 'color 0.3s' }}>Login</a>
-          <a href="/auth/signup" style={{ background: '#fff', color: '#000', padding: '0.85rem 1.75rem', borderRadius: '100px', fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', textDecoration: 'none', border: '1px solid transparent', transition: 'all 0.4s' }}>Cadastre-se</a>
+          <a href="/auth/signin" style={{ fontSize: '0.65rem', fontWeight: 500, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.2em', textDecoration: 'none', transition: 'color 0.3s' }}>Login</a>
+          <a href="/auth/signup" style={{ background: '#fff', color: '#000', padding: '0.85rem 1.75rem', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', textDecoration: 'none', border: '1px solid transparent', transition: 'all 0.4s', boxShadow: '0 0 15px rgba(255,255,255,0.1)' }}
+             onMouseOver={(e) => { e.currentTarget.style.boxShadow = '0 0 25px rgba(255,255,255,0.4)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+             onMouseOut={(e) => { e.currentTarget.style.boxShadow = '0 0 15px rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+          >Cadastre-se</a>
         </motion.div>
       </header>
 
@@ -46,17 +49,17 @@ export default function Home() {
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
               <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.3)' }} />
-              <p style={{ fontSize: '0.65rem', fontWeight: 900, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.4em' }}>Protocolos de Alta Fidelidade</p>
+              <p style={{ fontSize: '0.65rem', fontWeight: 500, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.4em' }}>Protocolos de Alta Fidelidade</p>
             </div>
             
-            <h1 style={{ fontSize: 'min(5rem, 10vw)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 0.95, fontFamily: 'Outfit, sans-serif', marginBottom: '2.5rem' }}>
+            <h1 style={{ fontSize: 'min(5rem, 10vw)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 0.95, fontFamily: 'Outfit, sans-serif', marginBottom: '2.5rem' }}>
               PLANEJAMENTO <br/>
               <span style={{ color: 'rgba(255,255,255,0.5)' }}>ESTRATÉGICO &</span><br/>
               INTELIGÊNCIA <span style={{ fontStyle: 'italic', fontWeight: 400 }}>JURÍDICA.</span>
             </h1>
             
             <p style={{ fontSize: '1.15rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', lineHeight: 1.6, fontWeight: 500, letterSpacing: '-0.01em' }}>
-              Assessoria de precisão para estruturação patrimonial global e proteção de ativos estratégicos.
+              Nossa inteligência ajuda a tirar suas dúvidas e direciona para as melhores escolhas. Preencha o formulário para melhores decisões e viva a melhor experiência em sua contratação.
             </p>
           </motion.div>
         </section>
@@ -68,8 +71,9 @@ export default function Home() {
               <div style={{ 
                 padding: '3rem', 
                 background: 'rgba(255,255,255,0.01)', 
-                border: '1px solid rgba(255,255,255,0.1)', 
-                borderRadius: '32px', 
+                border: '0.5px solid rgba(255,255,255,0.1)', 
+                borderRadius: '8px', 
+                boxShadow: '0 10px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
                 display: 'flex', 
                 flexDirection: 'row', 
                 alignItems: 'center',
@@ -91,20 +95,23 @@ export default function Home() {
               }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flex: 1 }}>
-                  <div style={{ width: '64px', height: '64px', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)', flexShrink: 0 }}>
+                  <div style={{ width: '64px', height: '64px', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)', flexShrink: 0 }}>
                     <Lock size={28} color="rgba(255,255,255,0.6)" />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'Outfit, sans-serif', color: '#fff', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <h3 style={{ fontSize: '2rem', fontWeight: 500, fontFamily: 'Outfit, sans-serif', color: '#fff', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                       PORTAL DO CLIENTE
                     </h3>
-                    <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', lineHeight: 1.6, maxWidth: '600px' }}>
+                    <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', lineHeight: 1.6, maxWidth: '600px' }}>
                       Inicie acesso aos formulários e envie seu documento e entenda a melhor solução com nossa inteligência.
                     </p>
                   </div>
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.75rem', fontWeight: 900, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3em', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.75rem', fontWeight: 500, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3em', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', border: '0.5px solid rgba(255,255,255,0.1)', transition: 'all 0.3s', boxShadow: '0 0 10px rgba(255,255,255,0.02)' }}
+                     onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#fff'; }}
+                     onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+                >
                   ACESSO RESTRITO <ChevronRight size={16} />
                 </div>
 
@@ -118,15 +125,15 @@ export default function Home() {
           <div style={{ display: 'flex', gap: '3rem', opacity: 0.25 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <ShieldCheck size={14} />
-              <span style={{ fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.25em' }}>AES-256</span>
+              <span style={{ fontSize: '0.6rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.25em' }}>AES-256</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <Globe size={14} />
-              <span style={{ fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.25em' }}>INTL COMPLIANT</span>
+              <span style={{ fontSize: '0.6rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.25em' }}>INTL COMPLIANT</span>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <p style={{ fontSize: '0.65rem', fontWeight: 900, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.4em' }}>BBLAW ESTRATÉGICO © 2025</p>
+            <p style={{ fontSize: '0.65rem', fontWeight: 500, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.4em' }}>BBLAW ESTRATÉGICO © 2025</p>
           </div>
         </motion.div>
 

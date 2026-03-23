@@ -343,7 +343,7 @@ export default function AdminDashboard() {
     if (loading) return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--admin-bg)', alignItems: 'center', justifyContent: 'center' }}>
             <Loader2 className="animate-spin" size={32} color="var(--admin-fg)" />
-            <p style={{ marginTop: '2rem', fontSize: '0.6rem', color: 'var(--admin-fg)', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em' }}>SISTEMA DE GESTÃO BBLAW</p>
+            <p style={{ marginTop: '2rem', fontSize: '0.6rem', color: 'var(--admin-fg)', fontWeight: 500, opacity: 0.3, letterSpacing: '0.2em' }}>SISTEMA DE GESTÃO BBLAW</p>
         </div>
     );
    return (
@@ -377,12 +377,12 @@ export default function AdminDashboard() {
                 zIndex: 100
             }}>
                 <div style={{ padding: '3rem 2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ width: '40px', height: '40px', background: '#fff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: '40px', height: '40px', background: '#fff', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <ShieldCheck color="#000" size={24} />
                     </div>
                     <div>
-                        <h2 style={{ fontSize: '1.2rem', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1 }}>BBLAW</h2>
-                        <p style={{ fontSize: '0.55rem', opacity: 0.3, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '4px' }}>INTEL UNIT</p>
+                        <h2 style={{ fontSize: '1.2rem', fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1 }}>BBLAW</h2>
+                        <p style={{ fontSize: '0.55rem', opacity: 0.3, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '4px' }}>INTEL UNIT</p>
                     </div>
                 </div>
 
@@ -396,16 +396,16 @@ export default function AdminDashboard() {
                 </nav>
 
                 <div style={{ padding: '2rem', borderTop: '0.5px solid var(--admin-card-border)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', background: 'var(--admin-card-bg)', padding: '0.75rem', borderRadius: '12px', border: '0.5px solid var(--admin-card-border)' }}>
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 900 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', background: 'var(--admin-card-bg)', padding: '0.75rem', borderRadius: '4px', border: '0.5px solid var(--admin-card-border)' }}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 500 }}>
                             {session?.user?.name?.[0] || 'A'}
                         </div>
                         <div style={{ overflow: 'hidden' }}>
-                            <p style={{ fontSize: '0.65rem', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session?.user?.name || 'Admin'}</p>
+                            <p style={{ fontSize: '0.65rem', fontWeight: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session?.user?.name || 'Admin'}</p>
                             <p style={{ fontSize: '0.5rem', opacity: 0.3, fontWeight: 700 }}>PAINEL DE CONTROLE</p>
                         </div>
                     </div>
-                    <button onClick={() => signOut()} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--admin-muted)', fontSize: '0.6rem', fontWeight: 900, padding: '8px 12px', borderRadius: '8px', transition: 'all 0.3s' }} onMouseOver={(e) => e.currentTarget.style.color = 'var(--admin-fg)'} onMouseOut={(e) => e.currentTarget.style.color = 'var(--admin-muted)'}>
+                    <button onClick={() => signOut()} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--admin-muted)', fontSize: '0.6rem', fontWeight: 500, padding: '8px 12px', borderRadius: '8px', transition: 'all 0.3s' }} onMouseOver={(e) => e.currentTarget.style.color = 'var(--admin-fg)'} onMouseOut={(e) => e.currentTarget.style.color = 'var(--admin-muted)'}>
                         <LogOut size={14} /> ENCERRAR SESSÃO
                     </button>
                 </div>
@@ -415,10 +415,10 @@ export default function AdminDashboard() {
             <main style={{ marginLeft: '280px', flex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
                 <header className="dash-header" style={{ padding: '3.5rem 4rem' }}>
                     <div>
-                        <h1 style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1 }}>
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1.1 }}>
                             {activeTab === 'OVERVIEW' ? 'SISTEMA DE INTELIGÊNCIA' : (activeTab === 'LEADS' ? 'LEADS ESTRATÉGICOS' : (activeTab === 'SUBMISSIONS' ? 'PROTOCOLOS ATIVOS' : activeTab))}
                         </h1>
-                        <p style={{ fontSize: '0.65rem', opacity: 0.3, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '6px' }}>GERENCIAMENTO DE ATIVOS E DADOS BBLAW</p>
+                        <p style={{ fontSize: '0.65rem', opacity: 0.3, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '6px' }}>GERENCIAMENTO DE ATIVOS E DADOS BBLAW</p>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
@@ -435,7 +435,7 @@ export default function AdminDashboard() {
 
                         <div style={{ width: '1px', height: '20px', background: 'var(--admin-muted-low)' }} />
 
-                        <button onClick={toggleTheme} style={{ background: 'var(--admin-input-bg)', border: '0.5px solid var(--admin-card-border)', padding: '0.75rem', borderRadius: '10px', color: 'var(--admin-fg)', transition: 'all 0.3s' }}>
+                        <button onClick={toggleTheme} style={{ background: 'var(--admin-input-bg)', border: '0.5px solid var(--admin-card-border)', padding: '0.75rem', borderRadius: '4px', color: 'var(--admin-fg)', transition: 'all 0.3s' }}>
                             {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
                         </button>
                     </div>
@@ -446,12 +446,12 @@ export default function AdminDashboard() {
                     <div style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
                         {(activeTab === 'LEADS' || activeTab === 'SUBMISSIONS') && (
                             <>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--admin-card-bg)', padding: '4px 12px', borderRadius: '10px', border: '0.5px solid var(--admin-card-border)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--admin-card-bg)', padding: '4px 12px', borderRadius: '4px', border: '0.5px solid var(--admin-card-border)' }}>
                                     <Filter size={12} style={{ opacity: 0.3 }} />
                                     <select
                                         value={filterStatus}
                                         onChange={(e) => setFilterStatus(e.target.value)}
-                                        style={{ background: 'transparent', border: 'none', fontSize: '0.55rem', color: 'var(--admin-fg)', fontWeight: 900, outline: 'none', letterSpacing: '0.05em', cursor: 'pointer' }}
+                                        style={{ background: 'transparent', border: 'none', fontSize: '0.55rem', color: 'var(--admin-fg)', fontWeight: 500, outline: 'none', letterSpacing: '0.05em', cursor: 'pointer' }}
                                     >
                                         <option value="ALL">TODOS OS ESTÁGIOS</option>
                                         <option value="PENDING">AGUARDANDO</option>
@@ -462,7 +462,7 @@ export default function AdminDashboard() {
                                 <button
                                     onClick={() => exportListPDF(activeTab === 'LEADS' ? 'LEADS' : 'SUBMISSIONS')}
                                     className="btn-premium"
-                                    style={{ padding: '0.65rem 1.25rem', fontSize: '0.55rem', background: '#fff', color: '#000', borderRadius: '8px', fontWeight: 900, transition: 'var(--transition-smooth)' }}
+                                    style={{ padding: '0.65rem 1.25rem', fontSize: '0.55rem', background: '#fff', color: '#000', borderRadius: '8px', fontWeight: 500, transition: 'var(--transition-smooth)' }}
                                 >
                                     <Download size={14} /> EXPORTAR BATCH
                                 </button>
@@ -479,8 +479,8 @@ export default function AdminDashboard() {
                                 <OverviewCard icon={<ShieldCheck size={20} />} label="VIP / ALTA PRIORIDADE" value={submissions.filter((s: any) => ['ALTA', 'VIP', 'URGENTE'].includes(s.priority)).length} />
                             </div>
 
-                            <div style={{ background: 'var(--admin-card-bg)', border: '0.5px solid var(--admin-card-border)', borderRadius: '16px', padding: '2.5rem' }}>
-                                <h4 style={{ fontSize: '0.65rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '2rem', textAlign: 'center' }}>DISTRIBUIÇÃO POR ESTÁGIO</h4>
+                            <div style={{ background: 'var(--admin-card-bg)', border: '0.5px solid var(--admin-card-border)', borderRadius: '4px', padding: '2.5rem' }}>
+                                <h4 style={{ fontSize: '0.65rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '2rem', textAlign: 'center' }}>DISTRIBUIÇÃO POR ESTÁGIO</h4>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '2rem' }}>
                                     {[
                                         { id: 'PENDING', label: 'AGUARDANDO', color: 'rgba(255,255,255,0.2)' },
@@ -492,9 +492,9 @@ export default function AdminDashboard() {
                                         const percent = total ? (count / total) * 100 : 0;
                                         return (
                                             <div key={st.id} style={{ textAlign: 'center' }}>
-                                                <div style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.25rem', color: st.color, letterSpacing: '-0.05em' }}>{count}</div>
-                                                <div style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.4, marginBottom: '1.25rem', letterSpacing: '0.1em' }}>{st.label}</div>
-                                                <div style={{ height: '4px', background: 'var(--admin-muted-low)', borderRadius: '10px', overflow: 'hidden' }}>
+                                                <div style={{ fontSize: '1.8rem', fontWeight: 500, marginBottom: '0.25rem', color: st.color, letterSpacing: '-0.05em' }}>{count}</div>
+                                                <div style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.4, marginBottom: '1.25rem', letterSpacing: '0.1em' }}>{st.label}</div>
+                                                <div style={{ height: '4px', background: 'var(--admin-muted-low)', borderRadius: '4px', overflow: 'hidden' }}>
                                                     <motion.div initial={{ width: 0 }} animate={{ width: `${percent}%` }} transition={{ duration: 1, ease: 'easeOut' }} style={{ height: '100%', background: st.color }} />
                                                 </div>
                                             </div>
@@ -503,24 +503,24 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
 
-                            <div style={{ marginTop: '1rem', background: 'var(--admin-card-bg)', border: '0.5px solid var(--admin-card-border)', borderRadius: '16px', padding: '2.5rem' }}>
-                                <h4 style={{ fontSize: '0.65rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem' }}>ATIVIDADE RECENTE</h4>
+                            <div style={{ marginTop: '1rem', background: 'var(--admin-card-bg)', border: '0.5px solid var(--admin-card-border)', borderRadius: '4px', padding: '2.5rem' }}>
+                                <h4 style={{ fontSize: '0.65rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem' }}>ATIVIDADE RECENTE</h4>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     {[...submissions, ...leads].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5).map((act, i) => (
-                                        <div key={act.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.01)', borderRadius: '12px', borderLeft: `2px solid ${act.priority === 'VIP' ? '#fff' : (act.priority === 'URGENTE' ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)')}` }}>
+                                        <div key={act.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.01)', borderRadius: '4px', borderLeft: `2px solid ${act.priority === 'VIP' ? '#fff' : (act.priority === 'URGENTE' ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)')}` }}>
                                             <div style={{ width: '6px', height: '6px', background: act.status === 'COMPLETED' ? '#fff' : (act.status === 'REVIEWING' ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)'), borderRadius: '50%' }} />
                                             <div style={{ flex: 1 }}>
-                                                <p style={{ fontSize: '0.75rem', fontWeight: 800 }}>{act.nome_completo_pessoal || act.user?.fullName || act.user?.name}</p>
+                                                <p style={{ fontSize: '0.75rem', fontWeight: 400 }}>{act.nome_completo_pessoal || act.user?.fullName || act.user?.name}</p>
                                                 <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{act.email} • {new Date(act.createdAt).toLocaleDateString('pt-BR')}</p>
                                             </div>
-                                            <span style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2 }}>{('funnelType' in act) ? 'PROTOCOLO' : 'LEAD'}</span>
+                                            <span style={{ fontSize: '0.55rem', fontWeight: 500, opacity: 0.2 }}>{('funnelType' in act) ? 'PROTOCOLO' : 'LEAD'}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        <div style={{ background: 'var(--admin-sidebar-bg)', border: '0.5px solid var(--admin-card-border)', borderRadius: '12px', overflow: 'hidden' }}>
+                        <div style={{ background: 'var(--admin-sidebar-bg)', border: '0.5px solid var(--admin-card-border)', borderRadius: '4px', overflow: 'hidden' }}>
                             {activeTab === 'LEADS' ? (
                                 <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                                     <thead style={{ background: 'var(--admin-card-bg)', borderBottom: '0.5px solid var(--admin-card-border)' }}>
@@ -537,7 +537,7 @@ export default function AdminDashboard() {
                                             <tr>
                                                 <td colSpan={5} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
                                                     <FileText size={24} style={{ margin: '0 auto 1rem' }} />
-                                                    <p style={{ fontSize: '0.6rem', fontWeight: 900 }}>SEM DADOS</p>
+                                                    <p style={{ fontSize: '0.6rem', fontWeight: 500 }}>SEM DADOS</p>
                                                 </td>
                                             </tr>
                                         ) : (
@@ -546,7 +546,7 @@ export default function AdminDashboard() {
                                                     onClick={() => setSelectedLead(lead)}
                                                 >
                                                     <AdminTd>
-                                                        <p style={{ fontSize: '0.75rem', fontWeight: 800 }}>{lead.nome_completo_pessoal}</p>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 400 }}>{lead.nome_completo_pessoal}</p>
                                                         <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{lead.email}</p>
                                                     </AdminTd>
                                                     <AdminTd>
@@ -597,7 +597,7 @@ export default function AdminDashboard() {
                                             <tr>
                                                 <td colSpan={5} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
                                                     <ClipboardList size={24} style={{ margin: '0 auto 1rem' }} />
-                                                    <p style={{ fontSize: '0.6rem', fontWeight: 900 }}>SEM DADOS</p>
+                                                    <p style={{ fontSize: '0.6rem', fontWeight: 500 }}>SEM DADOS</p>
                                                 </td>
                                             </tr>
                                         ) : (
@@ -607,7 +607,7 @@ export default function AdminDashboard() {
                                                     onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
                                                 >
                                                     <AdminTd onClick={() => setSelectedSubmission(sub)}>
-                                                        <p style={{ fontSize: '0.75rem', fontWeight: 800 }}>{sub.user?.fullName || sub.user?.name}</p>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 400 }}>{sub.user?.fullName || sub.user?.name}</p>
                                                         <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{sub.user?.email}</p>
                                                     </AdminTd>
                                                     <AdminTd onClick={() => setSelectedSubmission(sub)}>
@@ -659,7 +659,7 @@ export default function AdminDashboard() {
                                             <tr>
                                                 <td colSpan={5} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
                                                     <FileUp size={24} style={{ margin: '0 auto 1rem' }} />
-                                                    <p style={{ fontSize: '0.6rem', fontWeight: 900 }}>SEM DOCUMENTOS</p>
+                                                    <p style={{ fontSize: '0.6rem', fontWeight: 500 }}>SEM DOCUMENTOS</p>
                                                 </td>
                                             </tr>
                                         ) : (
@@ -670,11 +670,11 @@ export default function AdminDashboard() {
                                                 >
                                                     <AdminTd>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                            <div style={{ width: '32px', height: '32px', background: 'var(--admin-muted-low)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: 900 }}>
+                                                            <div style={{ width: '32px', height: '32px', background: 'var(--admin-muted-low)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: 500 }}>
                                                                 {(doc.user?.name || doc.user?.fullName || '?')[0]}
                                                             </div>
                                                             <div>
-                                                                <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.user?.name || doc.user?.fullName || 'NÃO IDENTIFICADO'}</p>
+                                                                <p style={{ fontSize: '0.7rem', fontWeight: 400 }}>{doc.user?.name || doc.user?.fullName || 'NÃO IDENTIFICADO'}</p>
                                                                 <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.user?.email || '-'}</p>
                                                             </div>
                                                         </div>
@@ -689,7 +689,7 @@ export default function AdminDashboard() {
                                                     <AdminTd>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                                             <div style={{ width: '6px', height: '6px', background: '#fff', borderRadius: '50%', opacity: 0.3 }} />
-                                                            <span style={{ fontSize: '0.55rem', fontWeight: 900, textTransform: 'uppercase', opacity: 0.6 }}>{doc.tipo}</span>
+                                                            <span style={{ fontSize: '0.55rem', fontWeight: 500, textTransform: 'uppercase', opacity: 0.6 }}>{doc.tipo}</span>
                                                         </div>
                                                     </AdminTd>
                                                     <AdminTd align="right">
@@ -700,7 +700,7 @@ export default function AdminDashboard() {
                                                                         if (d.url) window.open(d.url, '_blank');
                                                                     });
                                                                 }}
-                                                                style={{ padding: '0.55rem 1.25rem', borderRadius: '100px', background: '#fff', color: '#000', fontSize: '0.55rem', fontWeight: 900, border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                                                                style={{ padding: '0.55rem 1.25rem', borderRadius: '4px', background: '#fff', color: '#000', fontSize: '0.55rem', fontWeight: 500, border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
                                                                 onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)', e.currentTarget.style.boxShadow = '0 0 15px rgba(255,255,255,0.4)')}
                                                                 onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)', e.currentTarget.style.boxShadow = 'none')}
                                                             >
@@ -718,7 +718,7 @@ export default function AdminDashboard() {
                                                                         });
                                                                 }}
                                                                 title="Abrir pasta do cliente no Google Drive"
-                                                                style={{ padding: '0.55rem 1rem', borderRadius: '100px', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: '0.55rem', fontWeight: 900, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                                                                style={{ padding: '0.55rem 1rem', borderRadius: '4px', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: '0.55rem', fontWeight: 500, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
                                                                 onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.14)')}
                                                                 onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.07)')}
                                                             >
@@ -742,7 +742,7 @@ export default function AdminDashboard() {
                             ) : activeTab === 'WEBHOOKS' ? (
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
                                     <ShieldCheck size={32} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
-                                    <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.5rem' }}>MindTech Ativa</h3>
+                                    <h3 style={{ fontSize: '1rem', fontWeight: 400, marginBottom: '0.5rem' }}>MindTech Ativa</h3>
                                     <p style={{ fontSize: '0.75rem', opacity: 0.4, maxWidth: '400px', margin: '0 auto' }}>Sincronização estável com o n8n.</p>
                                 </div>
                             ) : (
@@ -760,26 +760,26 @@ export default function AdminDashboard() {
                                             <tr>
                                                 <td colSpan={4} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
                                                     <Users size={24} style={{ margin: '0 auto 1rem' }} />
-                                                    <p style={{ fontSize: '0.6rem', fontWeight: 900 }}>SEM DADOS</p>
+                                                    <p style={{ fontSize: '0.6rem', fontWeight: 500 }}>SEM DADOS</p>
                                                 </td>
                                             </tr>
                                         ) : (
                                             filteredUsers.map((user) => (
                                                 <tr key={user.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
                                                     <AdminTd>
-                                                        <p style={{ fontSize: '0.75rem', fontWeight: 800 }}>{user.fullName || user.name}</p>
+                                                        <p style={{ fontSize: '0.75rem', fontWeight: 400 }}>{user.fullName || user.name}</p>
                                                         <p style={{ fontSize: '0.6rem', opacity: 0.3 }}>{user.email}</p>
                                                     </AdminTd>
                                                     <AdminTd>
                                                         <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>{user.document || '—'}</p>
                                                     </AdminTd>
                                                     <AdminTd>
-                                                        <span style={{ fontSize: '0.55rem', fontWeight: 900, background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '100px' }}>{user.origemLead}</span>
+                                                        <span style={{ fontSize: '0.55rem', fontWeight: 500, background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>{user.origemLead}</span>
                                                     </AdminTd>
                                                     <AdminTd align="right">
                                                         <button
                                                             onClick={() => setSelectedUser(user)}
-                                                            style={{ fontSize: '0.6rem', fontWeight: 800, padding: '0.5rem 1rem', background: 'var(--admin-muted-low)', borderRadius: '100px', cursor: 'pointer', transition: 'all 0.3s' }}
+                                                            style={{ fontSize: '0.6rem', fontWeight: 400, padding: '0.5rem 1rem', background: 'var(--admin-muted-low)', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.3s' }}
                                                             onMouseOver={(e) => (e.currentTarget.style.background = '#fff', e.currentTarget.style.color = '#000')}
                                                             onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)', e.currentTarget.style.color = '#fff')}
                                                         >
@@ -828,8 +828,8 @@ export default function AdminDashboard() {
                                 style={{ position: 'relative', width: 'min(640px, 90vw)', background: 'var(--admin-sidebar-bg)', borderLeft: '1px solid var(--admin-card-border)', height: '100%', display: 'flex', flexDirection: 'column', padding: '3rem' }}>
                                 <header style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                     <div>
-                                        <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '0.75rem' }}>RECURSOS ESTRATÉGICOS</p>
-                                        <h3 style={{ fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1 }}>Detalhes do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Protocolo</span></h3>
+                                        <p style={{ fontSize: '0.55rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '0.75rem' }}>RECURSOS ESTRATÉGICOS</p>
+                                        <h3 style={{ fontSize: '1.3rem', fontWeight: 400, letterSpacing: '-0.03em', lineHeight: 1.1 }}>Detalhes do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Protocolo</span></h3>
                                     </div>
                                     <button onClick={() => setSelectedSubmission(null)} style={{ opacity: 0.3, padding: '0.5rem' }}><X size={32} /></button>
                                 </header>
@@ -847,16 +847,35 @@ export default function AdminDashboard() {
                                     </div>
 
                                     {/* Seção de Documentos Vinculados */}
-                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'var(--admin-card-bg)', borderRadius: '16px', border: '1px solid var(--admin-card-border)' }}>
-                                        <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Documentos Enviados</h4>
+                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                            <h4 style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>Documentos Enviados</h4>
+                                            <button
+                                                onClick={() => {
+                                                    const email = selectedSubmission.user?.email;
+                                                    if (!email) { alert('E-mail do cliente não encontrado.'); return; }
+                                                    fetch(`/api/admin/drive-folder?email=${encodeURIComponent(email)}`)
+                                                        .then(r => r.json())
+                                                        .then(d => {
+                                                            if (d.found && d.folderUrl) window.open(d.folderUrl, '_blank');
+                                                            else alert(d.message || 'Pasta não encontrada no Drive.');
+                                                        });
+                                                }}
+                                                style={{ padding: '0.4rem 0.8rem', borderRadius: '4px', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: '0.55rem', fontWeight: 500, border: '0.5px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', transition: 'all 0.3s' }}
+                                                onMouseOver={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#000'; }}
+                                                onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = '#fff'; }}
+                                            >
+                                                VER NO DRIVE
+                                            </button>
+                                        </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                             {allDocs.filter(d => d.userId === selectedSubmission.userId && d.funnelType === selectedSubmission.funnelType).length === 0 ? (
                                                 <p style={{ fontSize: '0.7rem', opacity: 0.3 }}>Nenhum documento vinculado a este protocolo.</p>
                                             ) : (
                                                 allDocs.filter(d => d.userId === selectedSubmission.userId && d.funnelType === selectedSubmission.funnelType).map(doc => (
-                                                    <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'var(--admin-card-bg)', borderRadius: '12px', border: '1px solid var(--admin-card-border)' }}>
+                                                    <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
                                                         <div>
-                                                            <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.filename}</p>
+                                                            <p style={{ fontSize: '0.7rem', fontWeight: 400 }}>{doc.filename}</p>
                                                             <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.tipo.toUpperCase()}</p>
                                                         </div>
                                                         <button
@@ -875,8 +894,8 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
 
-                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'var(--admin-card-bg)', borderRadius: '16px', border: '1px solid var(--admin-card-border)' }}>
-                                        <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Configuração de Urgência</h4>
+                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
+                                        <h4 style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Configuração de Urgência</h4>
                                         <PrioritySelector
                                             current={selectedSubmission.priority}
                                             onSelect={(p: string) => updatePriority(selectedSubmission.id, 'submission', p)}
@@ -885,7 +904,7 @@ export default function AdminDashboard() {
                                     </div>
 
                                     <div style={{ borderTop: '1px solid var(--admin-card-border)', paddingTop: '3rem' }}>
-                                        <h4 style={{ fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginBottom: '2.5rem' }}>DADOS DA TRANSMISSÃO</h4>
+                                        <h4 style={{ fontSize: '0.7rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.1em', marginBottom: '2.5rem' }}>DADOS DA TRANSMISSÃO</h4>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
                                             {Object.keys(selectedSubmission.data).map(key => {
                                                 const val = selectedSubmission.data[key];
@@ -903,17 +922,17 @@ export default function AdminDashboard() {
                                                 if (Array.isArray(val) && val.length > 0 && val[0] && typeof val[0] === 'object' && 'base64' in val[0]) {
                                                     return (
                                                         <div key={key}>
-                                                            <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '1rem' }}>{label}</p>
+                                                            <p style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.2, textTransform: 'uppercase', marginBottom: '1rem' }}>{label}</p>
                                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                                                 {val.map((file: any, fIdx: number) => (
-                                                                    <a key={fIdx} href={file.base64} download={file.name} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem', background: 'var(--admin-card-bg)', border: '1px solid var(--admin-card-border)', borderRadius: '12px', color: 'var(--admin-fg)', fontSize: '0.8rem', fontWeight: 700, transition: 'background 0.2s', textDecoration: 'none' }}
+                                                                    <a key={fIdx} href={file.base64} download={file.name} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem', background: 'var(--admin-card-bg)', border: '1px solid var(--admin-card-border)', borderRadius: '4px', color: 'var(--admin-fg)', fontSize: '0.8rem', fontWeight: 700, transition: 'background 0.2s', textDecoration: 'none' }}
                                                                         onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
                                                                         onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
                                                                     >
                                                                         <FileText size={18} opacity={0.5} />
                                                                         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                                                             <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{file.name}</span>
-                                                                            <span style={{ fontSize: '0.55rem', opacity: 0.2, fontWeight: 900, marginTop: '2px' }}>CONFERIR ARQUIVO</span>
+                                                                            <span style={{ fontSize: '0.55rem', opacity: 0.2, fontWeight: 500, marginTop: '2px' }}>CONFERIR ARQUIVO</span>
                                                                         </div>
                                                                         <span style={{ fontSize: '0.6rem', opacity: 0.3 }}>{(file.size / 1024).toFixed(0)} KB</span>
                                                                         <Download size={14} opacity={0.2} />
@@ -926,7 +945,7 @@ export default function AdminDashboard() {
 
                                                 return (
                                                     <div key={key}>
-                                                        <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{label}</p>
+                                                        <p style={{ fontSize: '0.55rem', fontWeight: 500, opacity: 0.2, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{label}</p>
                                                         <p style={{ fontSize: '0.85rem', fontWeight: 700, lineHeight: 1.5 }}>
                                                             {Array.isArray(val) ? val.join(', ') : (typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val))}
                                                         </p>
@@ -938,13 +957,13 @@ export default function AdminDashboard() {
                                 </div>
 
                                 <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--admin-card-border)', display: 'flex', gap: '1rem' }}>
-                                    <button onClick={() => exportSubmissionPDF(selectedSubmission)} style={{ flex: 1, padding: '1.25rem', background: 'var(--admin-muted-low)', border: '1px solid var(--admin-card-border)', color: 'var(--admin-fg)', fontWeight: 800, borderRadius: '100px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                                    <button onClick={() => exportSubmissionPDF(selectedSubmission)} style={{ flex: 1, padding: '1.25rem', background: 'var(--admin-muted-low)', border: '1px solid var(--admin-card-border)', color: 'var(--admin-fg)', fontWeight: 400, borderRadius: '4px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                                         <Download size={16} /> BAIXAR PDF
                                     </button>
-                                    <button onClick={() => updateStatus(selectedSubmission.id, 'submission', 'COMPLETED')} style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em', cursor: 'pointer', opacity: isUpdating ? 0.5 : 1 }} disabled={isUpdating}>
+                                    <button onClick={() => updateStatus(selectedSubmission.id, 'submission', 'COMPLETED')} style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 500, borderRadius: '4px', fontSize: '0.8rem', letterSpacing: '0.05em', cursor: 'pointer', opacity: isUpdating ? 0.5 : 1 }} disabled={isUpdating}>
                                         {isUpdating ? 'ATUALIZANDO...' : (selectedSubmission.status === 'COMPLETED' ? 'PROCESSADO ✓' : 'MARCAR COMO PROCESSADO')}
                                     </button>
-                                    <button onClick={() => setSelectedSubmission(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid var(--admin-card-border)', fontWeight: 800, color: 'var(--admin-fg)', borderRadius: '100px', fontSize: '0.8rem', cursor: 'pointer' }}>FECHAR</button>
+                                    <button onClick={() => setSelectedSubmission(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid var(--admin-card-border)', fontWeight: 400, color: 'var(--admin-fg)', borderRadius: '4px', fontSize: '0.8rem', cursor: 'pointer' }}>FECHAR</button>
                                 </footer>
                             </motion.div>
                         </div>
@@ -962,8 +981,8 @@ export default function AdminDashboard() {
                                 style={{ position: 'relative', width: 'min(700px, 90vw)', background: 'var(--admin-sidebar-bg)', borderLeft: '1px solid var(--admin-card-border)', height: '100%', display: 'flex', flexDirection: 'column', padding: '3.5rem' }}>
                                 <header style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                     <div>
-                                        <p style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '1rem' }}>INFORMAÇÕES DE FORMULÁRIO</p>
-                                        <h3 style={{ fontSize: '2rem', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1 }}>Dados do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Lead Estratégico</span></h3>
+                                        <p style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.2em', marginBottom: '1rem' }}>INFORMAÇÕES DE FORMULÁRIO</p>
+                                        <h3 style={{ fontSize: '2rem', fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1.1 }}>Dados do <br /><span style={{ color: 'rgba(255,255,255,0.4)' }}>Lead Estratégico</span></h3>
                                     </div>
                                     <button onClick={() => setSelectedLead(null)} style={{ opacity: 0.3, padding: '0.5rem' }}><X size={40} /></button>
                                 </header>
@@ -982,16 +1001,35 @@ export default function AdminDashboard() {
                                     </div>
 
                                     {/* Seção de Documentos Vinculados ao Lead */}
-                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'var(--admin-card-bg)', borderRadius: '16px', border: '1px solid var(--admin-card-border)' }}>
-                                        <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Documentos Enviados pelo Lead</h4>
+                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                            <h4 style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>Documentos Enviados pelo Lead</h4>
+                                            <button
+                                                onClick={() => {
+                                                    const email = selectedLead.email;
+                                                    if (!email) { alert('E-mail do cliente não encontrado.'); return; }
+                                                    fetch(`/api/admin/drive-folder?email=${encodeURIComponent(email)}`)
+                                                        .then(r => r.json())
+                                                        .then(d => {
+                                                            if (d.found && d.folderUrl) window.open(d.folderUrl, '_blank');
+                                                            else alert(d.message || 'Pasta não encontrada no Drive.');
+                                                        });
+                                                }}
+                                                style={{ padding: '0.4rem 0.8rem', borderRadius: '4px', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: '0.55rem', fontWeight: 500, border: '0.5px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', transition: 'all 0.3s' }}
+                                                onMouseOver={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#000'; }}
+                                                onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = '#fff'; }}
+                                            >
+                                                VER NO DRIVE
+                                            </button>
+                                        </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                             {allDocs.filter(d => d.userId === selectedLead.userId).length === 0 ? (
                                                 <p style={{ fontSize: '0.7rem', opacity: 0.3 }}>Nenhum documento vinculado a este lead.</p>
                                             ) : (
                                                 allDocs.filter(d => d.userId === selectedLead.userId).map(doc => (
-                                                    <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'var(--admin-card-bg)', borderRadius: '12px', border: '1px solid var(--admin-card-border)' }}>
+                                                    <div key={doc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
                                                         <div>
-                                                            <p style={{ fontSize: '0.7rem', fontWeight: 800 }}>{doc.filename}</p>
+                                                            <p style={{ fontSize: '0.7rem', fontWeight: 400 }}>{doc.filename}</p>
                                                             <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.tipo.toUpperCase()} - {doc.funnelType}</p>
                                                         </div>
                                                         <button
@@ -1010,8 +1048,8 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
 
-                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'var(--admin-card-bg)', borderRadius: '16px', border: '1px solid var(--admin-card-border)' }}>
-                                        <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Definir Prioridade do Lead</h4>
+                                    <div style={{ marginBottom: '4rem', padding: '2rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
+                                        <h4 style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.15em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Definir Prioridade do Lead</h4>
                                         <PrioritySelector
                                             current={selectedLead.priority}
                                             onSelect={(p: string) => updatePriority(selectedLead.id, 'lead', p)}
@@ -1020,7 +1058,7 @@ export default function AdminDashboard() {
                                     </div>
 
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                                        <h4 style={{ gridColumn: '1 / -1', fontSize: '0.7rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginTop: '1rem' }}>RESPOSTAS DO FORMULÁRIO</h4>
+                                        <h4 style={{ gridColumn: '1 / -1', fontSize: '0.7rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.1em', marginTop: '1rem' }}>RESPOSTAS DO FORMULÁRIO</h4>
                                         {Object.entries(selectedLead).map(([key, value]) => {
                                             // Filtra campos internos ou já mostrados no cabeçalho
                                             if (['id', 'userId', 'createdAt', 'updatedAt', 'user'].includes(key)) return null;
@@ -1030,9 +1068,9 @@ export default function AdminDashboard() {
                                             const label = key.replace(/_/g, ' ').toUpperCase();
 
                                             return (
-                                                <div key={key} style={{ background: 'var(--admin-card-bg)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--admin-card-border)' }}>
-                                                    <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, marginBottom: '0.5rem', letterSpacing: '0.05em' }}>{label}</p>
-                                                    <p style={{ fontSize: '0.9rem', fontWeight: 800, lineHeight: 1.4, color: 'var(--admin-fg)' }}>
+                                                <div key={key} style={{ background: 'var(--admin-card-bg)', padding: '1.25rem', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
+                                                    <p style={{ fontSize: '0.55rem', fontWeight: 500, opacity: 0.2, marginBottom: '0.5rem', letterSpacing: '0.05em' }}>{label}</p>
+                                                    <p style={{ fontSize: '0.9rem', fontWeight: 400, lineHeight: 1.4, color: 'var(--admin-fg)' }}>
                                                         {Array.isArray(value) ? value.join(', ') :
                                                             (typeof value === 'boolean' ? (value ? 'SIM' : 'NÃO') :
                                                                 (typeof value === 'object' ? JSON.stringify(value) : String(value)))}
@@ -1044,13 +1082,13 @@ export default function AdminDashboard() {
                                 </div>
 
                                 <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--admin-card-border)', display: 'flex', gap: '1rem' }}>
-                                    <button onClick={() => exportLeadPDF(selectedLead)} style={{ flex: 1, padding: '1.25rem', background: 'var(--admin-muted-low)', border: '1px solid var(--admin-card-border)', color: 'var(--admin-fg)', fontWeight: 800, borderRadius: '100px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                                    <button onClick={() => exportLeadPDF(selectedLead)} style={{ flex: 1, padding: '1.25rem', background: 'var(--admin-muted-low)', border: '1px solid var(--admin-card-border)', color: 'var(--admin-fg)', fontWeight: 400, borderRadius: '4px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                                         <Download size={16} /> EXPORTAR PDF
                                     </button>
-                                    <button onClick={() => updateStatus(selectedLead.id, 'lead', 'COMPLETED')} style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 900, borderRadius: '100px', fontSize: '0.8rem', letterSpacing: '0.05em', cursor: 'pointer', opacity: isUpdating ? 0.5 : 1 }} disabled={isUpdating}>
+                                    <button onClick={() => updateStatus(selectedLead.id, 'lead', 'COMPLETED')} style={{ flex: 1.5, padding: '1.25rem', background: '#fff', color: '#000', fontWeight: 500, borderRadius: '4px', fontSize: '0.8rem', letterSpacing: '0.05em', cursor: 'pointer', opacity: isUpdating ? 0.5 : 1 }} disabled={isUpdating}>
                                         {isUpdating ? 'ATUALIZANDO...' : (selectedLead.status === 'COMPLETED' ? 'PROCESSADO ✓' : 'CONCLUIR LEAD')}
                                     </button>
-                                    <button onClick={() => setSelectedLead(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid var(--admin-card-border)', fontWeight: 800, color: 'var(--admin-fg)', borderRadius: '100px', fontSize: '0.8rem', cursor: 'pointer' }}>FECHAR</button>
+                                    <button onClick={() => setSelectedLead(null)} style={{ flex: 1, padding: '1.25rem', border: '1px solid var(--admin-card-border)', fontWeight: 400, color: 'var(--admin-fg)', borderRadius: '4px', fontSize: '0.8rem', cursor: 'pointer' }}>FECHAR</button>
                                 </footer>
                             </motion.div>
                         </div>
@@ -1064,45 +1102,45 @@ export default function AdminDashboard() {
                     selectedUser && (
                         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(10px)' }}>
                             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-                                style={{ width: 'min(500px, 95vw)', background: 'var(--admin-sidebar-bg)', border: '1px solid var(--admin-card-border)', borderRadius: '32px', padding: '3rem', position: 'relative', boxShadow: '0 30px 60px rgba(0,0,0,0.8)' }}>
+                                style={{ width: 'min(500px, 95vw)', background: 'var(--admin-sidebar-bg)', border: '1px solid var(--admin-card-border)', borderRadius: '8px', padding: '3rem', position: 'relative', boxShadow: '0 30px 60px rgba(0,0,0,0.8)' }}>
                                 <button onClick={() => setSelectedUser(null)} style={{ position: 'absolute', top: '2rem', right: '2rem', background: 'transparent', border: 'none', color: 'var(--admin-fg)', opacity: 0.3, cursor: 'pointer' }}><X size={24} /></button>
                                 <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                                    <div style={{ width: '80px', height: '80px', background: 'var(--admin-muted-low)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 900, margin: '0 auto 1.5rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <div style={{ width: '80px', height: '80px', background: 'var(--admin-muted-low)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 500, margin: '0 auto 1.5rem', border: '1px solid rgba(255,255,255,0.1)' }}>
                                         {selectedUser.name?.[0] || selectedUser.fullName?.[0]}
                                     </div>
-                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>{selectedUser.fullName || selectedUser.name}</h3>
+                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 500, letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>{selectedUser.fullName || selectedUser.name}</h3>
                                     <p style={{ fontSize: '0.8rem', opacity: 0.4, fontWeight: 700 }}>{selectedUser.email}</p>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'var(--admin-card-bg)', borderRadius: '16px', border: '1px solid var(--admin-card-border)' }}>
-                                        <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>DOCUMENTO</span>
-                                        <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{selectedUser.document || 'NÃO INFORMADO'}</span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
+                                        <span style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.2 }}>DOCUMENTO</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 400 }}>{selectedUser.document || 'NÃO INFORMADO'}</span>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'var(--admin-card-bg)', borderRadius: '16px', border: '1px solid var(--admin-card-border)' }}>
-                                        <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>ORIGEM</span>
-                                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#3b82f6' }}>{selectedUser.origemLead || 'DIRETO'}</span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
+                                        <span style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.2 }}>ORIGEM</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 400, color: '#3b82f6' }}>{selectedUser.origemLead || 'DIRETO'}</span>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'var(--admin-card-bg)', borderRadius: '16px', border: '1px solid var(--admin-card-border)' }}>
-                                        <span style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.2 }}>MEMBRO DESDE</span>
-                                        <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{new Date(selectedUser.createdAt).toLocaleDateString('pt-BR')}</span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
+                                        <span style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.2 }}>MEMBRO DESDE</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 400 }}>{new Date(selectedUser.createdAt).toLocaleDateString('pt-BR')}</span>
                                     </div>
                                 </div>
 
                                 <div style={{ marginBottom: '3rem' }}>
-                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.1em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Requisitos do Cliente</h4>
+                                    <h4 style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.1em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Requisitos do Cliente</h4>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                        <div style={{ padding: '1.5rem', background: 'var(--admin-card-bg)', border: '1px solid var(--admin-card-border)', borderRadius: '16px', textAlign: 'center' }}>
-                                            <p style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.2rem' }}>{submissions.filter(s => s.userId === selectedUser.id).length}</p>
-                                            <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.3 }}>PROTOCOLOS</p>
+                                        <div style={{ padding: '1.5rem', background: 'var(--admin-card-bg)', border: '1px solid var(--admin-card-border)', borderRadius: '4px', textAlign: 'center' }}>
+                                            <p style={{ fontSize: '1.5rem', fontWeight: 500, marginBottom: '0.2rem' }}>{submissions.filter(s => s.userId === selectedUser.id).length}</p>
+                                            <p style={{ fontSize: '0.55rem', fontWeight: 500, opacity: 0.3 }}>PROTOCOLOS</p>
                                         </div>
-                                        <div style={{ padding: '1.5rem', background: 'var(--admin-card-bg)', border: '1px solid var(--admin-card-border)', borderRadius: '16px', textAlign: 'center' }}>
-                                            <p style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.2rem' }}>{allDocs.filter(d => d.userId === selectedUser.id).length}</p>
-                                            <p style={{ fontSize: '0.55rem', fontWeight: 900, opacity: 0.3 }}>DOCUMENTOS</p>
+                                        <div style={{ padding: '1.5rem', background: 'var(--admin-card-bg)', border: '1px solid var(--admin-card-border)', borderRadius: '4px', textAlign: 'center' }}>
+                                            <p style={{ fontSize: '1.5rem', fontWeight: 500, marginBottom: '0.2rem' }}>{allDocs.filter(d => d.userId === selectedUser.id).length}</p>
+                                            <p style={{ fontSize: '0.55rem', fontWeight: 500, opacity: 0.3 }}>DOCUMENTOS</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <button onClick={() => setSelectedUser(null)} style={{ width: '100%', padding: '1.25rem', background: '#fff', color: '#000', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 900, letterSpacing: '0.05em', cursor: 'pointer', boxShadow: '0 0 20px rgba(255,255,255,0.2)' }}>CONCLUIR VISUALIZAÇÃO</button>
+                                <button onClick={() => setSelectedUser(null)} style={{ width: '100%', padding: '1.25rem', background: '#fff', color: '#000', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 500, letterSpacing: '0.05em', cursor: 'pointer', boxShadow: '0 0 20px rgba(255,255,255,0.2)' }}>CONCLUIR VISUALIZAÇÃO</button>
                             </motion.div>
                         </div>
                     )
@@ -1124,11 +1162,11 @@ function OverviewCard({ icon, label, value }: { icon: any, label: string, value:
             }}
         >
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <div style={{ padding: '10px', background: 'var(--admin-card-bg)', border: '0.5px solid var(--admin-card-border)', borderRadius: '12px', color: 'rgba(255,255,255,0.6)' }}>{icon}</div>
-                <h3 style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.3, letterSpacing: '0.15em', textTransform: 'uppercase' }}>{label}</h3>
+                <div style={{ padding: '10px', background: 'var(--admin-card-bg)', border: '0.5px solid var(--admin-card-border)', borderRadius: '4px', color: 'rgba(255,255,255,0.6)' }}>{icon}</div>
+                <h3 style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.15em', textTransform: 'uppercase' }}>{label}</h3>
             </div>
             <div>
-                <p style={{ fontSize: '2.5rem', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.04em', fontFamily: 'Outfit' }}>{value}</p>
+                <p style={{ fontSize: '2.5rem', fontWeight: 500, lineHeight: 1, letterSpacing: '-0.04em', fontFamily: 'Outfit' }}>{value}</p>
                 <div style={{ height: '1px', width: '2rem', background: 'rgba(255,255,255,0.1)', marginTop: '0.75rem' }} />
             </div>
         </motion.div>
@@ -1145,7 +1183,7 @@ function SidebarLink({ icon, label, active, onClick }: { icon: any, label: strin
                 alignItems: 'center', 
                 gap: '1rem', 
                 padding: '0.85rem 1.25rem', 
-                borderRadius: '12px', 
+                borderRadius: '4px', 
                 background: active ? 'var(--admin-hover)' : 'transparent',
                 color: active ? 'var(--admin-fg)' : 'var(--admin-muted)',
                 border: active ? '0.5px solid var(--admin-card-border)' : '0.5px solid transparent',
@@ -1165,7 +1203,7 @@ function SidebarLink({ icon, label, active, onClick }: { icon: any, label: strin
 }
 
 function AdminTh({ children, align = 'left', style = {} }: any) {
-    return <th style={{ padding: '1rem 1.5rem', fontSize: '0.55rem', fontWeight: 900, opacity: 0.2, letterSpacing: '0.2em', textAlign: align, textTransform: 'uppercase', borderBottom: '1px solid var(--admin-card-border)', ...style }}>{children}</th>;
+    return <th style={{ padding: '1rem 1.5rem', fontSize: '0.55rem', fontWeight: 500, opacity: 0.2, letterSpacing: '0.2em', textAlign: align, textTransform: 'uppercase', borderBottom: '1px solid var(--admin-card-border)', ...style }}>{children}</th>;
 }
 
 function AdminTd({ children, align = 'left', onClick }: any) {
@@ -1192,11 +1230,11 @@ function PrioritySelector({ current, onSelect, loading }: any) {
                         onClick={() => onSelect(p.id)}
                         style={{
                             padding: '0.5rem 1rem',
-                            borderRadius: '100px',
+                            borderRadius: '4px',
                             background: isActive ? p.color : 'rgba(255,255,255,0.05)',
                             color: isActive ? (p.color === '#fff' ? '#000' : '#fff') : 'rgba(255,255,255,0.3)',
                             fontSize: '0.6rem',
-                            fontWeight: 900,
+                            fontWeight: 500,
                             border: '1px solid ' + (isActive ? p.color : 'rgba(255,255,255,0.1)'),
                             cursor: loading ? 'not-allowed' : 'pointer',
                             opacity: loading ? 0.5 : 1,

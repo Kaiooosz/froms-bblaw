@@ -26,7 +26,7 @@
   --input: rgba(0, 0, 0, 0.04);
   --ring: #000000;
 
-  --radius: 8px;
+  --radius: 4px;
   --border-thin: 0.5px solid var(--border);
   --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -104,8 +104,18 @@ h2,
 h3,
 h4 {
   font-family: 'Outfit', sans-serif;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   font-weight: 700;
+  background: linear-gradient(
+    to bottom,
+    #e8e8e8 0%,
+    #c8c8c8 40%,
+    #8a8a8a 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
 }
 
 button {
@@ -200,7 +210,7 @@ textarea {
   background: var(--primary);
   color: var(--primary-foreground);
   border-radius: 4px;
-  font-weight: 700;
+  font-weight: 500;
   font-family: 'Outfit', sans-serif;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -313,7 +323,7 @@ a {
   border-radius: 12px !important;
   padding: 0.85rem 1rem 0.85rem 3rem !important;
   font-size: 0.65rem !important;
-  font-weight: 900 !important;
+  font-weight: 500 !important;
   color: #fff !important;
   outline: none;
   transition: var(--transition-smooth);
@@ -328,9 +338,9 @@ a {
 .dash-table-container {
   background: #000;
   border: 0.5px solid rgba(255,255,255,0.05);
-  border-radius: 16px;
+  border-radius: 4px;
   overflow: hidden;
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.03);
 }
 
 .glass-panel {
@@ -338,15 +348,17 @@ a {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 0.5px solid rgba(255, 255, 255, 0.05);
-  border-radius: 24px;
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255,255,255,0.03);
 }
 
 .card-premium {
   background: rgba(255, 255, 255, 0.01);
   border: 0.5px solid rgba(255, 255, 255, 0.04);
-  border-radius: 16px;
+  border-radius: 4px;
   display: flex;
   transition: var(--transition-smooth);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 0 0 0.5px rgba(255,255,255,0.03);
 }
 
 .btn-premium {
