@@ -349,7 +349,7 @@ export default function AdminDashboard() {
         </div>
     );
    return (
-        <div style={{ background: 'var(--admin-bg)', color: 'var(--admin-fg)', minHeight: '100vh', display: 'flex' }}>
+        <div style={{ background: 'var(--admin-bg)', color: 'var(--admin-fg)', minHeight: '100vh', display: 'flex', fontFamily: "'Space Grotesk', sans-serif" }}>
             <style dangerouslySetInnerHTML={{
                 __html: `
                 body { background-color: var(--admin-bg) !important; }
