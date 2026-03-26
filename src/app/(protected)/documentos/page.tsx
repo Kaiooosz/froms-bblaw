@@ -79,7 +79,7 @@ const DEFAULT_DOCS = [
 export default function DocumentosPage() {
     const { data: session } = useSession();
     const searchParams = useSearchParams();
-    const [activeFunnel, setActiveFunnel] = useState<string | null>(searchParams.get('funnel'));
+    const [activeFunnel, setActiveFunnel] = useState<string | null>(searchParams?.get('funnel') ?? null);
     const [submissions, setSubmissions] = useState<any[]>([]);
     const [documents, setDocuments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
