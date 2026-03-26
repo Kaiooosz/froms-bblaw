@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -76,7 +76,7 @@ const DEFAULT_DOCS = [
     { id: 'outro', label: 'Outros Documentos', desc: 'Documentos complementares' }
 ];
 
-export default function DocumentosPage() {
+function DocumentosPageInner() {
     const { data: session } = useSession();
     const searchParams = useSearchParams();
     const [activeFunnel, setActiveFunnel] = useState<string | null>(searchParams?.get('funnel') ?? null);
@@ -472,5 +472,12 @@ export default function DocumentosPage() {
             `}</style>
         </div>
     );
+}
 
+export default function DocumentosPage() {
+    return (
+        <Suspense fallback={null}>
+            <DocumentosPageInner />
+        </Suspense>
+    );
 }
