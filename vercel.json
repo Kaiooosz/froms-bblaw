@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/nanobot-ping",
+      "schedule": "*/30 * * * *"
+    }
+  ]
+}
