@@ -706,32 +706,6 @@ export default function AdminDashboard() {
                                                             >
                                                                 ABRIR
                                                             </button>
-                                                            <button
-                                                                onClick={() => {
-                                                                    const email = doc.user?.email;
-                                                                    if (!email) { alert('E-mail do cliente não encontrado.'); return; }
-                                                                    fetch(`/api/admin/drive-folder?email=${encodeURIComponent(email)}`)
-                                                                        .then(r => r.json())
-                                                                        .then(d => {
-                                                                            if (d.found && d.folderUrl) window.open(d.folderUrl, '_blank');
-                                                                            else alert(d.message || 'Pasta não encontrada no Drive.');
-                                                                        });
-                                                                }}
-                                                                title="Abrir pasta do cliente no Google Drive"
-                                                                style={{ padding: '0.55rem 1rem', borderRadius: '4px', background: 'var(--admin-input-bg)', color: 'var(--admin-fg)', fontSize: '0.55rem', fontWeight: 500, border: '1px solid var(--admin-card-border)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
-                                                                onMouseOver={(e) => (e.currentTarget.style.background = 'var(--admin-hover)')}
-                                                                onMouseOut={(e) => (e.currentTarget.style.background = 'var(--admin-input-bg)')}
-                                                            >
-                                                                <svg width="11" height="11" viewBox="0 0 87.3 78" fill="currentColor">
-                                                                    <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066DA"/>
-                                                                    <path d="M43.65 25L29.9 1.2C28.55.4 27 0 25.45 0c-1.55 0-3.1.4-4.5 1.2L6.6 11.15 22.35 39z" fill="#00AC47"/>
-                                                                    <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.45 10.55z" fill="#EA4335"/>
-                                                                    <path d="M43.65 25L57.4 1.2C56.05.4 54.5 0 52.95 0H34.35c-1.55 0-3.1.4-4.45 1.2z" fill="#00832D"/>
-                                                                    <path d="M59.8 53H27.5L13.75 76.8c1.35.8 2.9 1.2 4.45 1.2h50.9c1.55 0 3.1-.4 4.45-1.2z" fill="#2684FC"/>
-                                                                    <path d="M73.4 26.5l-7.4-12.85c-.8-1.4-1.95-2.5-3.3-3.3L48.9 34l10.9 19h26.45c0-1.55-.4-3.1-1.2-4.5z" fill="#FFBA00"/>
-                                                                </svg>
-                                                                DRIVE
-                                                            </button>
                                                         </div>
                                                     </AdminTd>
                                                 </tr>
@@ -850,23 +824,6 @@ export default function AdminDashboard() {
                                     <div style={{ marginBottom: '4rem', padding: '2rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                                             <h4 style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>Documentos Enviados</h4>
-                                            <button
-                                                onClick={() => {
-                                                    const email = selectedSubmission.user?.email;
-                                                    if (!email) { alert('E-mail do cliente não encontrado.'); return; }
-                                                    fetch(`/api/admin/drive-folder?email=${encodeURIComponent(email)}`)
-                                                        .then(r => r.json())
-                                                        .then(d => {
-                                                            if (d.found && d.folderUrl) window.open(d.folderUrl, '_blank');
-                                                            else alert(d.message || 'Pasta não encontrada no Drive.');
-                                                        });
-                                                }}
-                                                style={{ padding: '0.4rem 0.8rem', borderRadius: '4px', background: 'var(--admin-input-bg)', color: 'var(--admin-fg)', fontSize: '0.55rem', fontWeight: 500, border: '0.5px solid var(--admin-card-border)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', transition: 'all 0.3s' }}
-                                                onMouseOver={(e) => { e.currentTarget.style.background = 'var(--admin-hover)'; e.currentTarget.style.color = 'var(--admin-fg)'; }}
-                                                onMouseOut={(e) => { e.currentTarget.style.background = 'var(--admin-input-bg)'; e.currentTarget.style.color = 'var(--admin-fg)'; }}
-                                            >
-                                                VER NO DRIVE
-                                            </button>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                             {allDocs.filter(d => d.userId === selectedSubmission.userId && d.funnelType === selectedSubmission.funnelType).length === 0 ? (
@@ -1004,23 +961,6 @@ export default function AdminDashboard() {
                                     <div style={{ marginBottom: '4rem', padding: '2rem', background: 'var(--admin-card-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                                             <h4 style={{ fontSize: '0.6rem', fontWeight: 500, opacity: 0.3, letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>Documentos Enviados pelo Lead</h4>
-                                            <button
-                                                onClick={() => {
-                                                    const email = selectedLead.email;
-                                                    if (!email) { alert('E-mail do cliente não encontrado.'); return; }
-                                                    fetch(`/api/admin/drive-folder?email=${encodeURIComponent(email)}`)
-                                                        .then(r => r.json())
-                                                        .then(d => {
-                                                            if (d.found && d.folderUrl) window.open(d.folderUrl, '_blank');
-                                                            else alert(d.message || 'Pasta não encontrada no Drive.');
-                                                        });
-                                                }}
-                                                style={{ padding: '0.4rem 0.8rem', borderRadius: '4px', background: 'var(--admin-input-bg)', color: 'var(--admin-fg)', fontSize: '0.55rem', fontWeight: 500, border: '0.5px solid var(--admin-card-border)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', transition: 'all 0.3s' }}
-                                                onMouseOver={(e) => { e.currentTarget.style.background = 'var(--admin-hover)'; e.currentTarget.style.color = 'var(--admin-fg)'; }}
-                                                onMouseOut={(e) => { e.currentTarget.style.background = 'var(--admin-input-bg)'; e.currentTarget.style.color = 'var(--admin-fg)'; }}
-                                            >
-                                                VER NO DRIVE
-                                            </button>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                             {allDocs.filter(d => d.userId === selectedLead.userId).length === 0 ? (

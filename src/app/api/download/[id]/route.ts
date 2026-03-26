@@ -1,6 +1,5 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { getDownloadUrl } from "@/lib/google-drive"
 import { NextResponse } from "next/server"
 
 export const dynamic = 'force-dynamic'
@@ -28,10 +27,27 @@ export async function GET(
             return NextResponse.json({ message: "Sem permissão para baixar este arquivo" }, { status: 403 })
         }
 
-        // Gera URL de download via Google Drive
-        const url = await getDownloadUrl(document.path)
+        // Faz proxy do blob privado pelo servidor usando o token
+        const blobRes = await fetch(document.path, {
+            headers: {
+                Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
+            }
+        })
 
-        return NextResponse.json({ url })
+        if (!blobRes.ok) {
+            return NextResponse.json({ message: "Arquivo não encontrado no storage" }, { status: 404 })
+        }
+
+        const buffer = await blobRes.arrayBuffer()
+        const contentType = blobRes.headers.get('content-type') || 'application/octet-stream'
+
+        return new NextResponse(buffer, {
+            headers: {
+                'Content-Type': contentType,
+                'Content-Disposition': `attachment; filename="${document.filename}"`,
+                'Cache-Control': 'no-store',
+            }
+        })
     } catch (error: any) {
         console.error("Download route error:", error)
         return NextResponse.json({ message: "Erro interno no download" }, { status: 500 })
