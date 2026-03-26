@@ -35,6 +35,9 @@
     letter-spacing: -0.05em;
     margin-bottom: 20px;
     line-height: 1;
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+    background: none;
 }
 
 .subtitle {
@@ -109,6 +112,8 @@
 
 .cardTitle {
     color: #fff;
+    -webkit-text-fill-color: #fff;
+    background: none;
     font-family: 'Outfit', sans-serif;
     font-size: 2rem;
     font-weight: 900;

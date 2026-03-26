@@ -85,7 +85,7 @@ function SignInContent() {
                             style={{ height: '52px', margin: '0 auto 2.5rem', display: 'block' }}
                         />
                     </Link>
-                    <h1 style={{ fontSize: '1.25rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.4em', fontFamily: 'Outfit, sans-serif', margin: 0 }}>AUTENTICAÇÃO</h1>
+                    <h1 style={{ fontSize: '1.25rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.4em', fontFamily: 'Outfit, sans-serif', margin: 0, color: '#fff', WebkitTextFillColor: '#fff', background: 'none' }}>AUTENTICAÇÃO</h1>
                     <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.5em', fontWeight: 800, marginTop: '8px', margin: 0 }}>SECURE GATEWAY PROTOCOL 3.0</p>
                 </div>
 
