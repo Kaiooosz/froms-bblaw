@@ -47,7 +47,10 @@ export default function ChatPage() {
     ]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [warmingUp, setWarmingUp] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const retryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const warmingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,16 +60,31 @@ export default function ChatPage() {
         scrollToBottom();
     }, [messages, isTyping]);
 
-    const submitMessage = async (msgText: string) => {
+    const submitMessage = async (msgText: string, retryCount = 0) => {
         if (!msgText.trim() || isTyping) return;
 
-        const historySnapshot = [...messages];
-        setMessages(prev => [...prev, { role: 'user', content: msgText }]);
+        // Clear any pending retries
+        if (retryRef.current) clearTimeout(retryRef.current);
+        if (warmingTimerRef.current) clearTimeout(warmingTimerRef.current);
+
+        const historySnapshot = retryCount === 0 ? [...messages] : messages.slice(0, -2); // on retry, exclude last user+assistant pair
+        if (retryCount === 0) {
+            setMessages(prev => [...prev, { role: 'user', content: msgText }]);
+        }
         setIsTyping(true);
+        setWarmingUp(false);
         setSuggestions([]);
 
+        // Show "warming up" hint after 8 seconds of silence
+        warmingTimerRef.current = setTimeout(() => setWarmingUp(true), 8000);
+
         // Adiciona mensagem vazia do assistente para streaming
-        setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+        setMessages(prev => {
+            const updated = [...prev];
+            if (retryCount > 0) updated[updated.length - 1] = { role: 'assistant', content: '' };
+            else updated.push({ role: 'assistant', content: '' });
+            return updated;
+        });
 
         try {
             const res = await fetch('/api/chat', {
@@ -145,9 +163,25 @@ export default function ChatPage() {
                 return updated;
             });
         } finally {
+            if (warmingTimerRef.current) clearTimeout(warmingTimerRef.current);
+            setWarmingUp(false);
             setIsTyping(false);
             scrollToBottom();
         }
+
+        // Auto-retry se o serviço de IA estiver inicializando (até 4 tentativas, intervalo crescente)
+        setMessages(prev => {
+            const last = prev[prev.length - 1];
+            if (last?.role === 'assistant' && last.content.includes('demorando para responder') && retryCount < 4) {
+                const delay = (retryCount + 1) * 8000;
+                const retryMsg = `⏳ Inicializando serviço de IA... Tentando novamente em ${delay / 1000}s (tentativa ${retryCount + 1}/4)`;
+                const updated = [...prev];
+                updated[updated.length - 1] = { role: 'assistant', content: retryMsg };
+                retryRef.current = setTimeout(() => submitMessage(msgText, retryCount + 1), delay);
+                return updated;
+            }
+            return prev;
+        });
     };
 
     const handleSend = async (e: React.FormEvent) => {
@@ -278,7 +312,9 @@ export default function ChatPage() {
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             <span style={{ fontSize: '0.6rem', fontWeight: 900, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.4em', textTransform: 'uppercase' }}>BBLAW INTEL ENGINE</span>
-                            <span style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.1)', textTransform: 'uppercase', letterSpacing: '0.2em' }} className="animate-pulse">Cruzando dados e ativos estratégicos...</span>
+                            <span style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.1)', textTransform: 'uppercase', letterSpacing: '0.2em' }} className="animate-pulse">
+                                {warmingUp ? 'Inicializando serviço de IA — pode levar alguns instantes...' : 'Cruzando dados e ativos estratégicos...'}
+                            </span>
                         </div>
                     </motion.div>
                 )}
