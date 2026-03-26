@@ -28,8 +28,7 @@ export async function GET() {
                 document: true,
                 phone: true,
                 origemLead: true,
-                role: true,
-                createdAt: true
+                role: true
             }
         })
 

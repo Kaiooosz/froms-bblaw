@@ -696,8 +696,13 @@ export default function AdminDashboard() {
                                                         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                                                             <button
                                                                 onClick={() => {
-                                                                    fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
-                                                                        if (d.url) window.open(d.url, '_blank');
+                                                                    fetch(`/api/download/${doc.id}`).then(async r => {
+                                                                        if (!r.ok) { alert('Erro ao baixar'); return; }
+                                                                        const blob = await r.blob();
+                                                                        const url = URL.createObjectURL(blob);
+                                                                        const a = document.createElement('a');
+                                                                        a.href = url; a.download = doc.filename || 'arquivo';
+                                                                        a.click(); URL.revokeObjectURL(url);
                                                                     });
                                                                 }}
                                                                 style={{ padding: '0.55rem 1.25rem', borderRadius: '4px', background: '#fff', color: '#000', fontSize: '0.55rem', fontWeight: 500, border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
@@ -837,8 +842,13 @@ export default function AdminDashboard() {
                                                         </div>
                                                         <button
                                                             onClick={() => {
-                                                                fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
-                                                                    if (d.url) window.open(d.url, '_blank');
+                                                                fetch(`/api/download/${doc.id}`).then(async r => {
+                                                                    if (!r.ok) { alert('Erro ao baixar'); return; }
+                                                                    const blob = await r.blob();
+                                                                    const url = URL.createObjectURL(blob);
+                                                                    const a = document.createElement('a');
+                                                                    a.href = url; a.download = doc.filename || 'arquivo';
+                                                                    a.click(); URL.revokeObjectURL(url);
                                                                 });
                                                             }}
                                                             style={{ padding: '0.5rem', borderRadius: '8px', background: '#fff', color: '#000', cursor: 'pointer' }}
@@ -974,8 +984,13 @@ export default function AdminDashboard() {
                                                         </div>
                                                         <button
                                                             onClick={() => {
-                                                                fetch(`/api/download/${doc.id}`).then(r => r.json()).then(d => {
-                                                                    if (d.url) window.open(d.url, '_blank');
+                                                                fetch(`/api/download/${doc.id}`).then(async r => {
+                                                                    if (!r.ok) { alert('Erro ao baixar'); return; }
+                                                                    const blob = await r.blob();
+                                                                    const url = URL.createObjectURL(blob);
+                                                                    const a = document.createElement('a');
+                                                                    a.href = url; a.download = doc.filename || 'arquivo';
+                                                                    a.click(); URL.revokeObjectURL(url);
                                                                 });
                                                             }}
                                                             style={{ padding: '0.5rem', borderRadius: '8px', background: '#fff', color: '#000', cursor: 'pointer' }}
