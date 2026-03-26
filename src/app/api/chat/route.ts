@@ -118,11 +118,37 @@ export async function POST(req: Request) {
         }
 
         // Proxy para o nanobot (comportamento padrão)
-        const nanobotResponse = await fetch(`${NANOBOT_URL}/chat`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message, history: history || [] }),
-        });
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
+
+        let nanobotResponse: Response;
+        try {
+            nanobotResponse = await fetch(`${NANOBOT_URL}/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, history: history || [] }),
+                signal: controller.signal,
+            });
+        } catch (fetchErr: any) {
+            clearTimeout(timeout);
+            const isTimeout = fetchErr?.name === 'AbortError';
+            console.error('Nanobot fetch error:', fetchErr);
+            const encoder = new TextEncoder();
+            const errMsg = isTimeout
+                ? 'O serviço de IA está demorando para responder. Tente novamente em instantes.'
+                : 'Não foi possível conectar ao serviço de IA no momento.';
+            const stream = new ReadableStream({
+                start(c) {
+                    c.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'chunk', content: errMsg })}\n\n`));
+                    c.enqueue(encoder.encode('data: [DONE]\n\n'));
+                    c.close();
+                }
+            });
+            return new Response(stream, {
+                headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive' },
+            });
+        }
+        clearTimeout(timeout);
 
         if (!nanobotResponse.ok || !nanobotResponse.body) {
             const errText = await nanobotResponse.text();
