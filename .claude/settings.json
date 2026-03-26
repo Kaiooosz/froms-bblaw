@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git -C \"C:/Users/Notebook/Documents/Programas/froms-bblaw\" add -A && git -C \"C:/Users/Notebook/Documents/Programas/froms-bblaw\" diff --cached --quiet || (git -C \"C:/Users/Notebook/Documents/Programas/froms-bblaw\" commit -m \"auto: atualização Claude\" && git -C \"C:/Users/Notebook/Documents/Programas/froms-bblaw\" push origin main) 2>/dev/null || true",
+            "timeout": 60,
+            "statusMessage": "Fazendo deploy para main..."
+          }
+        ]
+      }
+    ]
+  }
+}

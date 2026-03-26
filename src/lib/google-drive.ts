@@ -14,11 +14,13 @@ function getDriveClient() {
 }
 
 async function getOrCreateFolder(drive: any, name: string, parentId: string): Promise<string> {
-    // Busca pasta existente
+    // Busca pasta existente (suporta Shared Drives)
     const res = await drive.files.list({
         q: `name='${name}' and mimeType='application/vnd.google-apps.folder' and '${parentId}' in parents and trashed=false`,
         fields: 'files(id, name)',
         spaces: 'drive',
+        supportsAllDrives: true,
+        includeItemsFromAllDrives: true,
     });
 
     if (res.data.files && res.data.files.length > 0) {
@@ -33,6 +35,7 @@ async function getOrCreateFolder(drive: any, name: string, parentId: string): Pr
             parents: [parentId],
         },
         fields: 'id',
+        supportsAllDrives: true,
     });
 
     return folder.data.id as string;
@@ -67,6 +70,7 @@ export async function uploadToDrive(
             body: stream,
         },
         fields: 'id',
+        supportsAllDrives: true,
     });
 
     return file.data.id as string;
@@ -82,11 +86,13 @@ export async function getDownloadUrl(fileId: string): Promise<string> {
             role: 'reader',
             type: 'anyone',
         },
+        supportsAllDrives: true,
     });
 
     const file = await drive.files.get({
         fileId,
         fields: 'webContentLink, webViewLink',
+        supportsAllDrives: true,
     });
 
     return (file.data.webContentLink || file.data.webViewLink) as string;
@@ -94,5 +100,5 @@ export async function getDownloadUrl(fileId: string): Promise<string> {
 
 export async function deleteFromDrive(fileId: string): Promise<void> {
     const drive = getDriveClient();
-    await drive.files.delete({ fileId });
+    await drive.files.delete({ fileId, supportsAllDrives: true });
 }
