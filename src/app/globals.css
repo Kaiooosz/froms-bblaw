@@ -110,9 +110,9 @@ h4 {
   font-weight: 700;
   background: linear-gradient(
     to bottom,
-    #e8e8e8 0%,
-    #c8c8c8 40%,
-    #8a8a8a 100%
+    #ffffff 0%,
+    #e0e0e0 40%,
+    #b0b0b0 100%
   );
   -webkit-background-clip: text;
   background-clip: text;

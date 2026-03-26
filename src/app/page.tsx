@@ -54,7 +54,7 @@ export default function Home() {
             
             <h1 style={{ fontSize: 'min(5rem, 10vw)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 0.95, fontFamily: 'Outfit, sans-serif', marginBottom: '2.5rem' }}>
               PLANEJAMENTO <br/>
-              <span style={{ color: 'rgba(255,255,255,0.5)' }}>ESTRATÉGICO &</span><br/>
+              <span style={{ color: 'rgba(255,255,255,0.5)', WebkitTextFillColor: 'rgba(255,255,255,0.5)' }}>ESTRATÉGICO &</span><br/>
               INTELIGÊNCIA <span style={{ fontStyle: 'italic', fontWeight: 400 }}>JURÍDICA.</span>
             </h1>
             
