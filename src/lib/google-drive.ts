@@ -1,4 +1,4 @@
-import { put, del } from '@vercel/blob'
+import { put, del, getDownloadUrl as blobGetDownloadUrl } from '@vercel/blob'
 
 export async function uploadToDrive(
     buffer: Buffer,
@@ -11,7 +11,7 @@ export async function uploadToDrive(
     const pathname = `documentos/${userEmail}/${funnelType}/${tipo}/${filename}`
 
     const blob = await put(pathname, buffer, {
-        access: 'public',
+        access: 'private',
         contentType: mimeType,
     })
 
@@ -19,7 +19,7 @@ export async function uploadToDrive(
 }
 
 export async function getDownloadUrl(url: string): Promise<string> {
-    return url
+    return blobGetDownloadUrl(url)
 }
 
 export async function deleteFromDrive(url: string): Promise<void> {
