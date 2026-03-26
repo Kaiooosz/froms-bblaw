@@ -14,30 +14,37 @@ function isDocumentQuery(message: string): boolean {
     return DOCUMENT_KEYWORDS.some((kw) => lower.includes(kw));
 }
 
-function formatDocumentResponse(data: any[]): string {
+function formatDocumentResponse(data: any[]): { text: string; actions: { label: string; url: string }[] } {
     if (!data || data.length === 0) {
-        return 'Você ainda não possui nenhum formulário em andamento. Acesse o portal e escolha uma das operações disponíveis para iniciar. 📋';
+        return {
+            text: 'Você ainda não possui nenhum formulário em andamento. Acesse o portal e escolha uma das operações disponíveis para iniciar. 📋',
+            actions: []
+        };
     }
 
-    let response = '**Situação dos seus documentos:**\n\n';
+    let text = '**Situação dos seus documentos:**\n\n';
+    const actions: { label: string; url: string }[] = [];
 
     for (const item of data) {
         const percent = item.total > 0 ? Math.round((item.sentCount / item.total) * 100) : 0;
-        response += `📁 **${item.funnelLabel}** — ${item.sentCount}/${item.total} enviados (${percent}%)\n`;
+        text += `📁 **${item.funnelLabel}** — ${item.sentCount}/${item.total} enviados (${percent}%)\n`;
 
         if (item.pendingCount > 0) {
-            response += `\n⏳ *Ainda pendentes:*\n`;
+            text += `\n⏳ *Ainda pendentes:*\n`;
             item.pending.forEach((doc: string) => {
-                response += `  • ${doc}\n`;
+                text += `  • ${doc}\n`;
+            });
+            actions.push({
+                label: `Enviar documentos — ${item.funnelLabel}`,
+                url: `/documentos?funnel=${item.funnel}`
             });
         } else {
-            response += `  ✅ Todos os documentos foram enviados!\n`;
+            text += `  ✅ Todos os documentos foram enviados!\n`;
         }
-        response += '\n';
+        text += '\n';
     }
 
-    response += 'Para enviar os documentos pendentes, acesse **Portal → Documentação de Suporte**.';
-    return response;
+    return { text, actions };
 }
 
 export async function POST(req: Request) {
@@ -61,13 +68,12 @@ export async function POST(req: Request) {
 
                     if (res.ok) {
                         const data = await res.json();
-                        const responseText = formatDocumentResponse(data);
+                        const { text: responseText, actions } = formatDocumentResponse(data);
 
                         // Retorna como SSE para manter consistência com o cliente
                         const encoder = new TextEncoder();
                         const stream = new ReadableStream({
                             start(controller) {
-                                // Chunk por chunk para simular streaming
                                 const words = responseText.split(' ');
                                 let i = 0;
                                 const interval = setInterval(() => {
@@ -80,6 +86,14 @@ export async function POST(req: Request) {
                                         );
                                         i++;
                                     } else {
+                                        // Emite ações se houver pendências
+                                        if (actions.length > 0) {
+                                            controller.enqueue(
+                                                encoder.encode(
+                                                    `data: ${JSON.stringify({ type: 'action', actions })}\n\n`
+                                                )
+                                            );
+                                        }
                                         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
                                         clearInterval(interval);
                                         controller.close();

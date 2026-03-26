@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
     FileUp,
@@ -77,7 +78,8 @@ const DEFAULT_DOCS = [
 
 export default function DocumentosPage() {
     const { data: session } = useSession();
-    const [activeFunnel, setActiveFunnel] = useState<string | null>(null);
+    const searchParams = useSearchParams();
+    const [activeFunnel, setActiveFunnel] = useState<string | null>(searchParams.get('funnel'));
     const [submissions, setSubmissions] = useState<any[]>([]);
     const [documents, setDocuments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);

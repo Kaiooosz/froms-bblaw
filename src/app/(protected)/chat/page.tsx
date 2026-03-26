@@ -4,23 +4,31 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { 
-    Send, 
-    Bot, 
-    User, 
-    ChevronLeft, 
-    Loader2, 
+import {
+    Send,
+    Bot,
+    User,
+    ChevronLeft,
+    ChevronRight,
+    Loader2,
     Sparkles,
     ShieldCheck,
     Lock,
-    MessageSquare
+    MessageSquare,
+    FileUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
+interface Action {
+    label: string;
+    url: string;
+}
+
 interface Message {
     role: 'user' | 'assistant';
     content: string;
+    actions?: Action[];
 }
 
 export default function ChatPage() {
@@ -102,6 +110,15 @@ export default function ChatPage() {
                                 return updated;
                             });
                             scrollToBottom();
+                        } else if (event.type === 'action' && event.actions) {
+                            setMessages(prev => {
+                                const updated = [...prev];
+                                updated[updated.length - 1] = {
+                                    ...updated[updated.length - 1],
+                                    actions: event.actions
+                                };
+                                return updated;
+                            });
                         } else if (event.type === 'error') {
                             setMessages(prev => {
                                 const updated = [...prev];
@@ -235,6 +252,21 @@ export default function ChatPage() {
                                     msg.content
                                 )}
                             </div>
+                            {msg.actions && msg.actions.length > 0 && (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.75rem', paddingLeft: '0.5rem' }}>
+                                    {msg.actions.map((action, i) => (
+                                        <Link key={i} href={action.url}
+                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.2rem', background: '#fff', color: '#000', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 700, textDecoration: 'none', width: 'fit-content', transition: 'opacity 0.2s' }}
+                                            onMouseOver={(e) => (e.currentTarget.style.opacity = '0.85')}
+                                            onMouseOut={(e) => (e.currentTarget.style.opacity = '1')}
+                                        >
+                                            <FileUp size={14} />
+                                            {action.label}
+                                            <ChevronRight size={14} />
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
                         </motion.div>
                     ))}
                 </AnimatePresence>
