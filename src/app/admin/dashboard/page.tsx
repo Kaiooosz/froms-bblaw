@@ -49,6 +49,8 @@ export default function AdminDashboard() {
     const [allDocs, setAllDocs] = useState<any[]>([]);
     const [filterType, setFilterType] = useState('ALL');
     const [filterStatus, setFilterStatus] = useState('ALL');
+    const [docFunnelFilter, setDocFunnelFilter] = useState('ALL');
+    const [expandedDocUser, setExpandedDocUser] = useState<string | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<any | null>(null);
     const [isUpdating, setIsUpdating] = useState(false);
@@ -644,80 +646,113 @@ export default function AdminDashboard() {
                                     </tbody>
                                 </table>
                             ) : activeTab === 'DOCS' ? (
-                                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
-                                    <thead style={{ background: 'var(--admin-card-bg)', borderBottom: '1px solid var(--admin-card-border)' }}>
-                                        <tr>
-                                            <AdminTh>CLIENTE</AdminTh>
-                                            <AdminTh>FLUXO</AdminTh>
-                                            <AdminTh>ARQUIVO / NOME</AdminTh>
-                                            <AdminTh>TIPO</AdminTh>
-                                            <AdminTh align="right">AÇÃO</AdminTh>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {filteredDocs.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={5} style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
-                                                    <FileUp size={24} style={{ margin: '0 auto 1rem' }} />
-                                                    <p style={{ fontSize: '0.6rem', fontWeight: 500 }}>SEM DOCUMENTOS</p>
-                                                </td>
-                                            </tr>
-                                        ) : (
-                                            filteredDocs.map((doc) => (
-                                                <tr key={doc.id} style={{ borderBottom: '1px solid var(--admin-card-border)', transition: 'background 0.2s' }}
+                                <div>
+                                    <div style={{ display: 'flex', gap: '0.5rem', padding: '1rem 1.5rem', borderBottom: '1px solid var(--admin-card-border)', flexWrap: 'wrap' }}>
+                                        {['ALL', 'RESIDENCIA_FISCAL_PARAGUAI', 'OFFSHORE_INTERNACIONAL', 'HOLDING_NACIONAL', 'ESTRUTURACAO_CRIPTO', 'PLANEJAMENTO_SUCESSORIO', 'CONTENCIOSO_ESTRATEGICO'].map(f => (
+                                            <button key={f} onClick={() => setDocFunnelFilter(f)}
+                                                style={{ padding: '0.35rem 0.85rem', borderRadius: '20px', fontSize: '0.5rem', fontWeight: 700, letterSpacing: '0.05em', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid var(--admin-card-border)', background: docFunnelFilter === f ? 'var(--admin-fg)' : 'transparent', color: docFunnelFilter === f ? 'var(--admin-bg)' : 'var(--admin-fg)', opacity: docFunnelFilter === f ? 1 : 0.4 }}>
+                                                {f === 'ALL' ? 'TODOS' : f.replace(/_/g, ' ')}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {(() => {
+                                        const docsFiltered = filteredDocs.filter((d: any) => docFunnelFilter === 'ALL' || d.funnelType === docFunnelFilter);
+                                        const grouped = docsFiltered.reduce((acc: any, doc: any) => {
+                                            const key = doc.userId || 'unknown';
+                                            if (!acc[key]) acc[key] = { user: doc.user, userId: key, docs: [] };
+                                            acc[key].docs.push(doc);
+                                            return acc;
+                                        }, {});
+                                        const groups = Object.values(grouped) as any[];
+                                        if (groups.length === 0) return (
+                                            <div style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.2 }}>
+                                                <FileUp size={24} style={{ margin: '0 auto 1rem' }} />
+                                                <p style={{ fontSize: '0.6rem', fontWeight: 500 }}>SEM DOCUMENTOS</p>
+                                            </div>
+                                        );
+                                        return groups.map((group: any) => (
+                                            <div key={group.userId} style={{ borderBottom: '1px solid var(--admin-card-border)' }}>
+                                                <div onClick={() => setExpandedDocUser(expandedDocUser === group.userId ? null : group.userId)}
+                                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.5rem', cursor: 'pointer', transition: 'background 0.2s' }}
                                                     onMouseOver={(e) => (e.currentTarget.style.background = 'var(--admin-hover)')}
                                                     onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
                                                 >
-                                                    <AdminTd>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                            <div style={{ width: '32px', height: '32px', background: 'var(--admin-muted-low)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: 500 }}>
-                                                                {(doc.user?.name || doc.user?.fullName || '?')[0]}
-                                                            </div>
-                                                            <div>
-                                                                <p style={{ fontSize: '0.7rem', fontWeight: 400 }}>{doc.user?.name || doc.user?.fullName || 'NÃO IDENTIFICADO'}</p>
-                                                                <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{doc.user?.email || '-'}</p>
-                                                            </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                        <div style={{ width: '36px', height: '36px', background: 'var(--admin-muted-low)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 700, flexShrink: 0 }}>
+                                                            {(group.user?.name || group.user?.fullName || '?')[0].toUpperCase()}
                                                         </div>
-                                                    </AdminTd>
-                                                    <AdminTd>
-                                                        <FunnelBadge funnelType={doc.funnelType} title={funnelConfig[doc.funnelType]?.title || doc.funnelType} />
-                                                    </AdminTd>
-                                                    <AdminTd>
-                                                        <p style={{ fontSize: '0.65rem', fontWeight: 700, opacity: 0.6 }}>{doc.filename}</p>
-                                                        <p style={{ fontSize: '0.5rem', opacity: 0.2 }}>{(doc.size / 1024).toFixed(0)} KB</p>
-                                                    </AdminTd>
-                                                    <AdminTd>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                            <div style={{ width: '6px', height: '6px', background: '#fff', borderRadius: '50%', opacity: 0.3 }} />
-                                                            <span style={{ fontSize: '0.55rem', fontWeight: 500, textTransform: 'uppercase', opacity: 0.6 }}>{doc.tipo}</span>
+                                                        <div>
+                                                            <p style={{ fontSize: '0.7rem', fontWeight: 600 }}>{group.user?.name || group.user?.fullName || 'NÃO IDENTIFICADO'}</p>
+                                                            <p style={{ fontSize: '0.55rem', opacity: 0.3 }}>{group.user?.email || '-'}</p>
                                                         </div>
-                                                    </AdminTd>
-                                                    <AdminTd align="right">
-                                                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                                                            <button
-                                                                onClick={() => {
-                                                                    fetch(`/api/download/${doc.id}`).then(async r => {
-                                                                        if (!r.ok) { alert('Erro ao baixar'); return; }
-                                                                        const blob = await r.blob();
-                                                                        const url = URL.createObjectURL(blob);
-                                                                        const a = document.createElement('a');
-                                                                        a.href = url; a.download = doc.filename || 'arquivo';
-                                                                        a.click(); URL.revokeObjectURL(url);
-                                                                    });
-                                                                }}
-                                                                style={{ padding: '0.55rem 1.25rem', borderRadius: '4px', background: '#fff', color: '#000', fontSize: '0.55rem', fontWeight: 500, border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
-                                                                onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)', e.currentTarget.style.boxShadow = '0 0 15px rgba(255,255,255,0.4)')}
-                                                                onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)', e.currentTarget.style.boxShadow = 'none')}
-                                                            >
-                                                                ABRIR
-                                                            </button>
-                                                        </div>
-                                                    </AdminTd>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                        <span style={{ fontSize: '0.5rem', fontWeight: 700, opacity: 0.4, background: 'var(--admin-muted-low)', padding: '0.25rem 0.6rem', borderRadius: '20px' }}>
+                                                            {group.docs.length} {group.docs.length === 1 ? 'DOC' : 'DOCS'}
+                                                        </span>
+                                                        <ChevronRight size={14} style={{ opacity: 0.3, transform: expandedDocUser === group.userId ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
+                                                    </div>
+                                                </div>
+                                                {expandedDocUser === group.userId && (
+                                                    <div style={{ background: 'var(--admin-card-bg)' }}>
+                                                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                                            <thead>
+                                                                <tr style={{ borderBottom: '1px solid var(--admin-card-border)' }}>
+                                                                    <AdminTh>ARQUIVO</AdminTh>
+                                                                    <AdminTh>FLUXO</AdminTh>
+                                                                    <AdminTh>TIPO</AdminTh>
+                                                                    <AdminTh>TAMANHO</AdminTh>
+                                                                    <AdminTh align="right">AÇÃO</AdminTh>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {group.docs.map((doc: any) => (
+                                                                    <tr key={doc.id} style={{ borderBottom: '1px solid var(--admin-card-border)', transition: 'background 0.2s' }}
+                                                                        onMouseOver={(e) => (e.currentTarget.style.background = 'var(--admin-hover)')}
+                                                                        onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+                                                                    >
+                                                                        <AdminTd>
+                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                                <FileText size={14} style={{ opacity: 0.3, flexShrink: 0 }} />
+                                                                                <span style={{ fontSize: '0.65rem', fontWeight: 600, opacity: 0.8 }}>{doc.filename}</span>
+                                                                            </div>
+                                                                        </AdminTd>
+                                                                        <AdminTd>
+                                                                            <FunnelBadge funnelType={doc.funnelType} title={funnelConfig[doc.funnelType]?.title || doc.funnelType} />
+                                                                        </AdminTd>
+                                                                        <AdminTd>
+                                                                            <span style={{ fontSize: '0.55rem', fontWeight: 500, textTransform: 'uppercase', opacity: 0.5 }}>{doc.tipo}</span>
+                                                                        </AdminTd>
+                                                                        <AdminTd>
+                                                                            <span style={{ fontSize: '0.55rem', opacity: 0.3 }}>{(doc.size / 1024).toFixed(0)} KB</span>
+                                                                        </AdminTd>
+                                                                        <AdminTd align="right">
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    fetch(`/api/download/${doc.id}`).then(async r => {
+                                                                                        if (!r.ok) { alert('Erro ao baixar'); return; }
+                                                                                        const blob = await r.blob();
+                                                                                        const url = URL.createObjectURL(blob);
+                                                                                        const a = document.createElement('a');
+                                                                                        a.href = url; a.download = doc.filename || 'arquivo';
+                                                                                        a.click(); URL.revokeObjectURL(url);
+                                                                                    });
+                                                                                }}
+                                                                                style={{ padding: '0.4rem 1rem', borderRadius: '4px', background: 'var(--admin-fg)', color: 'var(--admin-bg)', fontSize: '0.5rem', fontWeight: 700, border: 'none', cursor: 'pointer' }}
+                                                                            >
+                                                                                BAIXAR
+                                                                            </button>
+                                                                        </AdminTd>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ));
+                                    })()}
+                                </div>
                             ) : activeTab === 'WEBHOOKS' ? (
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
                                     <ShieldCheck size={32} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
