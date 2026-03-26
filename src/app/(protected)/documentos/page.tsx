@@ -149,7 +149,7 @@ export default function DocumentosPage() {
                     ? FUNNEL_DOCS[activeFunnel]
                     : DEFAULT_DOCS
                 ).find(d => d.id === tipo)?.label || tipo;
-                setSuccessMsg(`"${docLabel}" enviado com sucesso para o Google Drive!`);
+                setSuccessMsg(`"${docLabel}" enviado com sucesso!`);
                 setTimeout(() => setSuccessMsg(null), 4500);
             } else {
                 const error = await res.json();
