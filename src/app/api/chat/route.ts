@@ -119,7 +119,7 @@ export async function POST(req: Request) {
 
         // Proxy para o nanobot (comportamento padrão)
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000);
+        const timeout = setTimeout(() => controller.abort(), 20000);
 
         let nanobotResponse: Response;
         try {
