@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 
+export const maxDuration = 60; // seconds — needed for slow HF Spaces cold starts
+
 const NANOBOT_URL = process.env.NANOBOT_URL || 'http://localhost:8000';
 
 const DOCUMENT_KEYWORDS = [
@@ -119,7 +121,7 @@ export async function POST(req: Request) {
 
         // Proxy para o nanobot (comportamento padrão)
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 20000);
+        const timeout = setTimeout(() => controller.abort(), 30000);
 
         let nanobotResponse: Response;
         try {
